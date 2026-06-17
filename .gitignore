@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Superpowers brainstorming session artifacts
 .superpowers/
+
+# Local git worktrees
+.worktrees/
