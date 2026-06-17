@@ -1,4 +1,5 @@
-const villageNodes = {
+(() => {
+  const villageNodes = {
   room: { id: 'room', label: '내 방', log: '카드를 챙겼다.', x: 50, y: 76, unlocks: ['store', 'bus'], startsUnlocked: true },
   store: { id: 'store', label: '편의점', log: '봉투값이 붙었다.', x: 28, y: 55, unlocks: ['work', 'subscriptions', 'lottery'] },
   bus: { id: 'bus', label: '버스정류장', log: '잔액이 부족하다.', x: 70, y: 56, unlocks: ['bank'] },
@@ -10,7 +11,7 @@ const villageNodes = {
   cyanGate: { id: 'cyanGate', label: 'Cyan 입구', log: '길이 열렸다.', x: 82, y: 14, unlocks: [], gate: true }
 };
 
-const villageEdges = [
+  const villageEdges = [
   ['room', 'store'],
   ['room', 'bus'],
   ['store', 'work'],
@@ -23,3 +24,4 @@ const villageEdges = [
 ];
 
 window.PreCyanVillageData = { villageNodes, villageEdges };
+})();

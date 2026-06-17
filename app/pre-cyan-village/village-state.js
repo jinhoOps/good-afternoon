@@ -1,6 +1,7 @@
-const { villageNodes } = window.PreCyanVillageData;
+(() => {
+  const { villageNodes } = window.PreCyanVillageData;
 
-const STORAGE_KEY = 'goodafternoon.preCyanVillage.v1';
+  const STORAGE_KEY = 'goodafternoon.preCyanVillage.v1';
 
 function createInitialState() {
   return {
@@ -107,3 +108,4 @@ window.PreCyanVillageState = {
   visitNode,
   enterGate
 };
+})();

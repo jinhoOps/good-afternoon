@@ -1,5 +1,6 @@
-const { villageEdges, villageNodes } = window.PreCyanVillageData;
-const { enterGate, isNodeUnlocked, loadState, resetState, saveState, visitNode } = window.PreCyanVillageState;
+(() => {
+  const { villageEdges, villageNodes } = window.PreCyanVillageData;
+  const { enterGate, isNodeUnlocked, loadState, resetState, saveState, visitNode } = window.PreCyanVillageState;
 
 const nodesHost = document.querySelector('#village-nodes');
 const pathsHost = document.querySelector('.village-paths');
@@ -8,7 +9,7 @@ const achievement = document.querySelector('#achievement');
 const enterButton = document.querySelector('#enter-gate');
 const resetButton = document.querySelector('#reset-state');
 
-let currentState = loadState();
+  let currentState = loadState();
 
 function normalizeEdge(edge) {
   if (Array.isArray(edge)) return { from: edge[0], to: edge[1] };
@@ -70,3 +71,4 @@ resetButton.addEventListener('click', () => {
 });
 
 render();
+})();
