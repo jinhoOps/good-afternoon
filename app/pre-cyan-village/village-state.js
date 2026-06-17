@@ -1,8 +1,8 @@
-import { villageNodes } from './village-data.js';
+const { villageNodes } = window.PreCyanVillageData;
 
-export const STORAGE_KEY = 'goodafternoon.preCyanVillage.v1';
+const STORAGE_KEY = 'goodafternoon.preCyanVillage.v1';
 
-export function createInitialState() {
+function createInitialState() {
   return {
     unlocked: ['room'],
     visited: [],
@@ -15,7 +15,7 @@ export function createInitialState() {
   };
 }
 
-export function loadState() {
+function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return createInitialState();
@@ -31,34 +31,34 @@ export function loadState() {
   }
 }
 
-export function saveState(state) {
+function saveState(state) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {}
   return state;
 }
 
-export function resetState() {
+function resetState() {
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {}
   return createInitialState();
 }
 
-export function isNodeUnlocked(state, id) {
+function isNodeUnlocked(state, id) {
   if (id === 'cyanGate') return state.cyanGateUnlocked;
   if (id === 'alley') return state.backAlleyDiscovered;
   return state.unlocked.includes(id);
 }
 
-export function countVisitedPublicPlaces(state) {
+function countVisitedPublicPlaces(state) {
   return state.visited.filter((id) => {
     const node = villageNodes[id];
     return node && !node.hidden && !node.gate;
   }).length;
 }
 
-export function visitNode(state, id) {
+function visitNode(state, id) {
   const node = villageNodes[id];
   if (!node || !isNodeUnlocked(state, id)) return state;
 
@@ -87,7 +87,7 @@ export function visitNode(state, id) {
   return nextState;
 }
 
-export function enterGate(state) {
+function enterGate(state) {
   if (!state.cyanGateUnlocked) return state;
   return {
     ...state,
@@ -95,3 +95,15 @@ export function enterGate(state) {
     firstAchievementShown: true
   };
 }
+
+window.PreCyanVillageState = {
+  STORAGE_KEY,
+  createInitialState,
+  loadState,
+  saveState,
+  resetState,
+  isNodeUnlocked,
+  countVisitedPublicPlaces,
+  visitNode,
+  enterGate
+};

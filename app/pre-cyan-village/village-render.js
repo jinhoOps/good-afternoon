@@ -1,5 +1,5 @@
-import { villageEdges, villageNodes } from './village-data.js';
-import { enterGate, isNodeUnlocked, loadState, resetState, saveState, visitNode } from './village-state.js';
+const { villageEdges, villageNodes } = window.PreCyanVillageData;
+const { enterGate, isNodeUnlocked, loadState, resetState, saveState, visitNode } = window.PreCyanVillageState;
 
 const nodesHost = document.querySelector('#village-nodes');
 const pathsHost = document.querySelector('.village-paths');
