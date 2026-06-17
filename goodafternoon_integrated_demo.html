@@ -21,6 +21,10 @@
       --text-muted: #6C6A64;  /* Muted Grey */
       --text-dim: #B2B0A9;
 
+      /* Pre-Cyan (Beginner Level) */
+      --color-pre: #8C867A;
+      --color-pre-bg: #F0EDE8;
+
       /* CMYK Theme Colors */
       --color-c: #4A8C8D;     /* Cyan */
       --color-c-bg: #E8F3F3;
@@ -390,6 +394,7 @@
     
     .tier-title-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
     .tier-badge { font-family: var(--mono); font-size: 11px; font-weight: 700; color: #FFFFFF; padding: 3px 10px; border-radius: 9999px; }
+    .tier-badge.pre { background-color: var(--color-pre); }
     .tier-badge.c { background-color: var(--color-c); }
     .tier-badge.m { background-color: var(--color-m); }
     .tier-badge.y { background-color: var(--color-y); }
@@ -436,6 +441,8 @@
     .node-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
     .node-lock-icon { font-size: 14px; color: var(--text-dim); }
 
+    .pre-c-group .concept-node.clear { border-color: var(--color-pre-bg); border-style: dashed; }
+    .pre-c-group .concept-node.clear .node-indicator { border-color: var(--color-pre); background-color: var(--color-pre); color: #FFFFFF; }
     .c-group .concept-node.clear { border-color: var(--color-c-bg); }
     .c-group .concept-node.clear .node-indicator { border-color: var(--color-c); background-color: var(--color-c); color: #FFFFFF; }
     .m-group .concept-node.clear { border-color: var(--color-m-bg); }
@@ -454,8 +461,11 @@
 
     .info-panel { display: flex; flex-direction: column; gap: 20px; }
     .panel-card { background-color: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 6px 24px rgba(28, 27, 24, 0.02); }
-    .panel-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; border-bottom: 1px solid var(--surface-dim); padding-bottom: 8px; display: flex; justify-content: space-between; }
-    .badge-list { display: flex; flex-direction: column; gap: 8px; }
+    .panel-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; border-bottom: 1px solid var(--surface-dim); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+    .panel-title:hover { color: var(--color-y); }
+    .panel-title-arrow { font-size: 10px; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); color: var(--color-y); margin-left: 8px; }
+    .badge-list { display: flex; flex-direction: column; gap: 8px; max-height: 800px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; opacity: 1; }
+    .badge-list.collapsed { max-height: 0; opacity: 0; pointer-events: none; }
     .badge-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; background-color: var(--bg); border: 1px solid var(--border); }
     .badge-icon { font-size: 18px; }
     .badge-name { font-size: 12px; font-weight: 700; }
@@ -908,6 +918,274 @@
     .report-line.pass { color: #A3BE8C; }
     .report-line.fail { color: #BF616A; }
     .report-line.comment { color: #6C6A64; }
+
+    /* ── 0단계 Pre-Cyan 대기실(Lobby) 스타일 ── */
+    .lobby-intro {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .lobby-card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 480px) {
+      .lobby-card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .lobby-card {
+      background-color: var(--surface);
+      border: 1.5px solid var(--surface-dim);
+      border-radius: 8px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      min-height: 72px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .lobby-card:hover {
+      border-color: var(--color-pre);
+      background-color: var(--color-pre-bg);
+      transform: translateY(-1px);
+    }
+    .lobby-card.viewed {
+      border-color: var(--color-pre);
+      background-color: var(--color-pre-bg);
+    }
+    .lobby-card-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .lobby-card-subtitle {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+    .lobby-card-check {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      font-size: 9px;
+      color: var(--color-pre);
+      font-family: var(--mono);
+      font-weight: 700;
+      display: none;
+    }
+    .lobby-card.viewed .lobby-card-check {
+      display: block;
+    }
+    .lobby-detail-box {
+      background-color: var(--surface-dim);
+      border-left: 3px solid var(--color-pre);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .lobby-detail-box strong {
+      color: var(--color-pre);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    /* ── 편지(Letter) 아이콘 및 모달 스타일 ── */
+    .letter-btn {
+      position: fixed;
+      top: 85px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(28, 27, 24, 0.08);
+      z-index: 9999;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      color: var(--color-y);
+    }
+    
+    .letter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(142, 116, 74, 0.15);
+      border-color: var(--color-y);
+      color: var(--text);
+    }
+    
+    .letter-btn svg {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.3s ease;
+    }
+    
+    .letter-btn:hover svg {
+      transform: scale(1.1);
+    }
+
+    .letter-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(28, 27, 24, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: letterFadeIn 0.3s ease forwards;
+    }
+
+    @keyframes letterFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .letter-paper {
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(28, 27, 24, 0.15);
+      position: relative;
+      overflow: hidden;
+      animation: letterSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes letterSlideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .letter-paper::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .letter-header {
+      padding: 32px 32px 16px;
+      text-align: center;
+      border-bottom: 1px dashed var(--border);
+      position: relative;
+      z-index: 1;
+    }
+
+    .letter-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 700;
+      font-style: italic;
+      color: var(--color-y);
+      margin-bottom: 6px;
+    }
+
+    .letter-subtitle {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    .letter-content {
+      padding: 24px 32px 32px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
+      z-index: 1;
+    }
+
+    .letter-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .letter-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .letter-content::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .letter-section {
+      margin-bottom: 24px;
+    }
+
+    .letter-section-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-y);
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(142, 116, 74, 0.15);
+      padding-bottom: 4px;
+      display: inline-block;
+    }
+
+    .letter-p {
+      margin-bottom: 14px;
+      text-align: justify;
+    }
+
+    .letter-footer {
+      padding: 16px 32px 24px;
+      text-align: center;
+      border-top: 1px dashed var(--border);
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      background-color: var(--surface-dim);
+    }
+
+    .letter-close-btn {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--color-y);
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .letter-close-btn:hover {
+      background-color: var(--color-y);
+      color: var(--bg);
+      border-color: var(--color-y);
+    }
   </style>
 </head>
 <body>
@@ -971,6 +1249,10 @@
         <p style="font-size: 13px; color: var(--text-muted); font-family: var(--mono); text-align: center; margin-bottom: 24px;">// 직업군 분류</p>
         
         <div class="option-list">
+          <button class="option-btn" onclick="selectTarget('beginner')">
+            <span>경제 입문자 (기초 단어나 상식부터 차근차근 🙋)</span>
+            <span class="option-btn-arrow">→</span>
+          </button>
           <button class="option-btn" onclick="selectTarget('student')">
             <span>중·고등학생 (교과서 밖 실전이 궁금함)</span>
             <span class="option-btn-arrow">→</span>
@@ -986,21 +1268,87 @@
         </div>
       </div>
 
+      <!-- 신규 슬라이드: 0단계 Pre-Cyan 필수 기초 단어 대기실 (Lobby) -->
+      <div class="onboard-slide" id="slide-pre-lobby" style="max-width: 520px; padding: 32px 36px;">
+        <span class="quiz-concept" style="color: var(--color-pre);">개념 00 / Pre-Cyan 대기실</span>
+        <h2 class="quiz-title" style="margin-bottom: 8px; text-align: center;">필수 기초 단어 놀이터 🐣</h2>
+        <p class="lobby-intro" style="margin-bottom: 20px;">
+          단어들을 둘러보며 경제 기초 상식을 다져보세요.<br>
+          <strong>카드를 눌러 설명을 읽고, 하단에서 '이해했어요'를 직접 체크</strong>해 보세요!
+        </p>
+
+        <div class="lobby-card-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-width: 440px; margin: 0 auto 20px;">
+          <div class="lobby-card" id="l-card-1" onclick="viewLobbyCard(1)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">💰 소득 (알바비/용돈)</div>
+          </div>
+          <div class="lobby-card" id="l-card-2" onclick="viewLobbyCard(2)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">🏪 가격 (삼각김밥 값)</div>
+          </div>
+          <div class="lobby-card" id="l-card-3" onclick="viewLobbyCard(3)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">🏦 예금 (통장에 묶어두기)</div>
+          </div>
+          <div class="lobby-card" id="l-card-4" onclick="viewLobbyCard(4)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">🎒 적금 (아이패드 챌린지)</div>
+          </div>
+          <div class="lobby-card" id="l-card-5" onclick="viewLobbyCard(5)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">💳 신용 (토스 후불결제)</div>
+          </div>
+          <div class="lobby-card" id="l-card-6" onclick="viewLobbyCard(6)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">📈 인플레이션 (비싼 과자값)</div>
+          </div>
+          <div class="lobby-card" id="l-card-7" onclick="viewLobbyCard(7)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">💸 수수료 (이체 수수료)</div>
+          </div>
+          <div class="lobby-card" id="l-card-8" onclick="viewLobbyCard(8)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">💼 원천징수 (알바 세금 3.3%)</div>
+          </div>
+          <div class="lobby-card" id="l-card-9" onclick="viewLobbyCard(9)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">📈 금리 (돈의 몸값)</div>
+          </div>
+          <div class="lobby-card" id="l-card-10" onclick="viewLobbyCard(10)">
+            <span class="lobby-card-check">✓ 이해함</span>
+            <div class="lobby-card-title">✈️ 환율 (해외직구 교환비)</div>
+          </div>
+        </div>
+
+        <div class="lobby-detail-box" id="lobby-detail" style="max-width: 440px; margin: 0 auto 20px; border-left-color: var(--color-pre);">
+          <strong id="lobby-detail-title">단어 선택</strong>
+          <span id="lobby-detail-text">단어 카드를 눌러 상세한 일상어 해설을 판독해 보세요.</span>
+          <div id="lobby-check-area" style="display: none; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); align-items: center; gap: 8px;">
+            <input type="checkbox" id="chk-understand" style="width: 16px; height: 16px; accent-color: var(--color-pre); cursor: pointer;" onchange="toggleUnderstandCurrentCard()">
+            <label for="chk-understand" style="font-size: 13px; font-weight: 700; color: var(--text); cursor: pointer; user-select: none;">이 단어, 이제 확실히 이해했어요!</label>
+          </div>
+        </div>
+
+        <button class="next-btn" id="btn-lobby-to-hub" disabled onclick="nextOnboardSlide('slide-pre-lobby', 'slide-hub-loader')" style="max-width: 440px; margin: 0 auto; display: block;">
+          필수 단어 다지기 완료! 개념 지도로 입장 (0/4)
+        </button>
+      </div>
+
       <!-- 슬라이드 3: 맛보기 L1 퀴즈 -->
       <div class="onboard-slide" id="slide-quiz">
-        <span class="quiz-concept">개념 01 / 돌 티어 맛보기</span>
-        <h2 class="quiz-title">왜 조개껍데기로 물건을 샀을까?</h2>
-        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+        <span class="quiz-concept" id="quiz-concept-label">개념 01 / 돌 티어 맛보기</span>
+        <h2 class="quiz-title" id="quiz-title-text">왜 조개껍데기로 물건을 샀을까?</h2>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;" id="quiz-desc-text">
           옛날 사람들은 금도 아니고 은도 아닌 '조개껍데기'를 돈으로 썼습니다. 그럴 수 있었던 진짜 이유가 무엇일까요?
         </p>
 
         <div class="option-list" id="quiz-options">
           <button class="option-btn" id="q-opt-1" onclick="selectQuizAnswer(1)">
-            <span>① 조개껍데기가 알록달록 예뻐서 수집 가치가 높았기 때문에</span>
+            <span id="q-opt-1-text">① 조개껍데기가 알록달록 예뻐서 수집 가치가 높았기 때문에</span>
             <span class="option-btn-arrow">→</span>
           </button>
           <button class="option-btn" id="q-opt-2" onclick="selectQuizAnswer(2)">
-            <span>② 모두가 '가치가 있다'고 약속하고 인정한 가장 편리한 물건이었기 때문에</span>
+            <span id="q-opt-2-text">② 모두가 '가치가 있다'고 약속하고 인정한 가장 편리한 물건이었기 때문에</span>
             <span class="option-btn-arrow">→</span>
           </button>
         </div>
@@ -1046,6 +1394,47 @@
         <div class="map-header">
           <h2 class="map-title">CMYK 개념 지도</h2>
           <p class="map-subtitle">// C, M, Y 잉크를 결합하여 최종 검정 잉크(K - 마스터)를 인쇄하십시오.</p>
+        </div>
+
+        <!-- 초초보 가이드 배너 (기본은 숨김) -->
+        <div id="beginner-guide-banner" style="display: none; background-color: var(--color-pre-bg); border: 1px solid var(--color-pre); padding: 18px 24px; border-radius: 8px; margin-bottom: 32px; color: var(--text); font-size: 13px; line-height: 1.6;">
+          <strong>🐣 기초 체력 단어장 온보딩 완료!</strong><br>
+          우리나라 고등학교 졸업 예정자 및 성인 입문자를 위해, 복잡한 경제학 역사 대신 실제 사회 생활과 뉴스 판독에 <b>숨 쉬듯 마주하는 최소한의 기초 단어 3가지</b>를 정리했습니다. 본격적인 CMYK 티어 진입 전, 아래 0단계(P1~P3) 카드를 가볍게 터치해 기초 체력을 먼저 충전해 보세요.
+        </div>
+
+        <!-- Pre-Cyan 티어 (초급 입문) -->
+        <div class="tier-group pre-c-group">
+          <div class="tier-title-bar">
+            <span class="tier-badge pre">Pre</span>
+            <span class="tier-name">0단계: Pre-Cyan 티어 (필수 기초 단어장)</span>
+            <span class="tier-status">3 / 3 CLEAR</span>
+          </div>
+          <div class="node-path" style="margin-bottom: 24px;">
+            <div class="concept-node clear" onclick="openNodeDetail('P1', '금리와 이자', '내가 통장에 알바비를 묶어두면(예금), 은행은 내 돈을 회사에 빌려주고 마진을 남겨서 고맙다고 나한테 보너스(이자)를 줘. 금리는 그 이자의 비율, 즉 돈을 빌려 쓰는 가격이야.', 'pre')" style="border-style: dashed;">
+              <div class="node-indicator">P1</div>
+              <div class="node-info">
+                <div class="node-title">금리와 이자</div>
+                <div class="node-desc">돈을 빌려 쓰는 대가이자 돈의 몸값</div>
+              </div>
+              <span class="node-lock-icon">✓</span>
+            </div>
+            <div class="concept-node clear" onclick="openNodeDetail('P2', '인플레이션', '어릴 때 700원 하던 편의점 과자가 지금은 1,500원이나 해. 이건 돈이 너무 흔해져서 돈의 힘(가치)이 약해졌기 때문이야. 물건 가격들이 다 같이 통통하게 찌는 현상이지.', 'pre')" style="border-style: dashed;">
+              <div class="node-indicator">P2</div>
+              <div class="node-info">
+                <div class="node-title">인플레이션</div>
+                <div class="node-desc">오늘의 1만 원과 내일의 1만 원이 다른 진짜 이유</div>
+              </div>
+              <span class="node-lock-icon">✓</span>
+            </div>
+            <div class="concept-node clear" onclick="openNodeDetail('P3', '신용의 기초', '당장 지갑에 돈이 없어도 \'다음 달 알바비 나오면 낼게요\' 약속하고 물건을 먼저 받아올 수 있는 신비한 힘이야. 약속에 대한 신뢰도이자 빌려 쓸 수 있는 능력이지.', 'pre')" style="border-style: dashed;">
+              <div class="node-indicator">P3</div>
+              <div class="node-info">
+                <div class="node-title">신용의 기초</div>
+                <div class="node-desc">미래의 내 소득을 현재로 당겨 쓰는 보이지 않는 신뢰</div>
+              </div>
+              <span class="node-lock-icon">✓</span>
+            </div>
+          </div>
         </div>
 
         <!-- C 티어 -->
@@ -1155,9 +1544,12 @@
       <!-- 사이드바 -->
       <div class="info-panel">
         <div class="panel-card">
-          <div class="panel-title">
+          <div class="panel-title" onclick="toggleAchievements()" title="업적 수집판 접기/펼치기">
             <span>인쇄 업적 수집판 (Achievements)</span>
-            <span id="badge-count-ratio" style="font-family: var(--mono); font-size: 11px; color: var(--color-y);">3/6</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="badge-count-ratio" style="font-family: var(--mono); font-size: 11px; color: var(--color-y);">3/6</span>
+              <span class="panel-title-arrow" id="achievements-arrow">▼</span>
+            </div>
           </div>
           <div class="badge-list" id="sidebar-badge-list">
             <!-- 뱃지 목록이 JavaScript를 통해 동적으로 인쇄됩니다. -->
@@ -1387,25 +1779,107 @@
   <script>
     // ──────────────────────────────────────────────────────────
     // 1. 글로벌 및 온보딩 전환 스크립트
-    // ──────────────────────────────────────────────────────────
-    // 마인크래프트 오마주 업적 데이터 시스템
-    const userBadges = {
-      greeting: true,        // 온보딩 인사 Meme 완료 상태로 진입
-      stoneAge: true,        // C 단계 완주 (초기값 PASS 상태)
-      acquireHardware: true, // M 단계 완주 (초기값 PASS 상태)
-      goDeeper: false,       // Y 단계 완주 여부
-      diamonds: false,       // K 마스터 분기 첫 클리어 여부
-      theEnd: false          // 모든 단계 정복 여부
+    // ───────────────�    // ── 0단계 Pre-Cyan 대기실 카드 관리 스크립트 ──
+    let currentLobbyCardId = null;
+    const understoodLobbyCards = new Set();
+    const lobbyCardData = {
+      1: {
+        title: "💰 소득 (알바비, 용돈)",
+        desc: "내가 땀 흘려 일하고 받은 돈이든 그냥 부모님께 받은 돈이든, 내 지갑 속으로 쏙 들어오는 모든 돈을 의미해. 경제학에서는 이걸 어려운 말로 '소득(Income)'이라고 불러. 일해서 버는 건 '근로소득', 용돈처럼 그냥 받는 건 '이전소득'이라고 하지. 모든 자산 관리의 출발점이야."
+      },
+      2: {
+        title: "🏪 가격 (삼각김밥 가격표)",
+        desc: "삼각김밥이 1,200원에 파는 건, 편의점 사장님이 받고 싶은 최소 가격과 '이 돈을 내고서라도 삼김을 먹겠다'는 네 배고픈 타협이 만난 결과물이야. 이걸 '가격(Price)'이라고 하고, 경제학에서는 파는 사람과 사는 사람의 팽팽한 기싸움이 딱 멈추는 균형점이라고 부르지."
+      },
+      3: {
+        title: "🏦 예금 (통장에 돈 묶어두기)",
+        desc: "당장 안 쓰고 남은 돈을 은행 금고에 안전하게 묶어두는 거래를 뜻해. 은행은 네가 돈을 묶어두면 고맙다며 보너스 돈을 더 얹어주는데, 이걸 '이자(Interest)'라고 해. 왜 주냐고? 은행이 네 돈을 가져다가 더 큰 회사들에 빌려주고 마진을 남기기 때문이야!"
+      },
+      4: {
+        title: "🎒 적금 (아이패드 사기 챌린지)",
+        desc: "매달 정해진 날짜마다 알바비 중 일부를 쪼개서 저축하는 챌린지야. 한 번에 큰돈을 저금하는 예금과 달리, 차근차근 매달 모아가는 게 목적이지. 약속한 만기를 채우면 은행에서 쏠쏠한 보너스 이자를 얹어줘."
+      },
+      5: {
+        title: "💳 신용 (외상과 토스 후불결제)",
+        desc: "내 지갑에 당장 만 원짜리 한 장 없는데도 '다음 달에 알바비 들어오면 낼게요' 약속하고 편의점 물건을 먼저 받아올 수 있는 약속의 힘이야. 토스 후불결제나 신용카드가 바로 그런 거지. '나중에 꼭 갚을게'라는 네 약속의 신뢰도를 '신용(Credit)'이라고 해."
+      },
+      6: {
+        title: "📈 인플레이션 (매년 비싸지는 과자 값)",
+        desc: "초등학교 때 700원 주고 사 먹었던 과자가 지금은 1,500원이나 해. 과자가 갑자기 더 맛있어진 걸까? 아니야! 시장에 돈이 너무 흔해져서 돈의 힘(가치)이 약해졌기 때문이야. 물건 가격들이 다 같이 통통하게 찌는 현상을 '인플레이션(Inflation)'이라고 부르지."
+      },
+      7: {
+        title: "💸 수수료 (이체할 때 떼어가는 500원)",
+        desc: "은행 앱으로 돈을 보내거나 편의점 ATM기에서 현금을 뽑을 때 얄미운 500원씩 떼이지? 은행 시스템이나 단말기를 빌려 쓴 사용료야. 푼돈 같지만 모이면 한 달 알바비의 꽤 아까운 금액이 돼. 경제학에선 서비스 제공에 대한 대가라고 해."
+      },
+      8: {
+        title: "💼 원천징수 (알바비에서 3.3% 떼기)",
+        desc: "알바 사장님이 월급을 주기 전에 세금으로 미리 3.3%를 뚝 떼어 나라에 내는 걸 말해. 100만 원 받을 줄 알았는데 통장에 96만 7천 원만 찍혀서 놀랐다면 바로 이것 때문이야. 대한민국 국민의 기본 의무인 세금을 소득에서 미리 징수해 가는 룰이지."
+      },
+      9: {
+        title: "📈 금리 (돈을 빌려 쓰는 몸값)",
+        desc: "돈을 빌려 쓰거나 은행에 맡길 때 붙는 이자의 비율(이자율)을 뜻해. 쉽게 말해 '돈의 가격'이지. 금리가 오르면 대출 있는 알바생들의 한숨은 깊어지고, 예금 통장을 든 사람들은 기분이 좋아져. 세상 모든 돈의 흐름을 조율하는 수도꼭지야."
+      },
+      10: {
+        title: "✈️ 환율 (해외직구 교환비)",
+        desc: "우리나라 돈과 다른 나라 돈(예: 미국 달러)을 바꿀 때의 비율이야. 미국 쇼핑몰에서 직구할 때 환율이 낮을 때(원화 가치가 강할 때) 사면 원화 기준 옷값이 더 싸지지. 전 세계 국가 돈 간의 힘겨루기 비율이라고 보면 돼."
+      }
     };
 
-    const badgeMeta = {
-      greeting: { icon: "🎙️", name: "굿 애프터눈 (Good Afternoon!)", desc: "인사를 나누며 경제 탐사의 첫발을 내디뎠습니다.", cond: "획득 완료" },
-      stoneAge: { icon: "🪨", name: "석기 시대 (Stone Age)", desc: "Cyan(C) 단계 (기초 직관) 전체 클리어", cond: "획득 완료" },
-      acquireHardware: { icon: "⚙️", name: "철이 철철 넘쳐 (Acquire Hardware)", desc: "Magenta(M) 단계 (가계 및 독해) 전체 클리어", cond: "획득 완료" },
-      goDeeper: { icon: "🌌", name: "더 깊은 곳으로 (We Need Go Deeper)", desc: "Yellow(Y) 단계 (거시 및 연쇄) 전체 클리어", cond: "Y2 챌린지 성공 시" },
-      diamonds: { icon: "💎", name: "다이아몬드다! (Diamonds!)", desc: "K 마스터 단계의 분기 지점 첫 클리어", cond: "K 분석 성공 시" },
-      theEnd: { icon: "🐉", name: "이걸로 끝이야? (The End?)", desc: "모든 단계 완료 및 마스터 등극", cond: "최종 마스터 달성 시" }
-    };
+    function viewLobbyCard(id) {
+      currentLobbyCardId = id;
+      
+      // 기존 선택된 카드 시각적 테두리 표시 변경
+      document.querySelectorAll('.lobby-card').forEach(c => {
+        c.style.boxShadow = 'none';
+        c.style.borderColor = c.classList.contains('viewed') ? 'var(--color-pre)' : 'var(--surface-dim)';
+      });
+      const card = document.getElementById('l-card-' + id);
+      card.style.boxShadow = '0 0 10px rgba(142, 116, 74, 0.2)';
+      card.style.borderColor = 'var(--color-pre)';
+
+      const detailBox = document.getElementById('lobby-detail');
+      const detailTitle = document.getElementById('lobby-detail-title');
+      const detailText = document.getElementById('lobby-detail-text');
+      const checkArea = document.getElementById('lobby-check-area');
+      const checkbox = document.getElementById('chk-understand');
+
+      detailTitle.innerText = lobbyCardData[id].title;
+      detailText.innerText = lobbyCardData[id].desc;
+      
+      // 현재 카드가 이미 이해(체크)된 상태인지 바인딩
+      checkbox.checked = understoodLobbyCards.has(id);
+      
+      detailBox.style.display = 'block';
+      checkArea.style.display = 'flex';
+    }
+
+    function toggleUnderstandCurrentCard() {
+      if (currentLobbyCardId === null) return;
+      
+      const checkbox = document.getElementById('chk-understand');
+      const card = document.getElementById('l-card-' + currentLobbyCardId);
+      
+      if (checkbox.checked) {
+        understoodLobbyCards.add(currentLobbyCardId);
+        card.classList.add('viewed'); // CSS에서 viewed/understood 호환성 유지
+      } else {
+        understoodLobbyCards.delete(currentLobbyCardId);
+        card.classList.remove('viewed');
+      }
+
+      const btn = document.getElementById('btn-lobby-to-hub');
+      const size = understoodLobbyCards.size;
+      
+      btn.innerText = `필수 단어 다지기 완료! 개념 지도로 입장 (${Math.min(4, size)}/4)`;
+      
+      if (size >= 4) {
+        btn.disabled = false;
+        btn.style.boxShadow = "0 0 15px rgba(142, 116, 74, 0.4)";
+      } else {
+        btn.disabled = true;
+        btn.style.boxShadow = "none";
+      }
+    }
 
     function renderBadges() {
       const listContainer = document.getElementById('sidebar-badge-list');
@@ -1465,6 +1939,15 @@
       document.getElementById('section-' + sectionId).classList.add('active');
       document.getElementById('dev-btn-' + sectionId).classList.add('active');
 
+      if (sectionId === 'hub') {
+        const banner = document.getElementById('beginner-guide-banner');
+        if (onboardingSession.targetGroup === 'beginner') {
+          banner.style.display = 'block';
+        } else {
+          banner.style.display = 'none';
+        }
+      }
+
       if (sectionId === 'cmyk') {
         // DEV CONTROL DECK을 통한 진입 시에는 테스트 편의를 위해 모든 카드의 잠금을 일괄 해제
         document.getElementById('card-c').classList.remove('locked');
@@ -1499,8 +1982,33 @@
 
     function selectTarget(group) {
       onboardingSession.targetGroup = group;
-      nextOnboardSlide('slide-target', 'slide-quiz');
+      
+      const conceptLabel = document.getElementById('quiz-concept-label');
+      const titleText = document.getElementById('quiz-title-text');
+      const descText = document.getElementById('quiz-desc-text');
+      const opt1Text = document.getElementById('q-opt-1-text');
+      const opt2Text = document.getElementById('q-opt-2-text');
+
+      if (group === 'beginner') {
+        conceptLabel.innerText = '개념 00 / Pre-Cyan (최소한의 상식)';
+        titleText.innerText = "은행 예금 이자보다 물가가 더 빨리 오르면?";
+        descText.innerText = '은행 예금 금리가 연 2%이고 물가상승률(인플레이션)이 연 5%일 때, 내 예금을 은행에 1년간 가만히 묵혀둔다면 돈의 실질 가치(구매력)는 어떻게 변할까요?';
+        opt1Text.innerText = '① 예금 이자는 받았으나 물가가 더 많이 올랐으므로 내 돈의 실질 구매력은 줄어든다.';
+        opt2Text.innerText = '② 은행이 안전하게 돈을 보관하고 2%의 이자도 얹어주었으므로 실질 구매력은 늘어난다.';
+        
+        // 초초보 입문자는 퀴즈 대신 대기실(로비)로 이동
+        nextOnboardSlide('slide-target', 'slide-pre-lobby');
+      } else {
+        conceptLabel.innerText = '개념 01 / 돌 티어 맛보기';
+        titleText.innerText = '왜 조개껍데기로 물건을 샀을까?';
+        descText.innerText = "옛날 사람들은 금도 아니고 은도 아닌 '조개껍데기'를 돈으로 썼습니다. 그럴 수 있었던 진짜 이유가 무엇일까요?";
+        opt1Text.innerText = '① 조개껍데기가 알록달록 예뻐서 수집 가치가 높았기 때문에';
+        opt2Text.innerText = '② 모두가 \'가치가 있다\'고 약속하고 인정한 가장 편리한 물건이었기 때문에';
+        
+        nextOnboardSlide('slide-target', 'slide-quiz');
+      }
     }
+
 
     function selectQuizAnswer(option) {
       const opt1 = document.getElementById('q-opt-1');
@@ -1512,25 +2020,40 @@
       opt1.disabled = true;
       opt2.disabled = true;
 
-      if (option === 2) {
+      const isBeginner = (onboardingSession.targetGroup === 'beginner');
+      const correctOpt = isBeginner ? 1 : 2;
+      const selectedBtn = option === 1 ? opt1 : opt2;
+      const wrongBtn = option === 1 ? opt2 : opt1;
+
+      if (option === correctOpt) {
         onboardingSession.quizCleared = true;
-        opt2.style.borderColor = "var(--success)";
-        opt2.style.backgroundColor = "var(--success-bg)";
-        opt2.style.color = "var(--success)";
-        dialogText.innerHTML = "🎯 <b>열렸다!</b> 돈은 가치에 대한 '모두의 신뢰와 약속'에서 시작합니다. 이제 경제 개념을 해제할 준비가 끝났습니다.";
+        selectedBtn.style.borderColor = "var(--success)";
+        selectedBtn.style.backgroundColor = "var(--success-bg)";
+        selectedBtn.style.color = "var(--success)";
+        
+        if (isBeginner) {
+          dialogText.innerHTML = "🎯 <b>기초 상식 해제!</b> 숫자는 늘었어도 실제 살 수 있는 물건의 양은 줄어듭니다. 이것이 '금리'와 '인플레이션'이라는 단어가 내 자산에 미치는 실질적인 영향입니다.";
+        } else {
+          dialogText.innerHTML = "🎯 <b>열렸다!</b> 돈은 가치에 대한 '모두의 신뢰와 약속'에서 시작합니다. 이제 경제 개념을 해제할 준비가 끝났습니다.";
+        }
         dialog.style.display = 'block';
         nextBtn.style.display = 'block';
       } else {
-        opt1.style.borderColor = "var(--error)";
-        opt1.style.backgroundColor = "var(--error-bg)";
-        opt1.style.color = "var(--error)";
-        dialogText.innerHTML = "⚠️ 정답이 아닙니다. 1.8초 후에 조개껍데기가 다시 떠내려옵니다.";
+        selectedBtn.style.borderColor = "var(--error)";
+        selectedBtn.style.backgroundColor = "var(--error-bg)";
+        selectedBtn.style.color = "var(--error)";
+        
+        if (isBeginner) {
+          dialogText.innerHTML = "⚠️ 정답이 아닙니다. 1.8초 후에 실질 가치가 다시 계산됩니다.";
+        } else {
+          dialogText.innerHTML = "⚠️ 정답이 아닙니다. 1.8초 후에 조개껍데기가 다시 떠내려옵니다.";
+        }
         dialog.style.display = 'block';
 
         setTimeout(() => {
-          opt1.style.borderColor = "var(--surface-dim)";
-          opt1.style.backgroundColor = "var(--surface)";
-          opt1.style.color = "var(--text)";
+          selectedBtn.style.borderColor = "var(--surface-dim)";
+          selectedBtn.style.backgroundColor = "var(--surface)";
+          selectedBtn.style.color = "var(--text)";
           opt1.disabled = false;
           opt2.disabled = false;
           dialog.style.display = 'none';
@@ -1564,12 +2087,14 @@
       modalDesc.innerText = desc;
 
       const inkNames = {
+        pre: 'Pre-Cyan: 아기 걸음마 (0단계)',
         c: 'C: CYAN INK (1단계)',
         m: 'M: MAGENTA INK (2단계)',
         y: 'Y: YELLOW INK (3단계)'
       };
       
       const inkColors = {
+        pre: 'var(--color-pre)',
         c: 'var(--color-c)',
         m: 'var(--color-m)',
         y: 'var(--color-y)'
@@ -1579,6 +2104,14 @@
       modalInk.style.color = inkColors[ink];
       modalInk.style.borderBottomColor = inkColors[ink] + '40';
       startBtn.style.backgroundColor = inkColors[ink];
+
+      if (ink === 'pre') {
+        startBtn.innerHTML = `<span>기초 개념 숙지 완료</span><span style="font-family: var(--mono)">✓</span>`;
+        startBtn.onclick = function() { modal.style.display = 'none'; };
+      } else {
+        startBtn.innerHTML = `<span>개념 잠금해제 퀴즈 시작</span><span style="font-family: var(--mono)">→</span>`;
+        startBtn.onclick = function() { startMasteryChallenge(); };
+      }
 
       modal.style.display = 'flex';
     }
@@ -1944,6 +2477,107 @@
       dateEl.innerText = `${now.getFullYear()}. ${String(now.getMonth() + 1).padStart(2, '0')}. ${String(now.getDate()).padStart(2, '0')}`;
       document.getElementById('cert-modal').style.display = 'flex';
     }
+
+    // ── 기획자의 편지 모달 제어 함수 ──
+    function openLetter() {
+      document.getElementById('letter-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLetter() {
+      document.getElementById('letter-modal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function closeLetterOnOverlay(event) {
+      if (event.target === document.getElementById('letter-modal')) {
+        closeLetter();
+      }
+    }
+
+    // ── 인쇄 업적 수집판 토글 함수 ──
+    function toggleAchievements() {
+      const badgeList = document.getElementById('sidebar-badge-list');
+      const arrow = document.getElementById('achievements-arrow');
+      badgeList.classList.toggle('collapsed');
+      
+      if (badgeList.classList.contains('collapsed')) {
+        arrow.style.transform = 'rotate(-90deg)';
+      } else {
+        arrow.style.transform = 'rotate(0deg)';
+      }
+    }
   </script>
+
+  <!-- 우측 상단 편지 버튼 -->
+  <button class="letter-btn" id="btn-open-letter" onclick="openLetter()" title="기획자의 편지 읽기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+      <polyline points="22,6 12,13 2,6"></polyline>
+    </svg>
+  </button>
+
+  <!-- 기획자의 편지 모달 -->
+  <div class="letter-modal" id="letter-modal" onclick="closeLetterOnOverlay(event)">
+    <div class="letter-paper">
+      <div class="letter-header">
+        <div class="letter-title">A Note from the Creator</div>
+        <div class="letter-subtitle">// 굿애프터눈을 시작하는 당신에게</div>
+      </div>
+      <div class="letter-content">
+        <div class="letter-section">
+          <div class="letter-section-title">01. 기획의 출발점: 실생활 경제의 부재</div>
+          <div class="letter-p">
+            현재 대한민국 교육과정에는 실생활에 꼭 필요한 '진짜 경제'가 빠져 있습니다. 사회에 첫발을 디디는 많은 청년들이 알바 월급에서 왜 3.3%가 떼이는지(원천징수), 토스 후불결제와 신용카드가 내 미래 소득을 어떻게 앞당겨 쓰는지(신용), 그리고 은행 예금 금리보다 물가가 더 빨리 오를 때 내 돈의 실질 구매력이 어떻게 녹아내리는지 모른 채 정글 같은 세상으로 던져지고 있습니다.
+          </div>
+        </div>
+        
+        <div class="letter-section">
+          <div class="letter-section-title">02. 게임 철학: Easy to Learn, Hard to Master</div>
+          <div class="letter-p">
+            우리는 경제를 지루한 교과서나 엄숙한 강의식으로 가르치고 싶지 않았습니다. 배움은 직관적이어야 하고, 마스터는 단단해야 합니다.
+          </div>
+          <div class="letter-p">
+            <strong>Easy to Learn:</strong> 경제 공부 경험이 전무한 초보자들도 퀴즈 스트레스 없이 첫발을 내딛을 수 있도록 0단계 대기실인 <strong>'Pre-Cyan 로비'</strong>를 도입했습니다. 일상 속 단어 카드들을 가볍게 터치하며 스스로의 속도에 맞추어 개념의 뼈대를 다집니다.
+          </div>
+          <div class="letter-p">
+            <strong>Hard to Master:</strong> 단순히 개념을 나열하고 외우는 것을 넘어, 스스로 시장 신호를 읽어내야 합니다. C(Cyan: 직관 해제) → M(Magenta: 뉴스 해독) → Y(Yellow: 연쇄 반응)로 이어지는 CMYK 잉크를 겹쳐 인쇄해 나가는 시뮬레이션 과정은 거시 경제 메커니즘을 입체적으로 다루는 본격 마스터리 체계로 연결됩니다.
+          </div>
+          <div class="letter-p" style="font-size: 12px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--border); padding-left: 10px; margin-top: 12px;">
+            * 참고: 현재 통합 데모의 개념 지도는 우선 핵심 기획 내용과 흐름을 담아둔 텍스트 뼈대 상태입니다. 정식 빌드에서는 시각적이고 생동감 넘치는 '진짜 게임 지도 형태'의 아름다운 경제 모험 맵으로 발전할 계획입니다.
+          </div>
+        </div>
+
+        <div class="letter-section">
+          <div class="letter-section-title">03. 서비스의 이름, '굿애프터눈'</div>
+          <div class="letter-p">
+            '굿애프터눈(Good Afternoon.)'은 전 세계 자금줄의 수도꼭지를 쥔 연방준비제도(Fed)의 제롬 파월 의장이 FOMC 기자회견을 시작할 때 건네는 짧은 인사말에서 따왔습니다. 이 한마디가 나오는 순간 전 세계 트레이더들이 모니터 앞으로 몰려들고, 금융 시장의 파도가 출렁입니다.
+          </div>
+          <div class="letter-p">
+            처음 앱을 여는 입문자에게는 평범한 낮 인사처럼 다가가지만, 거시 경제의 흐름과 금리의 톱니바퀴를 완벽히 이해한 사람만이 그 이스터에그의 유머를 발견하고 씩 웃을 수 있도록 네이밍을 숨겨두었습니다.
+          </div>
+        </div>
+
+        <div class="letter-section">
+          <div class="letter-section-title">04. 기획의 지향점: 독립적인 '일반투자자'의 탄생</div>
+          <div class="letter-p">
+            이 서비스가 기대하는 최종 결과물은 학문적인 경제학자를 길러내는 것이 아닙니다. 
+            <strong>"타인의 기사나 추천 리포트에 의존하지 않고, 스스로 시장 신호를 해독하여 독립적으로 자산을 지키고 책임질 수 있는 주체적인 투자자"</strong>를 만드는 것입니다.
+          </div>
+          <div class="letter-p">
+            모든 CMYK 잉크 합성을 마치고 마스터 레벨에 도달했을 때 마주할 <strong>"일반투자자가 된 것을 축하합니다"</strong>라는 문구가 여러분의 삶에 진정한 무기가 되기를 바랍니다.
+          </div>
+        </div>
+
+        <div style="text-align: right; margin-top: 32px; font-family: var(--serif); font-style: italic; color: var(--color-y);">
+          Sincerely,<br>
+          The Creator of Good Afternoon
+        </div>
+      </div>
+      <div class="letter-footer">
+        <button class="letter-close-btn" onclick="closeLetter()">편지 접기</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
