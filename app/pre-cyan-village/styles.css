@@ -1,1 +1,208 @@
-/* Styling is added in Task 4. */
+:root {
+  --bg: #FAF9F5;
+  --surface: #FFFFFF;
+  --surface-soft: #F2EFE9;
+  --line: #E5DEC9;
+  --accent: #8E744A;
+  --text: #1C1B18;
+  --muted: #6C6A64;
+  --cyan: #63B4D2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans KR", sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(100%, 430px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.village-header {
+  display: grid;
+  gap: 4px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.village-board {
+  position: relative;
+  min-height: 500px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.88), rgba(242,239,233,0.72)),
+    radial-gradient(circle at 18% 18%, rgba(142,116,74,0.11), transparent 24%),
+    radial-gradient(circle at 76% 22%, rgba(99,180,210,0.10), transparent 24%);
+  overflow: hidden;
+}
+
+.village-paths {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.village-path {
+  stroke: rgba(142, 116, 74, 0.22);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.village-path.is-lit {
+  stroke: rgba(142, 116, 74, 0.72);
+}
+
+.village-node {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  transform: translate(-50%, -50%);
+  min-width: 58px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--muted);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.25;
+  padding: 8px 9px;
+  cursor: pointer;
+  opacity: 0.34;
+  filter: grayscale(0.45);
+  transition: opacity 180ms ease, filter 180ms ease, transform 180ms ease, border-color 180ms ease;
+}
+
+.village-node.is-unlocked {
+  opacity: 1;
+  filter: none;
+}
+
+.village-node.is-visited {
+  border-color: var(--accent);
+}
+
+.village-node.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.village-node.is-hidden.is-unlocked {
+  opacity: 0.78;
+  pointer-events: auto;
+}
+
+.village-node:disabled {
+  cursor: default;
+}
+
+.village-node:not(:disabled):hover {
+  transform: translate(-50%, -52%);
+  border-color: var(--accent);
+}
+
+.village-log,
+.achievement {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 11px 12px;
+}
+
+.village-log p,
+.achievement p,
+.achievement h2 {
+  margin: 0;
+}
+
+.village-log {
+  min-height: 42px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.achievement {
+  background: rgba(142, 116, 74, 0.08);
+}
+
+.achievement-kicker {
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+}
+
+.achievement h2 {
+  margin-top: 2px;
+  font-size: 17px;
+}
+
+.achievement p:last-child {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+.controls button {
+  min-height: 40px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 9px 12px;
+  cursor: pointer;
+}
+
+#enter-gate {
+  border-color: var(--cyan);
+}
+
+@media (max-width: 420px) {
+  .app-shell {
+    padding: 12px;
+  }
+
+  .village-board {
+    min-height: 470px;
+  }
+
+  .village-node {
+    min-width: 52px;
+    font-size: 11px;
+    padding: 7px 8px;
+  }
+}
