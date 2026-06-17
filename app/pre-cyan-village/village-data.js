@@ -6,7 +6,7 @@ export const villageNodes = {
   subscriptions: { id: 'subscriptions', label: '구독함', log: '이번 달에도 빠졌다.', x: 52, y: 35, unlocks: [] },
   bank: { id: 'bank', label: '은행', log: '숫자가 조금 늘었다.', x: 78, y: 34, unlocks: [] },
   lottery: { id: 'lottery', label: '복권방', log: '같은 번호가 또 걸려 있다.', x: 18, y: 18, unlocks: [] },
-  alley: { id: 'alley', label: '어두운 골목', log: '불이 잠깐 켜졌다.', x: 9, y: 9, unlocks: [], hidden: true },
+  alley: { id: 'alley', label: '어두운 골목', log: '불이 잠깐 켜졌다.', x: 16, y: 12, unlocks: [], hidden: true },
   cyanGate: { id: 'cyanGate', label: 'Cyan 입구', log: '길이 열렸다.', x: 82, y: 14, unlocks: [], gate: true }
 };
 
