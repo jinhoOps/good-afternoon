@@ -19,5 +19,5 @@ export const villageEdges = [
   ['bus', 'bank'],
   ['work', 'bank'],
   ['bank', 'cyanGate'],
-  ['lottery', 'alley']
+  { from: 'lottery', to: 'alley', hiddenUntil: 'backAlleyDiscovered' }
 ];
