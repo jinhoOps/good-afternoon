@@ -5,6 +5,14 @@
 
 ---
 
+## Scope Clarification: Pre-Cyan vs K Tier
+
+Pre-Cyan is the entry experience. Its job is to reduce friction and help a first-time user adapt through a mobile-first village map. It does not teach mastery and does not expose score, progress, or achievement systems before the user clears the first region.
+
+K tier is the mastery experience. Its job is depth: synthesis, delayed feedback, diagnostics, and harder judgment. Do not move K-tier complexity into Pre-Cyan.
+
+---
+
 ## 🎯 마스터리(Mastery)의 정의: 독립적 일반 투자자
 이 프로젝트에서 정의하는 '마스터'는 학술적 전문가나 금융 공학자가 아닙니다.
 **"타인의 추천이나 리포트에 의존하지 않고, 스스로 시장 신호를 해독하여 독립적으로 판단하고 책임질 수 있는 주식 투자자(홀로서기 가능한 주체)"**를 뜻합니다.
@@ -15,11 +23,11 @@
 
 ## 1. CMYK 글로벌 티어 시스템
 
-굿애프터눈의 전체 107개 개념 카드들은 유저가 밟아가는 깊이와 성취도에 따라 C → M → Y → K 등급으로 체계적으로 분류되며, 아예 지식이 없는 입문자를 위해 CMYK 이전 단계인 **Pre-Cyan** 단계가 제공됩니다. (타깃: 우리나라 고등학교 졸업 예정자 이상 중 '알바/용돈' 수준의 기초 지식 보유자)
+굿애프터눈의 전체 107개 개념 카드들은 유저가 밟아가는 깊이와 성취도에 따라 C → M → Y → K 등급으로 체계적으로 분류되며, CMYK 이전에는 첫 진입 마찰을 낮추는 **Pre-Cyan** 지역이 제공됩니다. Pre-Cyan은 마스터리 학습이 아니라, 알바/용돈 수준의 경험을 가진 입문자가 현실 동네를 닮은 모바일 마을을 만져보며 조작 방식에 적응하는 0단계입니다.
 
 | 티어 (Tier) | 인쇄 잉크 | 기존 대체 | 개념 범주 & 퀴즈 형식 | 문항 수 |
 | :--- | :--- | :--- | :--- | :--- |
-| **Pre-Cyan 티어** | **Gray / White** (소지) | - | **용돈 & 알바생 대기실 (Pre-Cyan)**: 기초 금융 단어의 초쉬운 번역 / 10대 카드 스스로 이해도 체크 로비 | 10대 카드 |
+| **Pre-Cyan 티어** | **Gray / White** (소지) | - | **첫 모험 마을 (Pre-Cyan)**: 내 방, 편의점, 버스정류장, 알바처, 은행, 구독함, 복권방을 눌러보며 조작에 적응하는 모바일 첫 지역 | 공개 장소 4개 방문 |
 | **C 티어** | **Cyan** (청록) | 돌 티어 | **직관 해제 (Intuition)**: 가격, 교환 등 경제의 기초 뼈대 / 2~3지선다 퀴즈 | 12Q |
 | **M 티어** | **Magenta** (자홍) | 나무 티어 | **뉴스 해독 (News Decode)**: 저축, 수입, 금융 리포트 판독 / 실제 기사 맥락 퀴즈 | 10Q |
 | **Y 티어** | **Yellow** (노랑) | 철 티어 | **연쇄 반응 (Chain)**: 신용, 금리, 인과관계 전이 / 다중 노드 순서 맞추기 퍼즐 | 8Q + 🥚 1Q |
@@ -30,7 +38,7 @@
 ## 2. CMYK 학습 여정 (User Flow)
 
 ### 2.1. C~Y 티어 트렁크 여정
-0. **Pre-Cyan 티어 (0단계) 대기실(Lobby)**에서 퀴즈 압박 없이 알바비, 세금(3.3%), 후불결제 등 친숙한 일상어 카드들을 둘러보며, 스스로 학습 내용을 이해했다고 체크하는 방식으로(4개 이상 직접 체크 시 해제) 기초 체력을 충전합니다. (입문 타깃 진입 시 권장 로비)
+0. **Pre-Cyan 티어 (0단계) 첫 모험 마을**에서 내 방을 시작점으로 편의점, 버스정류장, 알바처, 은행, 구독함, 복권방을 눌러봅니다. 사용자는 점수, 진행률, 업적을 먼저 보지 않고 짧은 로그와 연결 노드 활성화를 통해 조작 방식에 적응합니다. 내 방을 포함해 공개 장소 4개를 방문하면 Cyan 입구가 열립니다.
 1. **C 티어 (1단계)**에서 화폐와 가치의 기본을 다지며 Cyan 잉크를 확보합니다.
 2. **M 티어 (2단계)**에서 실생활 예산과 기초 뉴스 해독을 통해 Magenta 잉크를 겹쳐 칠합니다.
 3. **Y 티어 (3단계)**에서 금리와 신용의 복잡한 톱니바퀴 연쇄를 해결하여 Yellow 잉크를 중첩합니다.

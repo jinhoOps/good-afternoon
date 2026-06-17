@@ -298,6 +298,18 @@ components:
     padding: 64px
 ---
 
+## Pre-Cyan First Village Direction
+
+Pre-Cyan은 학습 카드 묶음이 아니라 첫 모험 마을이다. 화면은 모바일 세로 한 화면을 1차 기준으로 하며, 현실 동네의 장소를 게임 업적 보드처럼 연결한다.
+
+Design rules:
+- 장소 먼저, 개념 나중.
+- 짧은 로그 중심. 긴 설명, 공부를 끝냈다는 문구, 점수형 보상은 첫 경험 전면에 두지 않는다.
+- 업적은 Pre-Cyan 클리어 직후 처음 보여준다.
+- 복권방은 공개 장소, 복권방 뒤 어두운 골목은 숨은 투자 씨앗으로 둔다.
+- 카드 그리드 UI는 Pre-Cyan 첫 경험의 기본형으로 사용하지 않는다.
+- 기존 HTML 데모의 표현은 참고 자료로만 보고, 새 구현은 `app/pre-cyan-village/`에서 시작한다.
+
 ## Overview
 
 This is the warmest, most editorial interface in the AI-product category. The base atmosphere is a **tinted cream canvas** (`{colors.canvas}` — #faf9f5) — distinctly warm, deliberately not the cool gray-white that every other AI brand uses. Headlines run a **slab-serif display** ("Copernicus" / Tiempos Headline) at weight 400 with negative letter-spacing, paired with **StyreneB / Inter** body sans. The combination feels like a literary publication, not a SaaS marketing page.
@@ -523,6 +535,7 @@ When photography is used (rare — mostly testimonials), avatars crop to perfect
 ## Do's and Don'ts
 
 ### Do
+- Do use a node-and-path village map for Pre-Cyan.
 - Anchor every page on the cream canvas. Pure white reads as "any other AI tool"; the warm tint is the brand differentiator.
 - Use Copernicus serif for every display headline. Pair with StyreneB sans body. Negative letter-spacing on display sizes is non-negotiable.
 - Reserve `{colors.primary}` (coral) for primary CTAs and full-bleed `{component.callout-card-coral}` moments. Don't paint accent moments coral elsewhere.
@@ -532,6 +545,7 @@ When photography is used (rare — mostly testimonials), avatars crop to perfect
 - Apply `{spacing.section}` (96px) between major bands.
 
 ### Don't
+- Don't present Pre-Cyan as a vocabulary card checklist.
 - Don't use cool grays or pure white for canvas. Cream is the brand.
 - Don't bold serif display weight. Copernicus at 700 reads as bombastic; the system stays at 400.
 - Don't use cool blue or saturated cyan as a brand accent. The coral is the brand voltage.
