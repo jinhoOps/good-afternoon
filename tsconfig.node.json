@@ -15,5 +15,10 @@
     "types": ["node"],
     "composite": true
   },
-  "include": ["vite.config.ts", "src/**/*.test.ts", "src/shared/**/*.ts"]
+  "include": [
+    "vite.config.ts",
+    "src/**/*.test.ts",
+    "src/shared/**/*.ts",
+    "src/pre-cyan-village/domain/**/*.ts"
+  ]
 }
