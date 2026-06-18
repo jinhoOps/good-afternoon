@@ -37,6 +37,10 @@
       : null;
     const reachedCyanGateInOldSave = parsed.firstAchievementShown === true
       && parsed.cyanGateUnlocked === true;
+    const migratedCurrentStage = reachedCyanGateInOldSave
+      && (!validCurrentStage || validCurrentStage === base.currentStage)
+      ? 'cyanLoop'
+      : validCurrentStage || base.currentStage;
     return {
       ...base,
       ...parsed,
@@ -49,9 +53,7 @@
       lastMove: parsed.lastMove && villageNodes[parsed.lastMove.from] && villageNodes[parsed.lastMove.to]
         ? parsed.lastMove
         : base.lastMove,
-      currentStage: reachedCyanGateInOldSave && !validCurrentStage
-        ? 'cyanLoop'
-        : validCurrentStage || base.currentStage,
+      currentStage: migratedCurrentStage,
       cyanLoopSeen: reachedCyanGateInOldSave ? true : Boolean(parsed.cyanLoopSeen),
       cyanLoopResult: ['success', 'failure'].includes(parsed.cyanLoopResult)
         ? parsed.cyanLoopResult

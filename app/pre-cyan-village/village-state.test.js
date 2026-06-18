@@ -98,7 +98,8 @@ test('loadState migrates old Cyan gate saved data into Cyan loop', () => {
     unlocked: ['room', 'store', 'bus', 'work', 'bank'],
     visited: ['room', 'store', 'bus', 'work'],
     cyanGateUnlocked: true,
-    firstAchievementShown: true
+    firstAchievementShown: true,
+    currentStage: 'preCyan'
   };
   const { state } = loadModules({
     [stateKey()]: JSON.stringify(oldGateState)
