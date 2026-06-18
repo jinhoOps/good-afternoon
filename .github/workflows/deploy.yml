@@ -27,14 +27,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      # app/pre-cyan-village 디렉토리를 배포 아티팩트로 업로드
+      # Vite 빌드 결과물을 배포 아티팩트로 업로드
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './app/pre-cyan-village'
+          path: './dist'
 
       # GitHub Pages 배포 진행
       - name: Deploy to GitHub Pages
