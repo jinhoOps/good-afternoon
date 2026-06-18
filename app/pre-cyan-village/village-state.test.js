@@ -53,7 +53,7 @@ function plain(value) {
 test('initial state includes token and Cyan loop defaults', () => {
   const { state } = loadModules();
   assert.deepEqual(plain(state.createInitialState()), {
-    unlocked: ['room'],
+    unlocked: ['room', 'store', 'bus'],
     visited: [],
     log: '나가기 전에 하나만 챙기면 된다.',
     cyanGateUnlocked: false,
@@ -73,7 +73,7 @@ test('initial state includes token and Cyan loop defaults', () => {
 
 test('loadState migrates old saved data with new fields', () => {
   const oldState = {
-    unlocked: ['room', 'store'],
+    unlocked: ['room'],
     visited: ['room'],
     log: '카드를 챙겼다.'
   };
@@ -85,15 +85,15 @@ test('loadState migrates old saved data with new fields', () => {
   assert.equal(loaded.movingToNodeId, null);
   assert.equal(loaded.currentStage, 'preCyan');
   assert.equal(loaded.cyanLoopCompleted, false);
-  assert.deepEqual(plain(loaded.unlocked), ['room', 'store']);
+  assert.ok(loaded.unlocked.includes('room'));
+  assert.ok(loaded.unlocked.includes('store'));
+  assert.ok(loaded.unlocked.includes('bus'));
+  assert.equal(new Set(loaded.unlocked).size, loaded.unlocked.length);
 });
 
 test('startMove locks movement without visiting immediately', () => {
   const { state } = loadModules();
-  const initial = {
-    ...state.createInitialState(),
-    unlocked: ['room', 'store']
-  };
+  const initial = state.createInitialState();
   const moving = state.startMove(initial, 'store');
   assert.equal(moving.playerNodeId, 'room');
   assert.equal(moving.movingToNodeId, 'store');

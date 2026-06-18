@@ -5,7 +5,7 @@
 
   function createInitialState() {
     return {
-      unlocked: ['room'],
+      unlocked: ['room', 'store', 'bus'],
       visited: [],
       log: '나가기 전에 하나만 챙기면 된다.',
       cyanGateUnlocked: false,
@@ -25,10 +25,13 @@
 
   function normalizeState(parsed) {
     const base = createInitialState();
+    const unlocked = Array.isArray(parsed.unlocked)
+      ? [...new Set([...base.unlocked, ...parsed.unlocked])]
+      : base.unlocked;
     return {
       ...base,
       ...parsed,
-      unlocked: Array.isArray(parsed.unlocked) ? parsed.unlocked : base.unlocked,
+      unlocked,
       visited: Array.isArray(parsed.visited) ? parsed.visited : base.visited,
       playerNodeId: villageNodes[parsed.playerNodeId] ? parsed.playerNodeId : base.playerNodeId,
       movingToNodeId: null,
