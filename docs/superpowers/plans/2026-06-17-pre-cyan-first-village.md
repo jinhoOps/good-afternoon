@@ -32,7 +32,7 @@
 - Modify: `DESIGN.md`
 - Modify: `harness/30_mastery_spec.md`
 
-- [ ] **Step 1: Inspect current references to the old Pre-Cyan concept**
+- [x] **Step 1: Inspect current references to the old Pre-Cyan concept**
 
 Run:
 
@@ -42,7 +42,7 @@ Select-String -Path PROJECT_CONTEXT.md,README.md,DESIGN.md,harness\30_mastery_sp
 
 Expected: Output shows old-card-lobby references and any design guidance that conflicts with the approved first-village direction.
 
-- [ ] **Step 2: Update `PROJECT_CONTEXT.md`**
+- [x] **Step 2: Update `PROJECT_CONTEXT.md`**
 
 Change the Pre-Cyan description in section `3.1 전체 구조` to this wording:
 
@@ -61,7 +61,7 @@ Also update section `8.1 최우선 과제` so the Easy-to-learn item reads:
 - **Easy to learn 개선**: Pre-Cyan을 단어 카드 대기실이 아니라 모바일 세로 한 화면 기준의 첫 모험 마을로 재설계한다. 사용자는 설명을 읽기보다 장소를 만지고, 짧은 로그와 연결 노드 활성화를 통해 조작 방식을 익힌다.
 ```
 
-- [ ] **Step 3: Update `README.md`**
+- [x] **Step 3: Update `README.md`**
 
 Replace the `3줄 요약` Pre-Cyan bullet with:
 
@@ -81,7 +81,7 @@ Replace the old demo instruction that treats the integrated HTML as the main pro
 현재 루트의 HTML 파일들은 기획 검증용 시각 자료입니다. 새 Pre-Cyan 첫 모험 마을은 `app/pre-cyan-village/index.html`에서 독립적으로 구현합니다.
 ```
 
-- [ ] **Step 4: Update `DESIGN.md`**
+- [x] **Step 4: Update `DESIGN.md`**
 
 Add this subsection near the beginning of the design guidance before component-level rules:
 
@@ -106,7 +106,7 @@ If an older `Do` or `Don't` rule explicitly recommends card-grid learning for Pr
 - Don't present Pre-Cyan as a vocabulary card checklist.
 ```
 
-- [ ] **Step 5: Update `harness/30_mastery_spec.md`**
+- [x] **Step 5: Update `harness/30_mastery_spec.md`**
 
 Add this clarification near the top of the document:
 
@@ -118,7 +118,7 @@ Pre-Cyan is the entry experience. Its job is to reduce friction and help a first
 K tier is the mastery experience. Its job is depth: synthesis, delayed feedback, diagnostics, and harder judgment. Do not move K-tier complexity into Pre-Cyan.
 ```
 
-- [ ] **Step 6: Verify documentation no longer describes Pre-Cyan as the primary word-card lobby**
+- [x] **Step 6: Verify documentation no longer describes Pre-Cyan as the primary word-card lobby**
 
 Run:
 
@@ -128,7 +128,7 @@ Select-String -Path PROJECT_CONTEXT.md,README.md,DESIGN.md,harness\30_mastery_sp
 
 Expected: No matches in `PROJECT_CONTEXT.md`, `README.md`, `DESIGN.md`, or `harness/30_mastery_spec.md`.
 
-- [ ] **Step 7: Commit documentation alignment**
+- [x] **Step 7: Commit documentation alignment**
 
 Run:
 
@@ -148,7 +148,7 @@ Expected: Commit succeeds with only documentation files.
 - Create: `app/pre-cyan-village/village-state.js`
 - Create: `app/pre-cyan-village/village-render.js`
 
-- [ ] **Step 1: Create the app directory**
+- [x] **Step 1: Create the app directory**
 
 Run:
 
@@ -158,7 +158,7 @@ New-Item -ItemType Directory -Force -Path app\pre-cyan-village | Out-Null
 
 Expected: `app/pre-cyan-village/` exists.
 
-- [ ] **Step 2: Create `index.html`**
+- [x] **Step 2: Create `index.html`**
 
 Create `app/pre-cyan-village/index.html` with:
 
@@ -204,7 +204,7 @@ Create `app/pre-cyan-village/index.html` with:
 </html>
 ```
 
-- [ ] **Step 3: Create empty module files with valid exports**
+- [x] **Step 3: Create empty module files with valid exports**
 
 Create `app/pre-cyan-village/village-data.js` with:
 
@@ -236,7 +236,7 @@ console.info('Pre-Cyan village ready', {
 });
 ```
 
-- [ ] **Step 4: Verify the shell opens as a static file**
+- [x] **Step 4: Verify the shell opens as a static file**
 
 Open `app/pre-cyan-village/index.html` in a browser.
 
@@ -249,7 +249,7 @@ Expected:
 4. There are no module import errors.
 ```
 
-- [ ] **Step 5: Commit scaffold**
+- [x] **Step 5: Commit scaffold**
 
 Run:
 
@@ -266,7 +266,7 @@ Expected: Commit succeeds.
 - Modify: `app/pre-cyan-village/village-data.js`
 - Modify: `app/pre-cyan-village/village-state.js`
 
-- [ ] **Step 1: Replace `village-data.js` with the approved graph**
+- [x] **Step 1: Replace `village-data.js` with the approved graph**
 
 Use:
 
@@ -296,7 +296,7 @@ export const villageEdges = [
 ];
 ```
 
-- [ ] **Step 2: Replace `village-state.js` with state helpers**
+- [x] **Step 2: Replace `village-state.js` with state helpers**
 
 Use:
 
@@ -395,7 +395,7 @@ export function enterGate(state) {
 }
 ```
 
-- [ ] **Step 3: Commit data and state**
+- [x] **Step 3: Commit data and state**
 
 Run:
 
@@ -412,7 +412,7 @@ Expected: Commit succeeds.
 - Modify: `app/pre-cyan-village/village-render.js`
 - Modify: `app/pre-cyan-village/styles.css`
 
-- [ ] **Step 1: Replace `village-render.js`**
+- [x] **Step 1: Replace `village-render.js`**
 
 Use:
 
@@ -478,7 +478,7 @@ resetButton.addEventListener('click', () => {
 render();
 ```
 
-- [ ] **Step 2: Replace `styles.css`**
+- [x] **Step 2: Replace `styles.css`**
 
 Use:
 
@@ -693,7 +693,7 @@ h1 {
 }
 ```
 
-- [ ] **Step 3: Commit rendering and styles**
+- [x] **Step 3: Commit rendering and styles**
 
 Run:
 
@@ -710,7 +710,7 @@ Expected: Commit succeeds.
 - Modify if needed: `app/pre-cyan-village/*.js`
 - Modify if needed: `app/pre-cyan-village/styles.css`
 
-- [ ] **Step 1: Static string verification**
+- [x] **Step 1: Static string verification**
 
 Run:
 
@@ -720,7 +720,7 @@ Select-String -Path app\pre-cyan-village\* -Pattern '필수 기초 단어 놀이
 
 Expected: No matches.
 
-- [ ] **Step 2: Browser smoke test**
+- [x] **Step 2: Browser smoke test**
 
 Open `app/pre-cyan-village/index.html` in a browser and verify:
 
@@ -734,7 +734,7 @@ Open `app/pre-cyan-village/index.html` in a browser and verify:
 7. 초기화 버튼으로 상태가 초기화된다.
 ```
 
-- [ ] **Step 3: Mobile viewport check**
+- [x] **Step 3: Mobile viewport check**
 
 Use browser responsive mode at `390x844` and verify:
 
@@ -745,7 +745,7 @@ Use browser responsive mode at `390x844` and verify:
 4. 가로 스크롤이 생기지 않는다.
 ```
 
-- [ ] **Step 4: Final git status check**
+- [x] **Step 4: Final git status check**
 
 Run:
 
@@ -755,7 +755,7 @@ git -c safe.directory=D:/jhkSandBox/CODE/good-afternoon status --short
 
 Expected: Only intended files are modified. No `.superpowers/` files appear because `.gitignore` excludes them.
 
-- [ ] **Step 5: Commit verification fixes**
+- [x] **Step 5: Commit verification fixes**
 
 If verification required fixes, run:
 
@@ -771,4 +771,3 @@ Expected: Commit succeeds only if there were fixes. If there were no fixes, do n
 - Spec coverage: The plan covers documentation cleanup, fresh implementation under `app/pre-cyan-village/`, mobile-first village UI, hidden lottery alley, localStorage state, achievement timing, and verification criteria.
 - Placeholder scan: No `TBD`, `TODO`, or unbounded implementation steps remain.
 - Type consistency: State fields match the approved spec: `unlocked`, `visited`, `cyanGateUnlocked`, `lotterySeen`, `backAlleyDiscovered`, `backAlleyEntered`, and `firstAchievementShown`.
-
