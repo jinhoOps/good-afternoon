@@ -165,6 +165,7 @@
   window.PreCyanVillageState = {
     STORAGE_KEY,
     createInitialState,
+    normalizeState,
     loadState,
     saveState,
     resetState,
