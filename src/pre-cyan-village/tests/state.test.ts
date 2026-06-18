@@ -5,6 +5,7 @@ import {
   completeMove,
   countVisitedPublicPlaces,
   createInitialState,
+  isNodeUnlocked,
   loadState,
   normalizeState,
   resetState,
@@ -13,6 +14,8 @@ import {
   STORAGE_KEY,
   visitNode
 } from '../domain/state';
+import { villageEdges, villageNodes } from '../domain/data';
+import { normalizeEdge } from '../../shared/map/paths';
 import type { StorageLike } from '../../shared/storage/local-storage';
 
 function createStorage(seed: Record<string, string> = {}): StorageLike {
@@ -205,4 +208,54 @@ test('saveState and resetState use the provided storage safely', () => {
 
 test('normalizeState recovers from non-object input', () => {
   assert.deepEqual(normalizeState(null), createInitialState());
+});
+
+test('loadState and resetState without storage are safe in Node', () => {
+  assert.doesNotThrow(() => loadState());
+  assert.deepEqual(loadState(), createInitialState());
+  assert.doesNotThrow(() => resetState());
+  assert.deepEqual(resetState(), createInitialState());
+});
+
+test('normalizeState rejects string booleans instead of unlocking gated state', () => {
+  const normalized = normalizeState({
+    cyanGateUnlocked: 'false',
+    lotterySeen: 'true',
+    backAlleyDiscovered: 'true',
+    backAlleyEntered: 'true',
+    firstAchievementShown: 'true',
+    currentStage: 'cyanLoop',
+    cyanLoopSeen: 'true',
+    cyanLoopCompleted: 'false'
+  });
+
+  assert.equal(normalized.cyanGateUnlocked, false);
+  assert.equal(normalized.lotterySeen, false);
+  assert.equal(normalized.backAlleyDiscovered, false);
+  assert.equal(normalized.backAlleyEntered, false);
+  assert.equal(normalized.firstAchievementShown, false);
+  assert.equal(normalized.currentStage, 'cyanLoop');
+  assert.equal(normalized.cyanLoopSeen, false);
+  assert.equal(normalized.cyanLoopCompleted, false);
+  assert.equal(isNodeUnlocked(normalized, 'cyanGate'), false);
+  assert.equal(isNodeUnlocked(normalized, 'alley'), false);
+});
+
+test('village data references only known nodes and state flags', () => {
+  const nodeIds = new Set(Object.keys(villageNodes));
+  const stateKeys = new Set(Object.keys(createInitialState()));
+
+  Object.values(villageNodes).forEach((node) => {
+    node.unlocks.forEach((nextId) => {
+      assert.equal(nodeIds.has(nextId), true, `${node.id} unlocks unknown node ${nextId}`);
+    });
+  });
+
+  villageEdges.map(normalizeEdge).forEach((edge) => {
+    assert.equal(nodeIds.has(edge.from), true, `edge starts at unknown node ${edge.from}`);
+    assert.equal(nodeIds.has(edge.to), true, `edge ends at unknown node ${edge.to}`);
+    if (edge.hiddenUntil) {
+      assert.equal(stateKeys.has(edge.hiddenUntil), true, `edge uses unknown hiddenUntil key ${edge.hiddenUntil}`);
+    }
+  });
 });

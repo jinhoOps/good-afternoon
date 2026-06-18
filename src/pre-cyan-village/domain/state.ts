@@ -61,6 +61,10 @@ function normalizeResult(value: unknown): Exclude<CyanLoopResult, null> | null {
     : null;
 }
 
+function getBrowserStorage(): StorageLike | null {
+  return typeof window === 'undefined' ? null : window.localStorage;
+}
+
 export function normalizeState(parsed: unknown): VillageState {
   const base = createInitialState();
   if (!isRecord(parsed)) return base;
@@ -85,10 +89,14 @@ export function normalizeState(parsed: unknown): VillageState {
     : base.lastMove;
 
   return {
-    ...base,
-    ...parsed,
     unlocked: unlocked ? mergeUnique(base.unlocked, unlocked) : base.unlocked,
     visited: visited ? mergeUnique(base.visited, visited) : base.visited,
+    log: typeof parsed.log === 'string' ? parsed.log : base.log,
+    cyanGateUnlocked: parsed.cyanGateUnlocked === true,
+    lotterySeen: parsed.lotterySeen === true,
+    backAlleyDiscovered: parsed.backAlleyDiscovered === true,
+    backAlleyEntered: parsed.backAlleyEntered === true,
+    firstAchievementShown: parsed.firstAchievementShown === true,
     playerNodeId: reachedCyanGateInOldSave && (!validPlayerNodeId || validPlayerNodeId === base.playerNodeId)
       ? 'cyanGate'
       : validPlayerNodeId ?? base.playerNodeId,
@@ -96,13 +104,17 @@ export function normalizeState(parsed: unknown): VillageState {
     lastMove: validLastMove,
     currentStage: migratedCurrentStage,
     cyanLoopSeen: reachedCyanGateInOldSave ? true : parsed.cyanLoopSeen === true,
+    cyanLoopCompleted: parsed.cyanLoopCompleted === true,
     cyanLoopResult: normalizeResult(parsed.cyanLoopResult)
   };
 }
 
-export function loadState(storage: StorageLike = window.localStorage): VillageState {
+export function loadState(storage?: StorageLike): VillageState {
+  const activeStorage = storage ?? getBrowserStorage();
+  if (!activeStorage) return createInitialState();
+
   try {
-    const saved = readStorage(storage, STORAGE_KEY);
+    const saved = readStorage(activeStorage, STORAGE_KEY);
     if (!saved) return createInitialState();
     return normalizeState(JSON.parse(saved));
   } catch {
@@ -115,8 +127,12 @@ export function saveState(storage: StorageLike, state: VillageState): VillageSta
   return state;
 }
 
-export function resetState(storage: StorageLike = window.localStorage): VillageState {
-  removeStorage(storage, STORAGE_KEY);
+export function resetState(storage?: StorageLike): VillageState {
+  const activeStorage = storage ?? getBrowserStorage();
+  if (activeStorage) {
+    removeStorage(activeStorage, STORAGE_KEY);
+  }
+
   return createInitialState();
 }
 
