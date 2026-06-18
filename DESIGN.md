@@ -1,7 +1,7 @@
 ---
 version: alpha
-name: design-analysis
-description: A warm-canvas editorial interface for Anthropic's   product. The system anchors on a tinted cream canvas with serif display headlines, warm coral CTAs, and dark navy product surfaces (code editor mockups, model showcase cards). Brand voltage comes from the cream/coral pairing — deliberately warm and humanist where most AI brands use cool blue + slate. Type voice runs a slab-serif display ("Copernicus" / Tiempos Headline) for h1/h2 and a humanist sans for body. The signature Anthropic black-radial-spike mark anchors the wordmark.
+name: good-afternoon-design-guidance
+description: Good Afternoon design guidance. The project uses a warm cream canvas, charcoal text, bronze-gold accents, short logs, and node-map interaction for the current Pre-Cyan implementation. The older Anthropic-style analysis below is retained only as reference material and is not the primary product direction.
 
 colors:
   primary: "#cc785c"
@@ -297,6 +297,35 @@ components:
     typography: "{typography.body-sm}"
     padding: 64px
 ---
+
+# Good Afternoon Design Priority
+
+이 문서의 우선순위는 다음과 같다.
+
+1. `Good Afternoon Design Priority`와 `Pre-Cyan First Village Direction`을 먼저 따른다.
+2. `PROJECT_CONTEXT.md`의 서비스 철학과 확정 구조를 유지한다.
+3. 아래의 Anthropic 스타일 분석은 참고 자료로만 사용한다. Good Afternoon 구현의 색, 톤, 상호작용 기준을 덮어쓰지 않는다.
+
+## Product Tone
+
+- 공부 앱처럼 보이지 않는다.
+- 장소와 상황이 먼저 나오고, 경제 개념은 나중에 따라온다.
+- 문장은 짧고 무심하게 둔다.
+- 보상은 점수보다 길이 열리는 감각을 우선한다.
+- `Good Afternoon.` 이름의 의미는 철 티어 이스터에그 전까지 직접 설명하지 않는다.
+
+## Current Visual Tokens
+
+- Canvas: `#FAF9F5`
+- Surface: `#FFFFFF`
+- Soft surface: `#F2EFE9`
+- Hairline: `#E5DEC9`
+- Accent: `#8E744A`
+- Text: `#1C1B18`
+- Muted text: `#6C6A64`
+- Cyan gate accent: `#63B4D2`
+- Radius: app controls and cards use 6px to 8px first
+- Typography: system UI and `Noto Sans KR` fallback for the app, monospace only for small code-comment style labels
 
 ## Pre-Cyan First Village Direction
 

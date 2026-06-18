@@ -1,23 +1,51 @@
-# 굿애프터눈 (Good Afternoon.) — 서비스 기획 및 통합 데모
+# 굿애프터눈 (Good Afternoon.)
 
-## 📌 3줄 요약 (Project Summary)
-1. **[서비스 정체성]** 제롬 파월의 FOMC 기자회견 밈에서 착안하여, 공부처럼 느끼지 않는 경제 개념 잠금해제(Duolingo + 마인크래프트 업적 시스템) 서비스의 기획 검증용 통합 목업입니다.
-2. **[피드백 반영 (Easy to Learn)]** 경제 단어를 먼저 보여주지 않고, 모바일 세로 화면 기준의 **Pre-Cyan 첫 모험 마을**에서 내 방·편의점·버스정류장·알바처·은행 같은 장소를 만지며 적응하는 0단계를 새 구현 방향으로 확정했습니다.
-3. **[데모 플레이]** 온보딩(초보자용 기초 퀴즈 분기) → 개념 지도(Pre-Cyan 및 CMYK 계층 구조) → 기준금리 4단계 인쇄 합성 시뮬레이터(LTV/금리 변동에 따른 파산 임계치 계산)의 핵심 흐름을 직접 조작하며 체감할 수 있습니다. *(※ 현재 데모의 개념 지도는 우선 핵심 기획 내용과 흐름을 담아둔 텍스트 뼈대 상태입니다. 향후 진짜 게임 지도 형태의 시각화 맵으로 발전할 계획입니다.)*
+굿애프터눈은 공부처럼 느껴지지 않는 경제 개념 잠금해제 서비스입니다. 제롬 파월의 FOMC 기자회견 인사말 밈에서 이름을 가져왔지만, 그 의미는 온보딩에서 설명하지 않고 철 티어 이스터에그에서 회수합니다.
 
----
+핵심 철학은 **Easy to learn, Hard to master**입니다. Pre-Cyan은 경제 단어에 부담이 있는 사용자가 현실 동네를 닮은 첫 모험 마을에서 적응하도록 만들고, 이후 Cyan 이상 티어와 마스터리 레이어가 깊이를 담당합니다.
 
-## 📂 프로젝트 주요 구성
-- **app/pre-cyan-village/**: 구현된 Pre-Cyan 첫 모험 마을 정적 앱. 기존 HTML 데모는 기획 검증용 시각 자료이며, 새 구현의 소스가 아닙니다.
-- **[goodafternoon_integrated_demo.html](file:///D:/jhkSandBox/CODE/good-afternoon/goodafternoon_integrated_demo.html)**: 통합 기획 및 피드백이 반영된 프론트엔드 HTML5 인터랙티브 목업.
-- **[PROJECT_CONTEXT.md](file:///D:/jhkSandBox/CODE/good-afternoon/PROJECT_CONTEXT.md)**: 서비스 정의, 수직/수평축 문제 로드맵, 온보딩 및 톤앤매너를 담은 서비스 메인 기획서.
-- **[harness/30_mastery_spec.md](file:///D:/jhkSandBox/CODE/good-afternoon/harness/30_mastery_spec.md)**: "Hard to Master" 철학을 구체화한 CMYK 글로벌 티어 및 분석 리포트 데이터 스키마 상세 명세서.
+## 현재 구현 상태
 
----
+- **Pre-Cyan 첫 모험 마을**: 구현됨. 내 방에서 시작해 공개 장소 4개를 방문하면 Cyan 입구가 열립니다.
+- **루트 HTML 데모**: 기획 검증용 시각 자료입니다. 온보딩, 개념 지도, 기준금리 챌린지 흐름을 참고할 때만 사용합니다.
+- **개발 로드맵**: `docs/ROADMAP.md`에 다음 구현 순서와 완료 기준을 정리했습니다.
+- **디자인 기준**: `DESIGN.md`의 Good Afternoon 우선 섹션을 기준으로 판단합니다.
 
-## ⚡ 실행 및 체험 방법
-현재 루트의 HTML 파일들은 기획 검증용 시각 자료입니다. 새 Pre-Cyan 첫 모험 마을은 `app/pre-cyan-village/index.html`에서 독립적으로 실행합니다.
+## 실행 방법
 
-1. Pre-Cyan 첫 모험 마을은 `app/pre-cyan-village/index.html`을 웹 브라우저(Chrome, Edge 등)로 직접 열어 확인합니다.
-2. 내 방에서 시작해 공개 장소 4개를 방문하면 Cyan 입구가 열리고, 들어가기 버튼을 누른 뒤 첫 업적이 표시됩니다.
-3. 기존 루트 HTML 데모는 온보딩, 개념 지도, 기준금리 챌린지의 기획 검증 흐름을 참고할 때만 사용합니다.
+Pre-Cyan 첫 모험 마을:
+
+1. `app/pre-cyan-village/index.html`을 Chrome 또는 Edge에서 직접 엽니다.
+2. 내 방을 누른 뒤 편의점, 버스정류장, 알바처, 은행, 구독함, 복권방을 탐색합니다.
+3. 내 방을 포함해 공개 장소 4개를 방문하면 Cyan 입구가 열립니다.
+4. Cyan 입구에 들어간 뒤 첫 업적이 표시되는지 확인합니다.
+
+기획 검증용 데모:
+
+- `goodafternoon_integrated_demo.html`: 온보딩, 개념 지도, 기준금리 챌린지 통합 목업
+- `goodafternoon_mathflat_edition.html`: 별도 평가형 실험 목업
+
+## 문서 지도
+
+- `PROJECT_CONTEXT.md`: 서비스 정의, 확정 구조, 기획 불변량
+- `docs/ROADMAP.md`: 개발 로드맵과 다음 구현 순서
+- `DESIGN.md`: Good Afternoon 디자인 기준과 참고 분석
+- `harness/30_mastery_spec.md`: Hard to Master 마스터리 레이어 상세 명세
+- `AGENTS.md`: 에이전트와 개발자가 따라야 할 작업 지침
+- `GEMINI.md`: Gemini용 harness 인덱스
+
+## 다음 개발 순서
+
+1. Pre-Cyan에서 Cyan 입구 이후의 임시 전환 화면을 추가합니다.
+2. Cyan 티어의 최소 플레이 루프를 만듭니다.
+3. 전체 진행 상태 저장 스키마를 설계합니다.
+4. 메인 허브 지도 초안을 만듭니다.
+5. 투자 브랜치의 첫 씨앗을 Pre-Cyan 어두운 골목 발견 상태와 연결합니다.
+
+## 개발 원칙
+
+- Vanilla HTML, CSS, JavaScript를 우선합니다.
+- 빌드 도구 없이 브라우저에서 직접 열 수 있는 정적 앱 단위를 유지합니다.
+- “학습”, “공부”, “점수” 뉘앙스를 첫 경험 전면에 두지 않습니다.
+- 철 티어 이전에는 `Good Afternoon.` 이름의 의미를 직접 설명하지 않습니다.
+- 변경 후에는 정적 문자열 스캔, 브라우저 스모크 테스트, 모바일 뷰포트 점검을 수행합니다.
