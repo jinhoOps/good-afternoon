@@ -115,7 +115,7 @@
     cyanLoopChoices.innerHTML = cyanFirstLoop.choices.map((choice) => {
       const selected = currentState.cyanLoopResult === 'success'
         && choice.id === cyanFirstLoop.correctChoiceId;
-      const classes = ['cyan-loop-choice', selected ? 'is-selected' : ''].filter(Boolean).join(' ');
+      const classes = ['cyan-choice', selected ? 'is-selected' : ''].filter(Boolean).join(' ');
       const disabled = currentState.cyanLoopCompleted ? 'disabled' : '';
       return `<button class="${classes}" type="button" data-cyan-choice="${choice.id}" ${disabled}>${choice.label}</button>`;
     }).join('');

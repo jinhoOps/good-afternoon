@@ -54,7 +54,7 @@ test('initial state includes token and Cyan loop defaults', () => {
   const { state } = loadModules();
   assert.deepEqual(plain(state.createInitialState()), {
     unlocked: ['room', 'store', 'bus'],
-    visited: [],
+    visited: ['room'],
     log: '나가기 전에 하나만 챙기면 된다.',
     cyanGateUnlocked: false,
     lotterySeen: false,
@@ -74,7 +74,7 @@ test('initial state includes token and Cyan loop defaults', () => {
 test('loadState migrates old saved data with new fields', () => {
   const oldState = {
     unlocked: ['room'],
-    visited: ['room'],
+    visited: [],
     log: '카드를 챙겼다.'
   };
   const { state } = loadModules({
@@ -89,6 +89,8 @@ test('loadState migrates old saved data with new fields', () => {
   assert.ok(loaded.unlocked.includes('store'));
   assert.ok(loaded.unlocked.includes('bus'));
   assert.equal(new Set(loaded.unlocked).size, loaded.unlocked.length);
+  assert.ok(loaded.visited.includes('room'));
+  assert.equal(new Set(loaded.visited).size, loaded.visited.length);
 });
 
 test('startMove locks movement without visiting immediately', () => {
@@ -98,7 +100,7 @@ test('startMove locks movement without visiting immediately', () => {
   assert.equal(moving.playerNodeId, 'room');
   assert.equal(moving.movingToNodeId, 'store');
   assert.deepEqual(plain(moving.lastMove), { from: 'room', to: 'store' });
-  assert.deepEqual(plain(moving.visited), []);
+  assert.deepEqual(plain(moving.visited), ['room']);
   assert.equal(moving.log, '나가기 전에 하나만 챙기면 된다.');
 });
 
@@ -125,7 +127,7 @@ test('completeMove visits after arrival and unlocks next places', () => {
   const arrived = state.completeMove(moving);
   assert.equal(arrived.playerNodeId, 'store');
   assert.equal(arrived.movingToNodeId, null);
-  assert.deepEqual(plain(arrived.visited), ['store']);
+  assert.deepEqual(plain(arrived.visited), ['room', 'store']);
   assert.equal(arrived.log, '봉투값이 붙었다.');
   assert.ok(arrived.unlocked.includes('work'));
   assert.ok(arrived.unlocked.includes('subscriptions'));
@@ -147,6 +149,16 @@ test('completeMove opens Cyan intro when arriving at Cyan gate', () => {
   assert.equal(arrived.currentStage, 'cyanLoop');
   assert.equal(arrived.cyanLoopSeen, true);
   assert.equal(arrived.cyanLoopCompleted, false);
+});
+
+test('room plus three public destinations can unlock Cyan gate', () => {
+  const { state } = loadModules();
+  const afterStore = state.completeMove(state.startMove(state.createInitialState(), 'store'));
+  const afterBus = state.completeMove(state.startMove(afterStore, 'bus'));
+  const afterWork = state.completeMove(state.startMove(afterBus, 'work'));
+  assert.deepEqual(plain(afterWork.visited), ['room', 'store', 'bus', 'work']);
+  assert.equal(state.countVisitedPublicPlaces(afterWork), 4);
+  assert.equal(afterWork.cyanGateUnlocked, true);
 });
 
 test('visitNode direct compatibility updates token position', () => {
