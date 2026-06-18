@@ -1,74 +1,201 @@
 (() => {
-  const { villageEdges, villageNodes } = window.PreCyanVillageData;
-  const { enterGate, isNodeUnlocked, loadState, resetState, saveState, visitNode } = window.PreCyanVillageState;
+  const { cyanFirstLoop, villageEdges, villageNodes } = window.PreCyanVillageData;
+  const {
+    answerCyanLoop,
+    completeMove,
+    isNodeUnlocked,
+    loadState,
+    resetState,
+    saveState,
+    startMove
+  } = window.PreCyanVillageState;
 
-const nodesHost = document.querySelector('#village-nodes');
-const pathsHost = document.querySelector('.village-paths');
-const logText = document.querySelector('#village-log-text');
-const achievement = document.querySelector('#achievement');
-const enterButton = document.querySelector('#enter-gate');
-const resetButton = document.querySelector('#reset-state');
+  const MOVE_FALLBACK_MS = 520;
+
+  const board = document.querySelector('.village-board');
+  const nodesHost = document.querySelector('#village-nodes');
+  const pathsHost = document.querySelector('.village-paths');
+  const token = document.querySelector('#player-token');
+  const logText = document.querySelector('#village-log-text');
+  const achievement = document.querySelector('#achievement');
+  const cyanLoop = document.querySelector('#cyan-loop');
+  const cyanLoopSituation = document.querySelector('#cyan-loop-situation');
+  const cyanLoopQuestion = document.querySelector('#cyan-loop-question');
+  const cyanLoopChoices = document.querySelector('#cyan-loop-choices');
+  const resetButton = document.querySelector('#reset-state');
 
   let currentState = loadState();
+  let moveFallbackId = null;
+  let completingMove = false;
 
-function normalizeEdge(edge) {
-  if (Array.isArray(edge)) return { from: edge[0], to: edge[1] };
-  return edge;
-}
+  function normalizeEdge(edge) {
+    if (Array.isArray(edge)) return { from: edge[0], to: edge[1] };
+    return edge;
+  }
 
-function isEdgeVisible(edge) {
-  if (!edge.hiddenUntil) return true;
-  return Boolean(currentState[edge.hiddenUntil]);
-}
+  function isMoving() {
+    return Boolean(currentState.movingToNodeId);
+  }
 
-function renderPaths() {
-  pathsHost.innerHTML = villageEdges
-    .map(normalizeEdge)
-    .filter(isEdgeVisible)
-    .map((edge) => {
-      const fromNode = villageNodes[edge.from];
-      const toNode = villageNodes[edge.to];
-      const isLit = isNodeUnlocked(currentState, edge.from) && isNodeUnlocked(currentState, edge.to);
-      return `<line class="village-path ${isLit ? 'is-lit' : ''}" x1="${fromNode.x}" y1="${fromNode.y}" x2="${toNode.x}" y2="${toNode.y}"></line>`;
+  function isEdgeVisible(edge) {
+    if (!edge.hiddenUntil) return true;
+    return Boolean(currentState[edge.hiddenUntil]);
+  }
+
+  function isSamePath(edge, move) {
+    return Boolean(move && (
+      (move.from === edge.from && move.to === edge.to)
+      || (move.from === edge.to && move.to === edge.from)
+    ));
+  }
+
+  function isLastMove(edge) {
+    const lastMove = currentState.lastMove;
+    return isSamePath(edge, lastMove);
+  }
+
+  function renderDirectLastMovePath(visibleEdges) {
+    const lastMove = currentState.lastMove;
+    if (!lastMove || !villageNodes[lastMove.from] || !villageNodes[lastMove.to]) return '';
+    if (visibleEdges.some((edge) => isSamePath(edge, lastMove))) return '';
+    const fromNode = villageNodes[lastMove.from];
+    const toNode = villageNodes[lastMove.to];
+    return `<line class="village-path is-lit is-last-move is-last-move-direct" x1="${fromNode.x}" y1="${fromNode.y}" x2="${toNode.x}" y2="${toNode.y}"></line>`;
+  }
+
+  function clearMoveFallback() {
+    if (!moveFallbackId) return;
+    window.clearTimeout(moveFallbackId);
+    moveFallbackId = null;
+  }
+
+  function scheduleMoveFallback() {
+    clearMoveFallback();
+    moveFallbackId = window.setTimeout(finishMove, MOVE_FALLBACK_MS);
+  }
+
+  function renderPaths() {
+    const visibleEdges = villageEdges
+      .map(normalizeEdge)
+      .filter(isEdgeVisible);
+    const edgePaths = visibleEdges.map((edge) => {
+        const fromNode = villageNodes[edge.from];
+        const toNode = villageNodes[edge.to];
+        const isLit = isNodeUnlocked(currentState, edge.from) && isNodeUnlocked(currentState, edge.to);
+        const classes = [
+          'village-path',
+          isLit ? 'is-lit' : '',
+          isLastMove(edge) ? 'is-last-move' : ''
+        ].filter(Boolean).join(' ');
+        return `<line class="${classes}" x1="${fromNode.x}" y1="${fromNode.y}" x2="${toNode.x}" y2="${toNode.y}"></line>`;
+      });
+    pathsHost.innerHTML = [
+      ...edgePaths,
+      renderDirectLastMovePath(visibleEdges)
+    ].join('');
+  }
+
+  function renderNodes() {
+    const moving = isMoving();
+    nodesHost.innerHTML = Object.values(villageNodes).map((node) => {
+      const unlocked = isNodeUnlocked(currentState, node.id);
+      const visited = currentState.visited.includes(node.id);
+      const hidden = node.hidden && !currentState.backAlleyDiscovered;
+      const current = currentState.playerNodeId === node.id;
+      const movingTarget = currentState.movingToNodeId === node.id;
+      const classes = [
+        'village-node',
+        unlocked ? 'is-unlocked' : '',
+        visited ? 'is-visited' : '',
+        hidden ? 'is-hidden' : '',
+        current ? 'is-current' : '',
+        movingTarget ? 'is-moving-target' : '',
+        node.gate ? 'is-gate' : ''
+      ].filter(Boolean).join(' ');
+      const disabled = moving || !unlocked ? 'disabled' : '';
+      return `<button class="${classes}" type="button" style="--x:${node.x};--y:${node.y}" data-node-id="${node.id}" ${disabled}>${node.label}</button>`;
     }).join('');
-}
+  }
 
-function renderNodes() {
-  nodesHost.innerHTML = Object.values(villageNodes).map((node) => {
-    const unlocked = isNodeUnlocked(currentState, node.id);
-    const visited = currentState.visited.includes(node.id);
-    const hidden = node.hidden && !currentState.backAlleyDiscovered;
-    const classes = ['village-node', unlocked ? 'is-unlocked' : '', visited ? 'is-visited' : '', hidden ? 'is-hidden' : ''].filter(Boolean).join(' ');
-    return `<button class="${classes}" type="button" style="--x:${node.x};--y:${node.y}" data-node-id="${node.id}" ${unlocked ? '' : 'disabled'}>${node.label}</button>`;
-  }).join('');
-}
+  function renderToken() {
+    const targetId = currentState.movingToNodeId || currentState.playerNodeId;
+    const targetNode = villageNodes[targetId] || villageNodes.room;
+    token.style.setProperty('--x', targetNode.x);
+    token.style.setProperty('--y', targetNode.y);
+    token.classList.toggle('is-moving', isMoving());
+  }
 
-function render() {
-  renderPaths();
-  renderNodes();
-  logText.textContent = currentState.log;
-  achievement.hidden = !currentState.firstAchievementShown;
-  enterButton.hidden = !currentState.cyanGateUnlocked || currentState.firstAchievementShown;
-}
+  function renderCyanLoop() {
+    const shouldShow = currentState.currentStage === 'cyanLoop' && currentState.cyanLoopSeen;
+    cyanLoop.hidden = !shouldShow;
+    if (!shouldShow) return;
 
-nodesHost.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-node-id]');
-  if (!button) return;
-  currentState = visitNode(currentState, button.dataset.nodeId);
-  saveState(currentState);
+    cyanLoopSituation.textContent = cyanFirstLoop.situation;
+    cyanLoopQuestion.textContent = cyanFirstLoop.question;
+    cyanLoopChoices.innerHTML = cyanFirstLoop.choices.map((choice) => {
+      const selected = currentState.cyanLoopResult === 'success'
+        && choice.id === cyanFirstLoop.correctChoiceId;
+      const classes = ['cyan-choice', selected ? 'is-selected' : ''].filter(Boolean).join(' ');
+      const disabled = currentState.cyanLoopCompleted ? 'disabled' : '';
+      return `<button class="${classes}" type="button" data-cyan-choice="${choice.id}" ${disabled}>${choice.label}</button>`;
+    }).join('');
+  }
+
+  function render() {
+    const moving = isMoving();
+    board.setAttribute('aria-busy', moving ? 'true' : 'false');
+    board.classList.toggle('is-moving', moving);
+    renderPaths();
+    renderNodes();
+    renderToken();
+    renderCyanLoop();
+    logText.textContent = currentState.log;
+    achievement.hidden = !currentState.firstAchievementShown;
+  }
+
+  function finishMove() {
+    if (completingMove || !currentState.movingToNodeId) return;
+    completingMove = true;
+    try {
+      clearMoveFallback();
+      currentState = completeMove(currentState);
+      saveState(currentState);
+      render();
+    } finally {
+      completingMove = false;
+    }
+  }
+
+  nodesHost.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-node-id]');
+    if (!button) return;
+    const nextState = startMove(currentState, button.dataset.nodeId);
+    if (nextState === currentState) return;
+    currentState = nextState;
+    saveState(currentState);
+    render();
+    scheduleMoveFallback();
+  });
+
+  token.addEventListener('transitionend', (event) => {
+    if (event.propertyName !== 'left' && event.propertyName !== 'top') return;
+    finishMove();
+  });
+
+  cyanLoopChoices.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-cyan-choice]');
+    if (!button) return;
+    currentState = answerCyanLoop(currentState, button.dataset.cyanChoice);
+    saveState(currentState);
+    render();
+  });
+
+  resetButton.addEventListener('click', () => {
+    clearMoveFallback();
+    currentState = resetState();
+    saveState(currentState);
+    render();
+  });
+
   render();
-});
-
-enterButton.addEventListener('click', () => {
-  currentState = enterGate(currentState);
-  saveState(currentState);
-  render();
-});
-
-resetButton.addEventListener('click', () => {
-  currentState = resetState();
-  render();
-});
-
-render();
 })();

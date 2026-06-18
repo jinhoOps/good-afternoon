@@ -23,5 +23,19 @@
   { from: 'lottery', to: 'alley', hiddenUntil: 'backAlleyDiscovered' }
 ];
 
-window.PreCyanVillageData = { villageNodes, villageEdges };
+const cyanFirstLoop = {
+  id: 'fare-exchange',
+  situation: '버스정류장에서 잔액이 부족하다.',
+  question: '지금 오가야 하는 건 뭐지?',
+  correctChoiceId: 'fare-for-time',
+  successLog: '맞아. 뭔가를 내고, 길을 얻었다.',
+  failureLog: '그건 아직 길이 안 이어진다.',
+  choices: [
+    { id: 'fare-for-time', label: '교통카드 잔액을 내고 이동 시간을 얻는다.' },
+    { id: 'time-for-bag', label: '이동 시간을 내고 봉투값을 얻는다.' },
+    { id: 'lottery-for-work', label: '복권 번호를 내고 알바 시간을 얻는다.' }
+  ]
+};
+
+window.PreCyanVillageData = { villageNodes, villageEdges, cyanFirstLoop };
 })();
