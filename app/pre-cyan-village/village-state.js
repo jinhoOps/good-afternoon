@@ -89,7 +89,9 @@
       ...state,
       unlocked: [...state.unlocked],
       visited: [...state.visited],
-      log: node.log
+      log: node.log,
+      playerNodeId: id,
+      movingToNodeId: null
     };
 
     if (!nextState.visited.includes(id)) {
@@ -116,6 +118,8 @@
       ...state,
       log: villageNodes.cyanGate.log,
       firstAchievementShown: true,
+      playerNodeId: 'cyanGate',
+      movingToNodeId: null,
       currentStage: 'cyanLoop',
       cyanLoopSeen: true
     };
@@ -138,6 +142,7 @@
   function completeMove(state) {
     if (!state.movingToNodeId) return state;
     const destinationId = state.movingToNodeId;
+    if (!villageNodes[destinationId] || !isNodeUnlocked(state, destinationId)) return state;
     const arrived = {
       ...state,
       playerNodeId: destinationId,

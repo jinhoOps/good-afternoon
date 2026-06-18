@@ -149,6 +149,31 @@ test('completeMove opens Cyan intro when arriving at Cyan gate', () => {
   assert.equal(arrived.cyanLoopCompleted, false);
 });
 
+test('visitNode direct compatibility updates token position', () => {
+  const { state } = loadModules();
+  const visited = state.visitNode({
+    ...state.createInitialState(),
+    unlocked: ['room', 'store'],
+    movingToNodeId: 'store'
+  }, 'store');
+  assert.equal(visited.playerNodeId, 'store');
+  assert.equal(visited.movingToNodeId, null);
+  assert.equal(visited.log, '봉투값이 붙었다.');
+});
+
+test('completeMove rejects corrupt locked movement without changing position', () => {
+  const { state } = loadModules();
+  const corrupt = {
+    ...state.createInitialState(),
+    playerNodeId: 'room',
+    movingToNodeId: 'bank'
+  };
+  const result = state.completeMove(corrupt);
+  assert.equal(result, corrupt);
+  assert.equal(result.playerNodeId, 'room');
+  assert.equal(result.movingToNodeId, 'bank');
+});
+
 test('answerCyanLoop records success and failure without scores', () => {
   const { state } = loadModules();
   const ready = {
