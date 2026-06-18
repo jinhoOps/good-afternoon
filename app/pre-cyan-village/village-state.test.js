@@ -93,6 +93,23 @@ test('loadState migrates old saved data with new fields', () => {
   assert.equal(new Set(loaded.visited).size, loaded.visited.length);
 });
 
+test('loadState migrates old Cyan gate saved data into Cyan loop', () => {
+  const oldGateState = {
+    unlocked: ['room', 'store', 'bus', 'work', 'bank'],
+    visited: ['room', 'store', 'bus', 'work'],
+    cyanGateUnlocked: true,
+    firstAchievementShown: true
+  };
+  const { state } = loadModules({
+    [stateKey()]: JSON.stringify(oldGateState)
+  });
+  const loaded = state.loadState();
+  assert.equal(loaded.playerNodeId, 'cyanGate');
+  assert.equal(loaded.movingToNodeId, null);
+  assert.equal(loaded.currentStage, 'cyanLoop');
+  assert.equal(loaded.cyanLoopSeen, true);
+});
+
 test('startMove locks movement without visiting immediately', () => {
   const { state } = loadModules();
   const initial = state.createInitialState();

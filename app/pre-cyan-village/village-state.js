@@ -31,19 +31,28 @@
     const visited = Array.isArray(parsed.visited)
       ? [...new Set([...base.visited, ...parsed.visited])]
       : base.visited;
+    const validPlayerNodeId = villageNodes[parsed.playerNodeId] ? parsed.playerNodeId : null;
+    const validCurrentStage = ['preCyan', 'cyanIntro', 'cyanLoop'].includes(parsed.currentStage)
+      ? parsed.currentStage
+      : null;
+    const reachedCyanGateInOldSave = parsed.firstAchievementShown === true
+      && parsed.cyanGateUnlocked === true;
     return {
       ...base,
       ...parsed,
       unlocked,
       visited,
-      playerNodeId: villageNodes[parsed.playerNodeId] ? parsed.playerNodeId : base.playerNodeId,
+      playerNodeId: reachedCyanGateInOldSave && (!validPlayerNodeId || validPlayerNodeId === base.playerNodeId)
+        ? 'cyanGate'
+        : validPlayerNodeId || base.playerNodeId,
       movingToNodeId: null,
       lastMove: parsed.lastMove && villageNodes[parsed.lastMove.from] && villageNodes[parsed.lastMove.to]
         ? parsed.lastMove
         : base.lastMove,
-      currentStage: ['preCyan', 'cyanIntro', 'cyanLoop'].includes(parsed.currentStage)
-        ? parsed.currentStage
-        : base.currentStage,
+      currentStage: reachedCyanGateInOldSave && !validCurrentStage
+        ? 'cyanLoop'
+        : validCurrentStage || base.currentStage,
+      cyanLoopSeen: reachedCyanGateInOldSave ? true : Boolean(parsed.cyanLoopSeen),
       cyanLoopResult: ['success', 'failure'].includes(parsed.cyanLoopResult)
         ? parsed.cyanLoopResult
         : base.cyanLoopResult

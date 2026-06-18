@@ -42,9 +42,25 @@
     return Boolean(currentState[edge.hiddenUntil]);
   }
 
+  function isSamePath(edge, move) {
+    return Boolean(move && (
+      (move.from === edge.from && move.to === edge.to)
+      || (move.from === edge.to && move.to === edge.from)
+    ));
+  }
+
   function isLastMove(edge) {
     const lastMove = currentState.lastMove;
-    return Boolean(lastMove && lastMove.from === edge.from && lastMove.to === edge.to);
+    return isSamePath(edge, lastMove);
+  }
+
+  function renderDirectLastMovePath(visibleEdges) {
+    const lastMove = currentState.lastMove;
+    if (!lastMove || !villageNodes[lastMove.from] || !villageNodes[lastMove.to]) return '';
+    if (visibleEdges.some((edge) => isSamePath(edge, lastMove))) return '';
+    const fromNode = villageNodes[lastMove.from];
+    const toNode = villageNodes[lastMove.to];
+    return `<line class="village-path is-lit is-last-move is-last-move-direct" x1="${fromNode.x}" y1="${fromNode.y}" x2="${toNode.x}" y2="${toNode.y}"></line>`;
   }
 
   function clearMoveFallback() {
@@ -59,10 +75,10 @@
   }
 
   function renderPaths() {
-    pathsHost.innerHTML = villageEdges
+    const visibleEdges = villageEdges
       .map(normalizeEdge)
-      .filter(isEdgeVisible)
-      .map((edge) => {
+      .filter(isEdgeVisible);
+    const edgePaths = visibleEdges.map((edge) => {
         const fromNode = villageNodes[edge.from];
         const toNode = villageNodes[edge.to];
         const isLit = isNodeUnlocked(currentState, edge.from) && isNodeUnlocked(currentState, edge.to);
@@ -72,7 +88,11 @@
           isLastMove(edge) ? 'is-last-move' : ''
         ].filter(Boolean).join(' ');
         return `<line class="${classes}" x1="${fromNode.x}" y1="${fromNode.y}" x2="${toNode.x}" y2="${toNode.y}"></line>`;
-      }).join('');
+      });
+    pathsHost.innerHTML = [
+      ...edgePaths,
+      renderDirectLastMovePath(visibleEdges)
+    ].join('');
   }
 
   function renderNodes() {

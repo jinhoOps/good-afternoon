@@ -46,6 +46,11 @@ test('movement locking and fallback are wired', () => {
   assert.match(source('village-render.js'), /completingMove/);
 });
 
+test('last move path supports reverse and direct free movement', () => {
+  assert.match(source('village-render.js'), /isSamePath/);
+  assert.match(source('village-render.js'), /is-last-move-direct/);
+});
+
 test('banned first-experience strings are absent from runtime files only', () => {
   assert.deepEqual(runtimeFiles, [
     'index.html',
