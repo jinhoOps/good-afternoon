@@ -6,7 +6,8 @@
 
 ## 현재 구현 상태
 
-- **Pre-Cyan 첫 모험 마을**: 구현됨. 내 방에서 시작해 공개 장소 4개를 방문하면 Cyan 입구가 열립니다.
+The active first slice is `app/pre-cyan-village/`: a static Pre-Cyan village demo where a player token moves between unlocked places, reaches the Cyan gate, and opens one minimal Cyan exchange judgment loop. It runs directly from `index.html`; no build step is required.
+
 - **루트 HTML 데모**: 기획 검증용 시각 자료입니다. 온보딩, 개념 지도, 기준금리 챌린지 흐름을 참고할 때만 사용합니다.
 - **개발 로드맵**: `docs/ROADMAP.md`에 다음 구현 순서와 완료 기준을 정리했습니다.
 - **디자인 기준**: `DESIGN.md`의 Good Afternoon 우선 섹션을 기준으로 판단합니다.
@@ -16,9 +17,9 @@
 Pre-Cyan 첫 모험 마을:
 
 1. `app/pre-cyan-village/index.html`을 Chrome 또는 Edge에서 직접 엽니다.
-2. 내 방을 누른 뒤 편의점, 버스정류장, 알바처, 은행, 구독함, 복권방을 탐색합니다.
-3. 내 방을 포함해 공개 장소 4개를 방문하면 Cyan 입구가 열립니다.
-4. Cyan 입구에 들어간 뒤 첫 업적이 표시되는지 확인합니다.
+2. 내 방을 누른 뒤 편의점, 버스정류장, 알바처, 은행, 구독함, 복권방을 탐색하며 토큰 이동을 확인합니다.
+3. 열린 장소를 지나 Cyan 입구에 도달합니다.
+4. Cyan 입구에서 첫 Cyan 교환 판단 루프가 열리는지 확인합니다.
 
 기획 검증용 데모:
 
