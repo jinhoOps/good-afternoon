@@ -1,7 +1,11 @@
-const app = document.querySelector<HTMLElement>('#app');
+import './styles.css';
+import { loadState, saveState } from './domain/state';
+import { wireEvents } from './view/events';
+import { queryAppElements, renderApp } from './view/render';
 
-if (!app) {
-  throw new Error('Missing #app root');
-}
+const elements = queryAppElements();
+const initialState = loadState(window.localStorage);
 
-app.textContent = 'Good Afternoon.';
+saveState(window.localStorage, initialState);
+renderApp(elements, initialState);
+wireEvents(elements, initialState, window.localStorage);
