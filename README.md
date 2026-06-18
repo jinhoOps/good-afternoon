@@ -6,7 +6,7 @@
 
 ## 현재 구현 상태
 
-The active first slice is `app/pre-cyan-village/`: a static Pre-Cyan village demo where a player token moves between unlocked places, reaches the Cyan gate, and opens one minimal Cyan exchange judgment loop. It runs directly from `index.html`; no build step is required.
+현재 활성 첫 슬라이스는 `app/pre-cyan-village/`입니다. 플레이어 토큰이 열린 장소 사이를 이동하고, Cyan 입구에 도달한 뒤, 최소 단위의 Cyan 교환 판단 루프 하나를 여는 정적 Pre-Cyan 마을 데모입니다. `index.html`에서 바로 실행되며 빌드 단계는 필요하지 않습니다.
 
 - **루트 HTML 데모**: 기획 검증용 시각 자료입니다. 온보딩, 개념 지도, 기준금리 챌린지 흐름을 참고할 때만 사용합니다.
 - **개발 로드맵**: `docs/ROADMAP.md`에 다음 구현 순서와 완료 기준을 정리했습니다.
