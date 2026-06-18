@@ -332,13 +332,14 @@ components:
 Pre-Cyan은 학습 카드 묶음이 아니라 첫 모험 마을이다. 화면은 모바일 세로 한 화면을 1차 기준으로 하며, 현실 동네의 장소를 게임 업적 보드처럼 연결한다.
 
 Design rules:
-- `app/pre-cyan-village/` 구현에서는 이 섹션과 `PROJECT_CONTEXT.md`의 다크/골드 톤앤매너가 우선한다. 아래의 Anthropic, cream, coral 중심 분석은 이전 참고 자료이며 새 Pre-Cyan 구현의 테마 기준으로 쓰지 않는다.
+- `src/pre-cyan-village/` 구현에서는 이 섹션의 Current Visual Tokens와 `PROJECT_CONTEXT.md`의 Pre-Cyan 톤앤매너가 우선한다. 아래의 Anthropic, cream, coral 중심 분석은 이전 참고 자료이며 새 Pre-Cyan 구현의 테마 기준으로 쓰지 않는다.
+- Vite + TypeScript가 현재 빌드 기준이다. `dist/`는 생성 출력물이며 커밋하지 않는다.
 - 장소 먼저, 개념 나중.
 - 짧은 로그 중심. 긴 설명, 공부를 끝냈다는 문구, 점수형 보상은 첫 경험 전면에 두지 않는다.
 - 업적은 Pre-Cyan 클리어 직후 처음 보여준다.
 - 복권방은 공개 장소, 복권방 뒤 어두운 골목은 숨은 투자 씨앗으로 둔다.
 - 카드 그리드 UI는 Pre-Cyan 첫 경험의 기본형으로 사용하지 않는다.
-- 기존 HTML 데모의 표현은 참고 자료로만 보고, 새 구현은 `app/pre-cyan-village/`에서 시작한다.
+- 기존 HTML 데모와 `app/` 구조의 표현은 참고 자료로만 보고, 새 구현은 `src/pre-cyan-village/`에서 시작한다.
 
 ## Overview
 
