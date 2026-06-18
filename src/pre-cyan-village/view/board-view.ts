@@ -42,10 +42,11 @@ export function renderPaths(pathsHost: SVGElement, state: VillageState): void {
 export function renderNodes(nodesHost: HTMLElement, state: VillageState): void {
   const moving = Boolean(state.movingToNodeId);
 
-  nodesHost.innerHTML = Object.values(villageNodes).map((node) => {
+  nodesHost.innerHTML = Object.values(villageNodes).filter((node) => {
+    return !node.hidden || state.backAlleyDiscovered;
+  }).map((node) => {
     const unlocked = isNodeUnlocked(state, node.id);
     const visited = state.visited.includes(node.id);
-    const hidden = node.hidden && !state.backAlleyDiscovered;
     const current = state.playerNodeId === node.id;
     const movingTarget = state.movingToNodeId === node.id;
     const position = positionFor(node);
@@ -53,7 +54,6 @@ export function renderNodes(nodesHost: HTMLElement, state: VillageState): void {
       'village-node',
       unlocked ? 'is-unlocked' : '',
       visited ? 'is-visited' : '',
-      hidden ? 'is-hidden' : '',
       current ? 'is-current' : '',
       movingTarget ? 'is-moving-target' : '',
       node.gate ? 'is-gate' : ''

@@ -1,11 +1,23 @@
 import './styles.css';
-import { loadState, saveState } from './domain/state';
+import { createInitialState, loadState, saveState } from './domain/state';
 import { wireEvents } from './view/events';
 import { queryAppElements, renderApp } from './view/render';
+import type { StorageLike } from '../shared/storage/local-storage';
+
+function getSafeStorage(): StorageLike | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
 
 const elements = queryAppElements();
-const initialState = loadState(window.localStorage);
+const storage = getSafeStorage();
+const initialState = storage ? loadState(storage) : createInitialState();
 
-saveState(window.localStorage, initialState);
+if (storage) {
+  saveState(storage, initialState);
+}
 renderApp(elements, initialState);
-wireEvents(elements, initialState, window.localStorage);
+wireEvents(elements, initialState, storage);

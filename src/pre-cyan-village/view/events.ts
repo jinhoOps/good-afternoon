@@ -1,13 +1,19 @@
-import { answerCyanLoop, completeMove, resetState, saveState, startMove } from '../domain/state';
+import { answerCyanLoop, completeMove, createInitialState, resetState, saveState, startMove } from '../domain/state';
 import { renderApp, type AppElements } from './render';
+import type { StorageLike } from '../../shared/storage/local-storage';
 import type { VillageState } from '../../shared/types/village';
 
 const MOVE_FALLBACK_MS = 520;
 
-export function wireEvents(elements: AppElements, initialState: VillageState, storage: Storage = window.localStorage): void {
+export function wireEvents(elements: AppElements, initialState: VillageState, storage: StorageLike | null): void {
   let currentState = initialState;
   let moveFallbackId: number | null = null;
   let completingMove = false;
+
+  function saveCurrentState(): void {
+    if (!storage) return;
+    saveState(storage, currentState);
+  }
 
   function clearMoveFallback(): void {
     if (moveFallbackId === null) return;
@@ -22,7 +28,7 @@ export function wireEvents(elements: AppElements, initialState: VillageState, st
     try {
       clearMoveFallback();
       currentState = completeMove(currentState);
-      saveState(storage, currentState);
+      saveCurrentState();
       renderApp(elements, currentState);
     } finally {
       completingMove = false;
@@ -42,7 +48,7 @@ export function wireEvents(elements: AppElements, initialState: VillageState, st
     if (nextState === currentState) return;
 
     currentState = nextState;
-    saveState(storage, currentState);
+    saveCurrentState();
     renderApp(elements, currentState);
     scheduleMoveFallback();
   });
@@ -57,14 +63,14 @@ export function wireEvents(elements: AppElements, initialState: VillageState, st
     if (!button) return;
 
     currentState = answerCyanLoop(currentState, button.dataset.cyanChoice ?? '');
-    saveState(storage, currentState);
+    saveCurrentState();
     renderApp(elements, currentState);
   });
 
   elements.resetButton.addEventListener('click', () => {
     clearMoveFallback();
-    currentState = resetState(storage);
-    saveState(storage, currentState);
+    currentState = storage ? resetState(storage) : createInitialState();
+    saveCurrentState();
     renderApp(elements, currentState);
   });
 }
