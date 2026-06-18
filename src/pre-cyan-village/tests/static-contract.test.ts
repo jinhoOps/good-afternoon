@@ -24,12 +24,20 @@ function listRuntimeFiles(dir: string): string[] {
   });
 }
 
+function hasViteEntryScript(indexHtml: string): boolean {
+  const scriptTags = indexHtml.match(/<script\b[^>]*><\/script>/g) ?? [];
+  return scriptTags.some((tag) => {
+    return /\btype\s*=\s*["']module["']/.test(tag)
+      && /\bsrc\s*=\s*["']\.\/main\.ts["']/.test(tag);
+  });
+}
+
 test('Vite entry keeps token and Cyan loop hosts wired', () => {
   const indexHtml = readVillageFile('index.html');
 
   assert.ok(indexHtml.includes('id="player-token"'));
   assert.ok(indexHtml.includes('id="cyan-loop"'));
-  assert.match(indexHtml, /<script[^>]*\btype="module"[^>]*\bsrc="\.\/main\.ts"[^>]*><\/script>/);
+  assert.equal(hasViteEntryScript(indexHtml), true);
 });
 
 test('movement locking and fallback remain wired', () => {
