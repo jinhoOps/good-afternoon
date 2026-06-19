@@ -14,7 +14,7 @@ import {
   STORAGE_KEY,
   visitNode
 } from '../domain/state';
-import { villageEdges, villageNodes } from '../domain/data';
+import { hotspots, plannedOutings, villageEdges, villageNodes } from '../domain/data';
 import { normalizeEdge } from '../../shared/map/paths';
 import type { StorageLike } from '../../shared/storage/local-storage';
 
@@ -258,4 +258,13 @@ test('village data references only known nodes and state flags', () => {
       assert.equal(stateKeys.has(edge.hiddenUntil), true, `edge uses unknown hiddenUntil key ${edge.hiddenUntil}`);
     }
   });
+});
+
+test('outing data references known hotspots and has four choices per outing', () => {
+  for (const outing of plannedOutings) {
+    assert.equal(outing.hotspotIds.length, 4);
+    outing.hotspotIds.forEach((hotspotId) => {
+      assert.ok(hotspots[hotspotId], `${outing.id} references unknown hotspot ${hotspotId}`);
+    });
+  }
 });
