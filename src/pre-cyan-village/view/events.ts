@@ -1,4 +1,4 @@
-import { recordMoneyFeverClick, resetState, saveState, selectHotspot, startOuting } from '../domain/state';
+import { createInitialState, recordMoneyFeverClick, resetState, saveState, selectHotspot, startOuting } from '../domain/state';
 import { renderApp, type AppElements } from './render';
 import type { StorageLike } from '../../shared/storage/local-storage';
 import type { HotspotId, VillageState } from '../../shared/types/village';
@@ -18,6 +18,10 @@ export function wireEvents(elements: AppElements, initialState: VillageState, st
     renderApp(elements, currentState);
   }
 
+  function isFinanceHotspot(hotspotId: HotspotId): boolean {
+    return hotspotId === 'bankAtm' || hotspotId === 'bankCounter';
+  }
+
   elements.startOutingButton.addEventListener('click', () => {
     update(startOuting(currentState));
   });
@@ -27,17 +31,14 @@ export function wireEvents(elements: AppElements, initialState: VillageState, st
     if (!button) return;
     const hotspotId = button.dataset.hotspotId as HotspotId | undefined;
     if (!hotspotId) return;
-    update(selectHotspot(currentState, hotspotId));
-  });
-
-  elements.zoneBoard.addEventListener('pointerdown', (event) => {
-    const button = (event.target as Element | null)?.closest<HTMLElement>('[data-hotspot-id="bankAtm"], [data-hotspot-id="bankCounter"]');
-    if (!button) return;
-    update(recordMoneyFeverClick(currentState, Date.now()));
+    const nextState = isFinanceHotspot(hotspotId)
+      ? selectHotspot(recordMoneyFeverClick(currentState, Date.now()), hotspotId)
+      : selectHotspot(currentState, hotspotId);
+    update(nextState);
   });
 
   elements.resetButton.addEventListener('click', () => {
-    currentState = storage ? resetState(storage) : resetState();
+    currentState = storage ? resetState(storage) : createInitialState();
     saveCurrentState();
     renderApp(elements, currentState);
   });
