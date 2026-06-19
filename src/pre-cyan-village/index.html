@@ -7,33 +7,30 @@
 </head>
 <body>
   <main class="app-shell">
-    <header class="village-header">
+    <section class="room-screen" id="room-screen">
       <p class="eyebrow">// Pre-Cyan</p>
       <h1>Good Afternoon.</h1>
-    </header>
+      <p class="guide-line" id="guide-line">다녀올래?</p>
+      <button type="button" id="start-outing">나가기</button>
+    </section>
 
-    <section class="village-board" aria-label="Pre-Cyan 첫 모험 마을" aria-busy="false">
-      <svg class="village-paths" viewBox="0 0 100 100" aria-hidden="true" focusable="false"></svg>
-      <div class="village-nodes" id="village-nodes"></div>
-      <div class="player-token" id="player-token" aria-hidden="true"></div>
+    <section class="village-board" id="village-board" hidden>
+      <header class="outing-header">
+        <h1 id="outing-title">첫 외출</h1>
+        <div class="outing-slots" id="outing-slots" aria-label="오늘 들를 곳"></div>
+      </header>
+      <div class="zone-board" id="zone-board"></div>
     </section>
 
     <section class="village-log" aria-live="polite">
-      <p id="village-log-text">나가기 전에 하나만 챙기면 된다.</p>
+      <p id="village-log-text">문은 열려 있어.</p>
     </section>
 
-    <section class="achievement" id="achievement" hidden>
-      <p class="achievement-kicker">기록</p>
-      <h2>첫 길</h2>
-      <p>마을 밖으로 나갈 준비가 됐다.</p>
+    <section class="reaction-panel" id="reaction-panel" hidden>
+      <p id="reaction-text"></p>
     </section>
 
-    <section class="cyan-loop" id="cyan-loop" hidden>
-      <p class="cyan-loop-kicker">Cyan</p>
-      <h2 id="cyan-loop-situation"></h2>
-      <p id="cyan-loop-question"></p>
-      <div class="cyan-loop-choices" id="cyan-loop-choices"></div>
-    </section>
+    <section class="status-strip" id="status-strip" aria-label="현재 상태"></section>
 
     <footer class="controls">
       <button type="button" id="reset-state">초기화</button>

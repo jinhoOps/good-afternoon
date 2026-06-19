@@ -32,32 +32,24 @@ function hasViteEntryScript(indexHtml: string): boolean {
   });
 }
 
-test('Vite entry keeps token and Cyan loop hosts wired', () => {
+test('Vite entry keeps room and outing hosts wired', () => {
   const indexHtml = readVillageFile('index.html');
 
-  assert.ok(indexHtml.includes('id="player-token"'));
-  assert.ok(indexHtml.includes('id="cyan-loop"'));
+  assert.ok(indexHtml.includes('id="room-screen"'));
+  assert.ok(indexHtml.includes('id="village-board"'));
+  assert.ok(indexHtml.includes('id="outing-slots"'));
+  assert.ok(indexHtml.includes('id="zone-board"'));
   assert.equal(hasViteEntryScript(indexHtml), true);
 });
 
-test('movement locking and fallback remain wired', () => {
-  const indexHtml = readVillageFile('index.html');
+test('outing render and event hosts remain wired', () => {
   const renderSource = readVillageFile(join('view', 'render.ts'));
   const eventsSource = readVillageFile(join('view', 'events.ts'));
 
-  assert.ok(indexHtml.includes('aria-busy="false"'));
-  assert.match(renderSource, /setAttribute\('aria-busy'/);
-  assert.match(eventsSource, /\bMOVE_FALLBACK_MS\b/);
-  assert.match(eventsSource, /addEventListener\('transitionend'/);
-  assert.match(eventsSource, /\bcompletingMove\b/);
-});
-
-test('last move path supports reverse matching and direct fallback rendering', () => {
-  const movementSource = readVillageFile(join('domain', 'movement.ts'));
-  const boardViewSource = readVillageFile(join('view', 'board-view.ts'));
-
-  assert.match(movementSource, /\bisSamePath\b/);
-  assert.match(boardViewSource, /\bis-last-move-direct\b/);
+  assert.match(renderSource, /\brenderOutingSlots\b/);
+  assert.match(renderSource, /\brenderZoneBoard\b/);
+  assert.match(eventsSource, /\bstartOuting\b/);
+  assert.match(eventsSource, /\bselectHotspot\b/);
 });
 
 test('runtime source avoids banned first-experience strings', () => {

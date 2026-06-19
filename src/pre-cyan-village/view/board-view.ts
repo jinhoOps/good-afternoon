@@ -1,75 +1,53 @@
-import { villageNodes } from '../domain/data';
-import { isLastMovePath, shouldRenderDirectLastMove, visibleEdges } from '../domain/movement';
-import { isNodeUnlocked } from '../domain/state';
-import type { Edge } from '../../shared/types/graph';
-import type { VillageNode, VillageState } from '../../shared/types/village';
+import { activeHotspotIds } from '../domain/outing';
+import { hotspots, zones } from '../domain/data';
+import type { HotspotId, VillageState, ZoneId } from '../../shared/types/village';
 
-type BoardPosition = Pick<VillageNode, 'x' | 'y'>;
+const zoneOrder: ZoneId[] = ['home', 'commercial', 'transit', 'work', 'finance', 'hidden'];
 
-function positionFor(node: VillageNode): BoardPosition {
-  return { x: node.x, y: node.y };
-}
-
-function lineFor(edge: Edge, className: string): string {
-  const fromNode = villageNodes[edge.from];
-  const toNode = villageNodes[edge.to];
-  if (!fromNode || !toNode) return '';
-
-  const from = positionFor(fromNode);
-  const to = positionFor(toNode);
-  return `<line class="${className}" x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}"></line>`;
-}
-
-export function renderPaths(pathsHost: SVGElement, state: VillageState): void {
-  const lines = visibleEdges(state).map((edge) => {
-    const isLit = isNodeUnlocked(state, edge.from) && isNodeUnlocked(state, edge.to);
-    const classes = [
-      'village-path',
-      isLit ? 'is-lit' : '',
-      isLastMovePath(edge, state.lastMove) ? 'is-last-move' : ''
-    ].filter(Boolean).join(' ');
-
-    return lineFor(edge, classes);
-  });
-
-  if (state.lastMove && shouldRenderDirectLastMove(state)) {
-    lines.push(lineFor(state.lastMove, 'village-path is-lit is-last-move is-last-move-direct'));
-  }
-
-  pathsHost.innerHTML = lines.join('');
-}
-
-export function renderNodes(nodesHost: HTMLElement, state: VillageState): void {
-  const moving = Boolean(state.movingToNodeId);
-
-  nodesHost.innerHTML = Object.values(villageNodes).filter((node) => {
-    return !node.hidden || state.backAlleyDiscovered;
-  }).map((node) => {
-    const unlocked = isNodeUnlocked(state, node.id);
-    const visited = state.visited.includes(node.id);
-    const current = state.playerNodeId === node.id;
-    const movingTarget = state.movingToNodeId === node.id;
-    const position = positionFor(node);
-    const classes = [
-      'village-node',
-      unlocked ? 'is-unlocked' : '',
-      visited ? 'is-visited' : '',
-      current ? 'is-current' : '',
-      movingTarget ? 'is-moving-target' : '',
-      node.gate ? 'is-gate' : ''
-    ].filter(Boolean).join(' ');
-    const disabled = moving || !unlocked ? 'disabled' : '';
-
-    return `<button class="${classes}" type="button" style="--x:${position.x};--y:${position.y}" data-node-id="${node.id}" ${disabled}>${node.label}</button>`;
+export function renderOutingSlots(host: HTMLElement, state: VillageState): void {
+  const selections = state.currentOutingSelections;
+  host.innerHTML = [0, 1, 2].map((index) => {
+    const hotspotId = selections[index];
+    const label = hotspotId ? hotspots[hotspotId]?.shortLabel ?? hotspotId : String(index + 1);
+    return `<span class="outing-slot ${hotspotId ? 'is-filled' : ''}">${label}</span>`;
   }).join('');
 }
 
-export function renderToken(token: HTMLElement, state: VillageState): void {
-  const targetId = state.movingToNodeId || state.playerNodeId;
-  const targetNode = villageNodes[targetId] || villageNodes.room;
-  const position = positionFor(targetNode);
+function renderHotspotButton(hotspotId: HotspotId, state: VillageState): string {
+  const hotspot = hotspots[hotspotId];
+  const selected = state.currentOutingSelections.includes(hotspotId);
+  const disabled = selected || state.currentOutingSelections.length >= 3 ? 'disabled' : '';
+  return `<button type="button" class="hotspot ${selected ? 'is-selected' : ''}" data-hotspot-id="${hotspot.id}" ${disabled}>${hotspot.label}</button>`;
+}
 
-  token.style.setProperty('--x', String(position.x));
-  token.style.setProperty('--y', String(position.y));
-  token.classList.toggle('is-moving', Boolean(state.movingToNodeId));
+export function renderZoneBoard(host: HTMLElement, state: VillageState): void {
+  const activeIds = activeHotspotIds(state);
+  host.innerHTML = zoneOrder.map((zoneId) => {
+    const zone = zones[zoneId];
+    const zoneHotspots = activeIds.filter((hotspotId) => hotspots[hotspotId]?.zoneId === zoneId);
+    const layer = state.zoneLayers[zoneId] ?? 0;
+    const hiddenActive = zoneId === 'hidden' && state.alley.discoveredHint;
+    return `
+      <section class="zone-card zone-${zoneId} ${zoneHotspots.length || hiddenActive ? 'is-active' : ''}" data-zone-id="${zoneId}">
+        <div>
+          <h2>${zone.label}</h2>
+          <p>${zone.description}</p>
+          <span class="zone-layer">layer ${layer}</span>
+        </div>
+        <div class="hotspots">
+          ${zoneHotspots.map((hotspotId) => renderHotspotButton(hotspotId, state)).join('')}
+          ${hiddenActive ? '<span class="hidden-hint">신호가 섞였다.</span>' : ''}
+        </div>
+      </section>
+    `;
+  }).join('');
+}
+
+export function renderStatusStrip(host: HTMLElement, state: VillageState): void {
+  const chips = [
+    state.moneyFever.triggeredEver ? '<span class="status-chip is-strange">돈독</span>' : '',
+    state.cyanGateUnlocked ? '<span class="status-chip is-cyan">길 열림</span>' : '',
+    state.roomFeatures.firstRecord ? '<span class="status-chip">기록 있음</span>' : ''
+  ].filter(Boolean);
+  host.innerHTML = chips.join('');
 }

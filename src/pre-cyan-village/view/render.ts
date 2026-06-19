@@ -1,79 +1,88 @@
-import { renderNodes, renderPaths, renderToken } from './board-view';
-import { renderCyanLoop } from './loop-view';
+import { outingById } from '../domain/data';
+import { renderOutingSlots, renderStatusStrip, renderZoneBoard } from './board-view';
 import type { VillageState } from '../../shared/types/village';
 
 export type AppElements = {
-  board: HTMLElement;
-  nodesHost: HTMLElement;
-  pathsHost: SVGElement;
-  token: HTMLElement;
+  roomScreen: HTMLElement;
+  guideLine: HTMLElement;
+  startOutingButton: HTMLButtonElement;
+  villageBoard: HTMLElement;
+  outingTitle: HTMLElement;
+  outingSlots: HTMLElement;
+  zoneBoard: HTMLElement;
   logText: HTMLElement;
-  achievement: HTMLElement;
-  cyanLoop: HTMLElement;
-  cyanLoopSituation: HTMLElement;
-  cyanLoopQuestion: HTMLElement;
-  cyanLoopChoices: HTMLElement;
+  reactionPanel: HTMLElement;
+  reactionText: HTMLElement;
+  statusStrip: HTMLElement;
   resetButton: HTMLButtonElement;
 };
 
 export function queryAppElements(documentRef: Document = document): AppElements {
-  const board = documentRef.querySelector<HTMLElement>('.village-board');
-  const nodesHost = documentRef.querySelector<HTMLElement>('#village-nodes');
-  const pathsHost = documentRef.querySelector<SVGElement>('.village-paths');
-  const token = documentRef.querySelector<HTMLElement>('#player-token');
+  const roomScreen = documentRef.querySelector<HTMLElement>('#room-screen');
+  const guideLine = documentRef.querySelector<HTMLElement>('#guide-line');
+  const startOutingButton = documentRef.querySelector<HTMLButtonElement>('#start-outing');
+  const villageBoard = documentRef.querySelector<HTMLElement>('#village-board');
+  const outingTitle = documentRef.querySelector<HTMLElement>('#outing-title');
+  const outingSlots = documentRef.querySelector<HTMLElement>('#outing-slots');
+  const zoneBoard = documentRef.querySelector<HTMLElement>('#zone-board');
   const logText = documentRef.querySelector<HTMLElement>('#village-log-text');
-  const achievement = documentRef.querySelector<HTMLElement>('#achievement');
-  const cyanLoop = documentRef.querySelector<HTMLElement>('#cyan-loop');
-  const cyanLoopSituation = documentRef.querySelector<HTMLElement>('#cyan-loop-situation');
-  const cyanLoopQuestion = documentRef.querySelector<HTMLElement>('#cyan-loop-question');
-  const cyanLoopChoices = documentRef.querySelector<HTMLElement>('#cyan-loop-choices');
+  const reactionPanel = documentRef.querySelector<HTMLElement>('#reaction-panel');
+  const reactionText = documentRef.querySelector<HTMLElement>('#reaction-text');
+  const statusStrip = documentRef.querySelector<HTMLElement>('#status-strip');
   const resetButton = documentRef.querySelector<HTMLButtonElement>('#reset-state');
 
   if (
-    !board
-    || !nodesHost
-    || !pathsHost
-    || !token
+    !roomScreen
+    || !guideLine
+    || !startOutingButton
+    || !villageBoard
+    || !outingTitle
+    || !outingSlots
+    || !zoneBoard
     || !logText
-    || !achievement
-    || !cyanLoop
-    || !cyanLoopSituation
-    || !cyanLoopQuestion
-    || !cyanLoopChoices
+    || !reactionPanel
+    || !reactionText
+    || !statusStrip
     || !resetButton
   ) {
     throw new Error('Missing Pre-Cyan village DOM element');
   }
 
   return {
-    board,
-    nodesHost,
-    pathsHost,
-    token,
+    roomScreen,
+    guideLine,
+    startOutingButton,
+    villageBoard,
+    outingTitle,
+    outingSlots,
+    zoneBoard,
     logText,
-    achievement,
-    cyanLoop,
-    cyanLoopSituation,
-    cyanLoopQuestion,
-    cyanLoopChoices,
+    reactionPanel,
+    reactionText,
+    statusStrip,
     resetButton
   };
 }
 
-export function renderApp(elements: AppElements, state: VillageState): void {
-  const moving = Boolean(state.movingToNodeId);
+function outingTitleFor(state: VillageState): string {
+  if (!state.currentOutingId) return '외출';
+  return outingById(state.currentOutingId)?.title ?? '다른 하루';
+}
 
-  elements.board.setAttribute('aria-busy', moving ? 'true' : 'false');
-  elements.board.classList.toggle('is-moving', moving);
-  renderPaths(elements.pathsHost, state);
-  renderNodes(elements.nodesHost, state);
-  renderToken(elements.token, state);
-  renderCyanLoop({
-    cyanLoop: elements.cyanLoop,
-    situation: elements.cyanLoopSituation,
-    question: elements.cyanLoopQuestion,
-    choices: elements.cyanLoopChoices
-  }, state);
+export function renderApp(elements: AppElements, state: VillageState): void {
+  const inRoom = state.screen === 'room';
+  const onBoard = state.screen === 'villageBoard';
+  const reaction = state.pendingReaction;
+
+  elements.roomScreen.hidden = !inRoom;
+  elements.villageBoard.hidden = !onBoard;
+  elements.guideLine.textContent = state.guideLine;
+  elements.outingTitle.textContent = outingTitleFor(state);
   elements.logText.textContent = state.log;
-  elements.achievement.hidden = !state.firstAchievementShown;
+  elements.reactionPanel.hidden = !reaction;
+  elements.reactionText.textContent = reaction?.log ?? '';
+
+  renderOutingSlots(elements.outingSlots, state);
+  renderZoneBoard(elements.zoneBoard, state);
+  renderStatusStrip(elements.statusStrip, state);
 }
