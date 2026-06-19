@@ -50,5 +50,6 @@ export function outingById(id: string): OutingDefinition | null {
 }
 
 export function nextPlannedOutingId(outingCount: number): string {
-  return plannedOutings[Math.min(outingCount, plannedOutings.length - 1)].id;
+  const index = Math.min(Math.max(0, Math.trunc(outingCount) || 0), plannedOutings.length - 1);
+  return plannedOutings[index].id;
 }

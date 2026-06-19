@@ -263,6 +263,7 @@ test('village data references only known nodes and state flags', () => {
 test('outing data references known hotspots and has four choices per outing', () => {
   for (const outing of plannedOutings) {
     assert.equal(outing.hotspotIds.length, 4);
+    assert.equal(new Set(outing.hotspotIds).size, 4, `${outing.id} has duplicate hotspots`);
     outing.hotspotIds.forEach((hotspotId) => {
       assert.ok(hotspots[hotspotId], `${outing.id} references unknown hotspot ${hotspotId}`);
     });
