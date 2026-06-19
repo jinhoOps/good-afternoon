@@ -1,38 +1,64 @@
-import { villageNodes } from './data';
-import { answerCyanLoop, countVisitedPublicPlaces, enterGate, isNodeUnlocked, visitNode } from './rules';
-import {
-  completeMove,
-  hasVisiblePathForMove,
-  isLastMovePath,
-  shouldRenderDirectLastMove,
-  startMove,
-  visibleEdges
-} from './movement';
 import { readStorage, removeStorage, type StorageLike, writeStorage } from '../../shared/storage/local-storage';
-import type { CurrentStage, CyanLoopResult, VillageState } from '../../shared/types/village';
+import type {
+  HotspotId,
+  RequiredAction,
+  RoomFeatureId,
+  ScreenId,
+  StageId,
+  VillageState,
+  ZoneId
+} from '../../shared/types/village';
+import { recordMoneyFeverClick, selectHotspot, startOuting } from './outing';
 
-export const STORAGE_KEY = 'goodafternoon.preCyanVillage.v1';
+export const STORAGE_KEY = 'goodafternoon.preCyanVillage.v2';
 
-const VALID_STAGES: CurrentStage[] = ['preCyan', 'cyanIntro', 'cyanLoop'];
-const VALID_RESULTS: Exclude<CyanLoopResult, null>[] = ['success', 'failure'];
+const VALID_SCREENS: ScreenId[] = ['room', 'villageBoard', 'event'];
+const VALID_STAGES: StageId[] = ['preCyan', 'cyanReady'];
+const VALID_ACTIONS: RequiredAction[] = ['receivedSupport', 'spent', 'moved', 'earned', 'kept'];
+const VALID_ZONES: ZoneId[] = ['home', 'commercial', 'transit', 'work', 'finance', 'hidden'];
+const VALID_ROOM_FEATURES: RoomFeatureId[] = ['guideDevice', 'firstRecord', 'cyanTraceRecord', 'strangeDrawer'];
 
 export function createInitialState(): VillageState {
   return {
-    unlocked: ['room', 'store', 'bus'],
-    visited: ['room'],
-    log: '나가기 전에 하나만 챙기면 된다.',
+    screen: 'room',
+    stage: 'preCyan',
+    log: '문은 열려 있어.',
+    guideLine: '다녀올래?',
+    currentOutingId: null,
+    currentOutingSelections: [],
+    outingHistory: [],
+    completedActions: [],
+    sequenceFlags: {},
+    reactionsSeen: [],
+    zoneLayers: {
+      home: 1,
+      commercial: 0,
+      transit: 0,
+      work: 0,
+      finance: 0,
+      hidden: 0
+    },
+    roomFeatures: {
+      guideDevice: true,
+      firstRecord: false,
+      cyanTraceRecord: false,
+      strangeDrawer: false
+    },
+    bankSupportReceived: false,
+    cyanTraceDiscovered: false,
     cyanGateUnlocked: false,
-    lotterySeen: false,
-    backAlleyDiscovered: false,
-    backAlleyEntered: false,
-    firstAchievementShown: false,
-    playerNodeId: 'room',
-    movingToNodeId: null,
-    lastMove: null,
-    currentStage: 'preCyan',
-    cyanLoopSeen: false,
-    cyanLoopCompleted: false,
-    cyanLoopResult: null
+    moneyFever: {
+      activeUntil: null,
+      triggeredEver: false,
+      triggerCountWindowStartedAt: null,
+      triggerCount: 0
+    },
+    alley: {
+      discoveredHint: false,
+      unlockedAfterYellow: false
+    },
+    pendingReaction: null,
+    outingCount: 0
   };
 }
 
@@ -40,25 +66,29 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function mergeUnique(base: string[], extra: string[]): string[] {
-  return [...new Set([...base, ...extra])];
+function stringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 }
 
-function stringArray(value: unknown): string[] | null {
-  if (!Array.isArray(value)) return null;
-  return value.filter((item): item is string => typeof item === 'string');
+function validArray<T extends string>(items: string[], valid: T[]): T[] {
+  return items.filter((item): item is T => valid.includes(item as T));
 }
 
-function normalizeStage(value: unknown): CurrentStage | null {
-  return typeof value === 'string' && VALID_STAGES.includes(value as CurrentStage)
-    ? value as CurrentStage
-    : null;
+function booleanRecord<T extends string>(value: unknown, keys: T[], defaults: Record<T, boolean>): Record<T, boolean> {
+  if (!isRecord(value)) return defaults;
+  return keys.reduce<Record<T, boolean>>((result, key) => {
+    result[key] = value[key] === true || defaults[key];
+    return result;
+  }, { ...defaults });
 }
 
-function normalizeResult(value: unknown): Exclude<CyanLoopResult, null> | null {
-  return typeof value === 'string' && VALID_RESULTS.includes(value as Exclude<CyanLoopResult, null>)
-    ? value as Exclude<CyanLoopResult, null>
-    : null;
+function zoneLayerRecord(value: unknown, defaults: Record<ZoneId, number>): Record<ZoneId, number> {
+  if (!isRecord(value)) return defaults;
+  return VALID_ZONES.reduce<Record<ZoneId, number>>((result, zone) => {
+    const layer = value[zone];
+    result[zone] = typeof layer === 'number' && Number.isFinite(layer) && layer >= 0 ? Math.floor(layer) : defaults[zone];
+    return result;
+  }, { ...defaults });
 }
 
 function getBrowserStorage(): StorageLike | null {
@@ -69,43 +99,51 @@ export function normalizeState(parsed: unknown): VillageState {
   const base = createInitialState();
   if (!isRecord(parsed)) return base;
 
-  const unlocked = stringArray(parsed.unlocked);
-  const visited = stringArray(parsed.visited);
-  const validPlayerNodeId = typeof parsed.playerNodeId === 'string' && villageNodes[parsed.playerNodeId]
-    ? parsed.playerNodeId
-    : null;
-  const validCurrentStage = normalizeStage(parsed.currentStage);
-  const reachedCyanGateInOldSave = parsed.firstAchievementShown === true && parsed.cyanGateUnlocked === true;
-  const migratedCurrentStage = reachedCyanGateInOldSave
-    && (!validCurrentStage || validCurrentStage === base.currentStage)
-    ? 'cyanLoop'
-    : validCurrentStage ?? base.currentStage;
-  const validLastMove = isRecord(parsed.lastMove)
-    && typeof parsed.lastMove.from === 'string'
-    && typeof parsed.lastMove.to === 'string'
-    && villageNodes[parsed.lastMove.from]
-    && villageNodes[parsed.lastMove.to]
-    ? { from: parsed.lastMove.from, to: parsed.lastMove.to }
-    : base.lastMove;
+  const screen = typeof parsed.screen === 'string' && VALID_SCREENS.includes(parsed.screen as ScreenId)
+    ? parsed.screen as ScreenId
+    : base.screen;
+  const stage = typeof parsed.stage === 'string' && VALID_STAGES.includes(parsed.stage as StageId)
+    ? parsed.stage as StageId
+    : base.stage;
+  const completedActions = validArray(stringArray(parsed.completedActions), VALID_ACTIONS);
 
   return {
-    unlocked: unlocked ? mergeUnique(base.unlocked, unlocked) : base.unlocked,
-    visited: visited ? mergeUnique(base.visited, visited) : base.visited,
+    ...base,
+    screen,
+    stage,
     log: typeof parsed.log === 'string' ? parsed.log : base.log,
+    guideLine: typeof parsed.guideLine === 'string' ? parsed.guideLine : base.guideLine,
+    currentOutingId: typeof parsed.currentOutingId === 'string' ? parsed.currentOutingId : null,
+    currentOutingSelections: stringArray(parsed.currentOutingSelections) as HotspotId[],
+    outingHistory: Array.isArray(parsed.outingHistory) ? parsed.outingHistory as VillageState['outingHistory'] : [],
+    completedActions,
+    sequenceFlags: isRecord(parsed.sequenceFlags)
+      ? Object.fromEntries(Object.entries(parsed.sequenceFlags).filter(([, value]) => value === true))
+      : {},
+    reactionsSeen: stringArray(parsed.reactionsSeen),
+    zoneLayers: zoneLayerRecord(parsed.zoneLayers, base.zoneLayers),
+    roomFeatures: booleanRecord(parsed.roomFeatures, VALID_ROOM_FEATURES, base.roomFeatures),
+    bankSupportReceived: parsed.bankSupportReceived === true || completedActions.includes('receivedSupport'),
+    cyanTraceDiscovered: parsed.cyanTraceDiscovered === true,
     cyanGateUnlocked: parsed.cyanGateUnlocked === true,
-    lotterySeen: parsed.lotterySeen === true,
-    backAlleyDiscovered: parsed.backAlleyDiscovered === true,
-    backAlleyEntered: parsed.backAlleyEntered === true,
-    firstAchievementShown: parsed.firstAchievementShown === true,
-    playerNodeId: reachedCyanGateInOldSave && (!validPlayerNodeId || validPlayerNodeId === base.playerNodeId)
-      ? 'cyanGate'
-      : validPlayerNodeId ?? base.playerNodeId,
-    movingToNodeId: null,
-    lastMove: validLastMove,
-    currentStage: migratedCurrentStage,
-    cyanLoopSeen: reachedCyanGateInOldSave ? true : parsed.cyanLoopSeen === true,
-    cyanLoopCompleted: parsed.cyanLoopCompleted === true,
-    cyanLoopResult: normalizeResult(parsed.cyanLoopResult)
+    moneyFever: isRecord(parsed.moneyFever)
+      ? {
+        activeUntil: typeof parsed.moneyFever.activeUntil === 'number' ? parsed.moneyFever.activeUntil : null,
+        triggeredEver: parsed.moneyFever.triggeredEver === true,
+        triggerCountWindowStartedAt: typeof parsed.moneyFever.triggerCountWindowStartedAt === 'number'
+          ? parsed.moneyFever.triggerCountWindowStartedAt
+          : null,
+        triggerCount: typeof parsed.moneyFever.triggerCount === 'number' ? parsed.moneyFever.triggerCount : 0
+      }
+      : base.moneyFever,
+    alley: isRecord(parsed.alley)
+      ? {
+        discoveredHint: parsed.alley.discoveredHint === true,
+        unlockedAfterYellow: parsed.alley.unlockedAfterYellow === true
+      }
+      : base.alley,
+    pendingReaction: null,
+    outingCount: typeof parsed.outingCount === 'number' && parsed.outingCount >= 0 ? Math.floor(parsed.outingCount) : base.outingCount
   };
 }
 
@@ -129,23 +167,12 @@ export function saveState(storage: StorageLike, state: VillageState): VillageSta
 
 export function resetState(storage?: StorageLike): VillageState {
   const activeStorage = storage ?? getBrowserStorage();
-  if (activeStorage) {
-    removeStorage(activeStorage, STORAGE_KEY);
-  }
-
+  if (activeStorage) removeStorage(activeStorage, STORAGE_KEY);
   return createInitialState();
 }
 
 export {
-  answerCyanLoop,
-  completeMove,
-  countVisitedPublicPlaces,
-  enterGate,
-  hasVisiblePathForMove,
-  isLastMovePath,
-  isNodeUnlocked,
-  shouldRenderDirectLastMove,
-  startMove,
-  visibleEdges,
-  visitNode
+  recordMoneyFeverClick,
+  selectHotspot,
+  startOuting
 };

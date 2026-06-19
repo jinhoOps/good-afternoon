@@ -1,22 +1,19 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  answerCyanLoop,
-  completeMove,
-  countVisitedPublicPlaces,
   createInitialState,
-  isNodeUnlocked,
   loadState,
   normalizeState,
+  recordMoneyFeverClick,
   resetState,
   saveState,
-  startMove,
-  STORAGE_KEY,
-  visitNode
+  selectHotspot,
+  startOuting,
+  STORAGE_KEY
 } from '../domain/state';
-import { hotspots, plannedOutings, villageEdges, villageNodes } from '../domain/data';
-import { normalizeEdge } from '../../shared/map/paths';
+import { hotspots, plannedOutings, requiredActions } from '../domain/data';
 import type { StorageLike } from '../../shared/storage/local-storage';
+import type { HotspotId } from '../../shared/types/village';
 
 function createStorage(seed: Record<string, string> = {}): StorageLike {
   const store = { ...seed };
@@ -33,231 +30,14 @@ function createStorage(seed: Record<string, string> = {}): StorageLike {
   };
 }
 
-test('initial state includes token and Cyan loop defaults', () => {
-  assert.deepEqual(createInitialState(), {
-    unlocked: ['room', 'store', 'bus'],
-    visited: ['room'],
-    log: '나가기 전에 하나만 챙기면 된다.',
-    cyanGateUnlocked: false,
-    lotterySeen: false,
-    backAlleyDiscovered: false,
-    backAlleyEntered: false,
-    firstAchievementShown: false,
-    playerNodeId: 'room',
-    movingToNodeId: null,
-    lastMove: null,
-    currentStage: 'preCyan',
-    cyanLoopSeen: false,
-    cyanLoopCompleted: false,
-    cyanLoopResult: null
-  });
-});
-
-test('loadState migrates old saved data with new fields', () => {
-  const storage = createStorage({
-    [STORAGE_KEY]: JSON.stringify({
-      unlocked: ['room'],
-      visited: [],
-      log: '카드를 챙겼다.'
-    })
-  });
-  const loaded = loadState(storage);
-  assert.equal(loaded.playerNodeId, 'room');
-  assert.equal(loaded.movingToNodeId, null);
-  assert.equal(loaded.currentStage, 'preCyan');
-  assert.equal(loaded.cyanLoopCompleted, false);
-  assert.ok(loaded.unlocked.includes('room'));
-  assert.ok(loaded.unlocked.includes('store'));
-  assert.ok(loaded.unlocked.includes('bus'));
-  assert.equal(new Set(loaded.unlocked).size, loaded.unlocked.length);
-  assert.ok(loaded.visited.includes('room'));
-  assert.equal(new Set(loaded.visited).size, loaded.visited.length);
-});
-
-test('loadState migrates old Cyan gate saved data into Cyan loop', () => {
-  const storage = createStorage({
-    [STORAGE_KEY]: JSON.stringify({
-      unlocked: ['room', 'store', 'bus', 'work', 'bank'],
-      visited: ['room', 'store', 'bus', 'work'],
-      cyanGateUnlocked: true,
-      firstAchievementShown: true,
-      currentStage: 'preCyan'
-    })
-  });
-  const loaded = loadState(storage);
-  assert.equal(loaded.playerNodeId, 'cyanGate');
-  assert.equal(loaded.movingToNodeId, null);
-  assert.equal(loaded.currentStage, 'cyanLoop');
-  assert.equal(loaded.cyanLoopSeen, true);
-});
-
-test('startMove locks movement without visiting immediately', () => {
-  const initial = createInitialState();
-  const moving = startMove(initial, 'store');
-  assert.equal(moving.playerNodeId, 'room');
-  assert.equal(moving.movingToNodeId, 'store');
-  assert.deepEqual(moving.lastMove, { from: 'room', to: 'store' });
-  assert.deepEqual(moving.visited, ['room']);
-  assert.equal(moving.log, '나가기 전에 하나만 챙기면 된다.');
-});
-
-test('startMove ignores locked, unknown, current, and in-flight destinations', () => {
-  const initial = createInitialState();
-  assert.equal(startMove(initial, 'bank'), initial);
-  assert.equal(startMove(initial, 'missing'), initial);
-  assert.equal(startMove(initial, 'room'), initial);
-  const moving = {
-    ...initial,
-    unlocked: ['room', 'store'],
-    movingToNodeId: 'store'
-  };
-  assert.equal(startMove(moving, 'bus'), moving);
-});
-
-test('completeMove visits after arrival and unlocks next places', () => {
-  const moving = startMove({
-    ...createInitialState(),
-    unlocked: ['room', 'store']
-  }, 'store');
-  const arrived = completeMove(moving);
-  assert.equal(arrived.playerNodeId, 'store');
-  assert.equal(arrived.movingToNodeId, null);
-  assert.deepEqual(arrived.visited, ['room', 'store']);
-  assert.equal(arrived.log, '봉투값이 붙었다.');
-  assert.ok(arrived.unlocked.includes('work'));
-  assert.ok(arrived.unlocked.includes('subscriptions'));
-  assert.ok(arrived.unlocked.includes('lottery'));
-});
-
-test('completeMove opens Cyan intro when arriving at Cyan gate', () => {
-  const moving = startMove({
-    ...createInitialState(),
-    unlocked: ['room', 'store', 'bus', 'work', 'bank'],
-    visited: ['store', 'bus', 'work', 'bank'],
-    cyanGateUnlocked: true,
-    playerNodeId: 'bank'
-  }, 'cyanGate');
-  const arrived = completeMove(moving);
-  assert.equal(arrived.playerNodeId, 'cyanGate');
-  assert.equal(arrived.firstAchievementShown, true);
-  assert.equal(arrived.currentStage, 'cyanLoop');
-  assert.equal(arrived.cyanLoopSeen, true);
-  assert.equal(arrived.cyanLoopCompleted, false);
-});
-
-test('room plus three public destinations can unlock Cyan gate', () => {
-  const afterStore = completeMove(startMove(createInitialState(), 'store'));
-  const afterBus = completeMove(startMove(afterStore, 'bus'));
-  const afterWork = completeMove(startMove(afterBus, 'work'));
-  assert.deepEqual(afterWork.visited, ['room', 'store', 'bus', 'work']);
-  assert.equal(countVisitedPublicPlaces(afterWork), 4);
-  assert.equal(afterWork.cyanGateUnlocked, true);
-});
-
-test('visitNode direct compatibility updates token position', () => {
-  const visited = visitNode({
-    ...createInitialState(),
-    unlocked: ['room', 'store'],
-    movingToNodeId: 'store'
-  }, 'store');
-  assert.equal(visited.playerNodeId, 'store');
-  assert.equal(visited.movingToNodeId, null);
-  assert.equal(visited.log, '봉투값이 붙었다.');
-});
-
-test('completeMove rejects corrupt locked movement without changing position', () => {
-  const corrupt = {
-    ...createInitialState(),
-    playerNodeId: 'room',
-    movingToNodeId: 'bank'
-  };
-  const result = completeMove(corrupt);
-  assert.equal(result, corrupt);
-  assert.equal(result.playerNodeId, 'room');
-  assert.equal(result.movingToNodeId, 'bank');
-});
-
-test('answerCyanLoop records success and failure without scores', () => {
-  const ready = {
-    ...createInitialState(),
-    playerNodeId: 'cyanGate',
-    firstAchievementShown: true,
-    currentStage: 'cyanLoop' as const,
-    cyanLoopSeen: true
-  };
-  const success = answerCyanLoop(ready, 'fare-for-time');
-  assert.equal(success.cyanLoopCompleted, true);
-  assert.equal(success.cyanLoopResult, 'success');
-  assert.equal(success.log, '맞아. 뭔가를 내고, 길을 얻었다.');
-  assert.equal(success.log.includes('점수'), false);
-  const failure = answerCyanLoop(ready, 'lottery-for-work');
-  assert.equal(failure.cyanLoopCompleted, true);
-  assert.equal(failure.cyanLoopResult, 'failure');
-  assert.equal(failure.log, '그건 아직 길이 안 이어진다.');
-  assert.equal(failure.log.includes('점수'), false);
-});
-
-test('saveState and resetState use the provided storage safely', () => {
-  const storage = createStorage();
-  const saved = saveState(storage, createInitialState());
-  assert.equal(storage.getItem(STORAGE_KEY), JSON.stringify(saved));
-  const reset = resetState(storage);
-  assert.deepEqual(reset, createInitialState());
-  assert.equal(storage.getItem(STORAGE_KEY), null);
-});
-
-test('normalizeState recovers from non-object input', () => {
-  assert.deepEqual(normalizeState(null), createInitialState());
-});
-
-test('loadState and resetState without storage are safe in Node', () => {
-  assert.doesNotThrow(() => loadState());
-  assert.deepEqual(loadState(), createInitialState());
-  assert.doesNotThrow(() => resetState());
-  assert.deepEqual(resetState(), createInitialState());
-});
-
-test('normalizeState rejects string booleans instead of unlocking gated state', () => {
-  const normalized = normalizeState({
-    cyanGateUnlocked: 'false',
-    lotterySeen: 'true',
-    backAlleyDiscovered: 'true',
-    backAlleyEntered: 'true',
-    firstAchievementShown: 'true',
-    currentStage: 'cyanLoop',
-    cyanLoopSeen: 'true',
-    cyanLoopCompleted: 'false'
-  });
-
-  assert.equal(normalized.cyanGateUnlocked, false);
-  assert.equal(normalized.lotterySeen, false);
-  assert.equal(normalized.backAlleyDiscovered, false);
-  assert.equal(normalized.backAlleyEntered, false);
-  assert.equal(normalized.firstAchievementShown, false);
-  assert.equal(normalized.currentStage, 'cyanLoop');
-  assert.equal(normalized.cyanLoopSeen, false);
-  assert.equal(normalized.cyanLoopCompleted, false);
-  assert.equal(isNodeUnlocked(normalized, 'cyanGate'), false);
-  assert.equal(isNodeUnlocked(normalized, 'alley'), false);
-});
-
-test('village data references only known nodes and state flags', () => {
-  const nodeIds = new Set(Object.keys(villageNodes));
-  const stateKeys = new Set(Object.keys(createInitialState()));
-
-  Object.values(villageNodes).forEach((node) => {
-    node.unlocks.forEach((nextId) => {
-      assert.equal(nodeIds.has(nextId), true, `${node.id} unlocks unknown node ${nextId}`);
-    });
-  });
-
-  villageEdges.map(normalizeEdge).forEach((edge) => {
-    assert.equal(nodeIds.has(edge.from), true, `edge starts at unknown node ${edge.from}`);
-    assert.equal(nodeIds.has(edge.to), true, `edge ends at unknown node ${edge.to}`);
-    if (edge.hiddenUntil) {
-      assert.equal(stateKeys.has(edge.hiddenUntil), true, `edge uses unknown hiddenUntil key ${edge.hiddenUntil}`);
-    }
-  });
+test('initial state starts in room with guide device only', () => {
+  const state = createInitialState();
+  assert.equal(state.screen, 'room');
+  assert.equal(state.stage, 'preCyan');
+  assert.equal(state.currentOutingId, null);
+  assert.deepEqual(state.completedActions, []);
+  assert.equal(state.roomFeatures.guideDevice, true);
+  assert.equal(state.cyanGateUnlocked, false);
 });
 
 test('outing data references known hotspots and has four choices per outing', () => {
@@ -268,4 +48,105 @@ test('outing data references known hotspots and has four choices per outing', ()
       assert.ok(hotspots[hotspotId], `${outing.id} references unknown hotspot ${hotspotId}`);
     });
   }
+});
+
+test('startOuting opens the first planned outing', () => {
+  const state = startOuting(createInitialState());
+  assert.equal(state.screen, 'villageBoard');
+  assert.equal(state.currentOutingId, 'settling');
+  assert.deepEqual(state.currentOutingSelections, []);
+  assert.equal(state.guideLine, '처음이면 은행 쪽이 덜 헤매.');
+});
+
+test('first optimal outing gains support spend and move actions', () => {
+  let state = startOuting(createInitialState());
+  state = selectHotspot(state, 'bankCounter');
+  assert.deepEqual(state.completedActions, ['receivedSupport']);
+  state = selectHotspot(state, 'storeFront');
+  assert.ok(state.completedActions.includes('spent'));
+  state = selectHotspot(state, 'busStop');
+  assert.equal(state.screen, 'room');
+  assert.equal(state.outingHistory.length, 1);
+  assert.ok(state.completedActions.includes('moved'));
+});
+
+test('same hotspot reacts differently before support', () => {
+  let state = startOuting(createInitialState());
+  state = selectHotspot(state, 'storeFront');
+  assert.equal(state.completedActions.includes('spent'), false);
+  assert.equal(state.pendingReaction?.kind, 'differentDay');
+  assert.match(state.log, /빈손/);
+});
+
+test('three optimal outings unlock Cyan trace after all required actions', () => {
+  let state = startOuting(createInitialState());
+  for (const hotspot of ['bankCounter', 'storeFront', 'busStop'] as HotspotId[]) {
+    state = selectHotspot(state, hotspot);
+  }
+  state = startOuting(state);
+  for (const hotspot of ['workBackDoor', 'storeRegister', 'bankAtm'] as HotspotId[]) {
+    state = selectHotspot(state, hotspot);
+  }
+  state = startOuting(state);
+  for (const hotspot of ['bankAtm', 'busEnd', 'cyanTrace'] as HotspotId[]) {
+    state = selectHotspot(state, hotspot);
+  }
+
+  assert.deepEqual([...state.completedActions].sort(), [...requiredActions].sort());
+  assert.equal(state.cyanGateUnlocked, true);
+  assert.equal(state.stage, 'cyanReady');
+  assert.equal(state.roomFeatures.firstRecord, true);
+});
+
+test('Cyan trace stays faint until every required action is complete', () => {
+  let state = startOuting({
+    ...createInitialState(),
+    currentOutingId: null,
+    completedActions: ['receivedSupport', 'spent', 'moved'],
+    outingCount: 2
+  });
+  state = selectHotspot(state, 'bankAtm');
+  state = selectHotspot(state, 'cyanTrace');
+  assert.equal(state.cyanGateUnlocked, false);
+  assert.match(state.log, /흐릿/);
+});
+
+test('recovery outing emphasizes missing actions', () => {
+  const state = startOuting({
+    ...createInitialState(),
+    completedActions: ['receivedSupport', 'spent', 'moved', 'earned'],
+    outingCount: 3
+  });
+  assert.equal(state.currentOutingId, 'recovery-kept');
+});
+
+test('money fever triggers after ten finance clicks without opening alley', () => {
+  let state = startOuting(createInitialState());
+  for (let index = 0; index < 10; index += 1) {
+    state = recordMoneyFeverClick(state, 1000 + index * 100);
+  }
+  assert.equal(state.moneyFever.triggeredEver, true);
+  assert.equal(state.alley.discoveredHint, true);
+  assert.equal(state.alley.unlockedAfterYellow, false);
+});
+
+test('loadState recovers corrupt or old data safely', () => {
+  const storage = createStorage({ [STORAGE_KEY]: '{"visited":["room"]}' });
+  const loaded = loadState(storage);
+  assert.equal(loaded.screen, 'room');
+  assert.equal(loaded.currentOutingSelections.length, 0);
+  assert.equal(loaded.cyanGateUnlocked, false);
+});
+
+test('saveState and resetState use provided storage', () => {
+  const storage = createStorage();
+  const saved = saveState(storage, createInitialState());
+  assert.equal(storage.getItem(STORAGE_KEY), JSON.stringify(saved));
+  const reset = resetState(storage);
+  assert.deepEqual(reset, createInitialState());
+  assert.equal(storage.getItem(STORAGE_KEY), null);
+});
+
+test('normalizeState recovers from non-object input', () => {
+  assert.deepEqual(normalizeState(null), createInitialState());
 });
