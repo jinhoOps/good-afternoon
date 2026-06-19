@@ -189,6 +189,23 @@ test('corrupt in-progress outing save returns to safe room state', () => {
   assert.deepEqual(normalized.currentOutingSelections, []);
 });
 
+test('completed in-progress outing save returns to safe room state', () => {
+  const normalized = normalizeState({
+    screen: 'villageBoard',
+    currentOutingId: 'settling',
+    currentOutingSelections: ['bankCounter', 'storeFront', 'busStop'],
+    currentOutingFlagsGained: ['supportEnvelope', 'spentSmall', 'foundTransitPath'],
+    currentOutingReactionsSeen: ['bank-counter-support', 'storeFront-spent', 'busStop-moved']
+  });
+
+  assert.equal(normalized.screen, 'room');
+  assert.equal(normalized.currentOutingId, null);
+  assert.deepEqual(normalized.currentOutingSelections, []);
+  assert.deepEqual(normalized.currentOutingFlagsGained, []);
+  assert.deepEqual(normalized.currentOutingReactionsSeen, []);
+  assert.equal(normalized.pendingReaction, null);
+});
+
 test('malformed history records are dropped or normalized safely', () => {
   const normalized = normalizeState({
     outingHistory: [

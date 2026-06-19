@@ -182,17 +182,19 @@ export function normalizeState(parsed: unknown): VillageState {
     : base.stage;
   const completedActions = validArray(stringArray(parsed.completedActions), VALID_ACTIONS);
   const currentOutingId = validCurrentOutingId(parsed.currentOutingId, completedActions);
-  const normalizedScreen = screen === 'villageBoard' && !currentOutingId ? 'room' : screen;
+  const screenWithValidOuting = screen === 'villageBoard' && !currentOutingId ? 'room' : screen;
   const stateForActiveHotspots: VillageState = {
     ...base,
-    screen: normalizedScreen,
+    screen: screenWithValidOuting,
     currentOutingId,
     completedActions
   };
-  const activeHotspots = normalizedScreen === 'villageBoard' ? new Set(activeHotspotIds(stateForActiveHotspots)) : new Set<HotspotId>();
-  const currentOutingSelections = normalizedScreen === 'villageBoard'
+  const activeHotspots = screenWithValidOuting === 'villageBoard' ? new Set(activeHotspotIds(stateForActiveHotspots)) : new Set<HotspotId>();
+  const normalizedSelections = screenWithValidOuting === 'villageBoard'
     ? uniqueValidHotspots(parsed.currentOutingSelections).filter((hotspotId) => activeHotspots.has(hotspotId)).slice(0, 3)
     : [];
+  const normalizedScreen = screenWithValidOuting === 'villageBoard' && normalizedSelections.length >= 3 ? 'room' : screenWithValidOuting;
+  const currentOutingSelections = normalizedScreen === 'villageBoard' ? normalizedSelections : [];
 
   return {
     ...base,
