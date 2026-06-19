@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import test from 'node:test';
 
@@ -55,6 +55,13 @@ test('Vite entry keeps room and outing hosts wired', () => {
   assert.equal(hasViteEntryScript(indexHtml), true);
 });
 
+test('Vite entry declares a project-local favicon', () => {
+  const indexHtml = readVillageFile('index.html');
+
+  assert.match(indexHtml, /<link\s+rel="icon"\s+type="image\/svg\+xml"\s+href="\.\/favicon\.svg">/);
+  assert.equal(existsSync(join(villageDir, 'favicon.svg')), true);
+});
+
 test('outing render and event hosts remain wired', () => {
   const renderSource = readVillageFile(join('view', 'render.ts'));
   const eventsSource = readVillageFile(join('view', 'events.ts'));
@@ -96,6 +103,12 @@ test('GitHub Pages workflow deploys the Vite dist artifact', () => {
   assert.match(workflow, /\bnpm run build\b/);
   assert.match(workflow, /path:\s*['"]?\.\/dist['"]?/);
   assert.doesNotMatch(workflow, /app\/pre-cyan-village/);
+});
+
+test('Vite build uses the GitHub Pages project base path', () => {
+  const viteConfig = readProjectFile('vite.config.ts');
+
+  assert.match(viteConfig, /base:\s*['"]\/good-afternoon\/['"]/);
 });
 
 test('repository docs point developers at Vite commands and generated dist output', () => {
