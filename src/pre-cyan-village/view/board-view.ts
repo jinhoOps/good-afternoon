@@ -8,7 +8,7 @@ export function renderOutingSlots(host: HTMLElement, state: VillageState): void 
   const selections = state.currentOutingSelections;
   host.innerHTML = [0, 1, 2].map((index) => {
     const hotspotId = selections[index];
-    const label = hotspotId ? hotspots[hotspotId]?.shortLabel ?? hotspotId : String(index + 1);
+    const label = hotspotId ? hotspots[hotspotId]?.shortLabel ?? '?' : String(index + 1);
     return `<span class="outing-slot ${hotspotId ? 'is-filled' : ''}">${label}</span>`;
   }).join('');
 }

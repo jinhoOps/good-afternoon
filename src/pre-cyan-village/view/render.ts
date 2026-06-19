@@ -70,11 +70,10 @@ function outingTitleFor(state: VillageState): string {
 }
 
 export function renderApp(elements: AppElements, state: VillageState): void {
-  const inRoom = state.screen === 'room';
   const onBoard = state.screen === 'villageBoard';
   const reaction = state.pendingReaction;
 
-  elements.roomScreen.hidden = !inRoom;
+  elements.roomScreen.hidden = onBoard;
   elements.villageBoard.hidden = !onBoard;
   elements.guideLine.textContent = state.guideLine;
   elements.outingTitle.textContent = outingTitleFor(state);
