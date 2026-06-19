@@ -34,11 +34,24 @@ function hasViteEntryScript(indexHtml: string): boolean {
 
 test('Vite entry keeps room and outing hosts wired', () => {
   const indexHtml = readVillageFile('index.html');
+  const hostIds = [
+    'room-screen',
+    'guide-line',
+    'start-outing',
+    'village-board',
+    'outing-title',
+    'outing-slots',
+    'zone-board',
+    'village-log-text',
+    'reaction-panel',
+    'reaction-text',
+    'status-strip',
+    'reset-state'
+  ];
 
-  assert.ok(indexHtml.includes('id="room-screen"'));
-  assert.ok(indexHtml.includes('id="village-board"'));
-  assert.ok(indexHtml.includes('id="outing-slots"'));
-  assert.ok(indexHtml.includes('id="zone-board"'));
+  for (const hostId of hostIds) {
+    assert.ok(indexHtml.includes(`id="${hostId}"`));
+  }
   assert.equal(hasViteEntryScript(indexHtml), true);
 });
 
