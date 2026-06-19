@@ -91,6 +91,14 @@ function zoneLayerRecord(value: unknown, defaults: Record<ZoneId, number>): Reco
   }, { ...defaults });
 }
 
+function trueBooleanRecord(value: unknown): Record<string, boolean> {
+  if (!isRecord(value)) return {};
+  return Object.entries(value).reduce<Record<string, boolean>>((result, [key, recordValue]) => {
+    if (recordValue === true) result[key] = true;
+    return result;
+  }, {});
+}
+
 function getBrowserStorage(): StorageLike | null {
   return typeof window === 'undefined' ? null : window.localStorage;
 }
@@ -117,9 +125,7 @@ export function normalizeState(parsed: unknown): VillageState {
     currentOutingSelections: stringArray(parsed.currentOutingSelections) as HotspotId[],
     outingHistory: Array.isArray(parsed.outingHistory) ? parsed.outingHistory as VillageState['outingHistory'] : [],
     completedActions,
-    sequenceFlags: isRecord(parsed.sequenceFlags)
-      ? Object.fromEntries(Object.entries(parsed.sequenceFlags).filter(([, value]) => value === true))
-      : {},
+    sequenceFlags: trueBooleanRecord(parsed.sequenceFlags),
     reactionsSeen: stringArray(parsed.reactionsSeen),
     zoneLayers: zoneLayerRecord(parsed.zoneLayers, base.zoneLayers),
     roomFeatures: booleanRecord(parsed.roomFeatures, VALID_ROOM_FEATURES, base.roomFeatures),

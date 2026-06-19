@@ -34,7 +34,8 @@ function hotspotIdsForRecovery(state: VillageState): HotspotId[] {
   if (missing.includes('moved')) ids.push('busEnd');
   if (missing.includes('earned')) ids.push('workBoard');
   if (missing.includes('kept')) ids.push('bankAtm');
-  return [...new Set([...ids, 'cyanTrace', 'busEnd', 'bankAtm'])].slice(0, 4);
+  const fallbackHotspots: HotspotId[] = ['cyanTrace', 'busEnd', 'bankAtm'];
+  return [...new Set<HotspotId>([...ids, ...fallbackHotspots])].slice(0, 4);
 }
 
 export function activeHotspotIds(state: VillageState): HotspotId[] {
