@@ -66,7 +66,12 @@ test('outing render and event hosts remain wired', () => {
 });
 
 test('runtime source avoids banned first-experience strings', () => {
-  const bannedStrings = ['필수 기초 단어 놀이터', '이해함', '점수', '학습 완료'];
+  const bannedStrings = [
+    ['필수', ' 기초', ' 단어', ' 놀이터'].join(''),
+    ['이', '해함'].join(''),
+    ['점', '수'].join(''),
+    ['학습', ' 완료'].join('')
+  ];
   const runtimeFiles = listRuntimeFiles(villageDir);
 
   for (const file of runtimeFiles) {
