@@ -96,7 +96,7 @@ h1 { margin: 0; font-size: 24px; line-height: 1.1; letter-spacing: 0; }
   bottom: 24px;
   width: 68px;
   height: 112px;
-  background: #E8E0D2;
+  background: var(--surface-soft);
 }
 
 .guide-device {
