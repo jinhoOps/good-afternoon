@@ -70,6 +70,35 @@ test('first optimal outing gains support spend and move actions', () => {
   assert.ok(state.completedActions.includes('moved'));
 });
 
+test('second outing history does not include first outing flags or reactions', () => {
+  let state = startOuting(createInitialState());
+  for (const hotspot of ['bankCounter', 'storeFront', 'busStop'] as HotspotId[]) {
+    state = selectHotspot(state, hotspot);
+  }
+  state = startOuting(state);
+  for (const hotspot of ['workBackDoor', 'storeRegister', 'bankAtm'] as HotspotId[]) {
+    state = selectHotspot(state, hotspot);
+  }
+
+  assert.equal(state.outingHistory.length, 2);
+  assert.deepEqual(state.outingHistory[0].flagsGained, ['supportEnvelope', 'spentSmall', 'foundTransitPath']);
+  assert.deepEqual(state.outingHistory[0].reactionsSeen, ['bank-counter-support', 'storeFront-spent', 'busStop-moved']);
+  assert.deepEqual(state.outingHistory[1].flagsGained, ['earnedSmall', 'spentSmall', 'keptSmall']);
+  assert.deepEqual(state.outingHistory[1].reactionsSeen, ['workBackDoor-earned', 'storeRegister-spent', 'bank-atm-kept']);
+});
+
+test('duplicate and inactive hotspot selections are rejected', () => {
+  let state = startOuting(createInitialState());
+  state = selectHotspot(state, 'bankCounter');
+  const afterDuplicate = selectHotspot(state, 'bankCounter');
+  assert.equal(afterDuplicate, state);
+  assert.deepEqual(afterDuplicate.currentOutingSelections, ['bankCounter']);
+
+  const afterInactive = selectHotspot(state, 'workBackDoor');
+  assert.equal(afterInactive, state);
+  assert.deepEqual(afterInactive.currentOutingSelections, ['bankCounter']);
+});
+
 test('same hotspot reacts differently before support', () => {
   let state = startOuting(createInitialState());
   state = selectHotspot(state, 'storeFront');
@@ -96,6 +125,16 @@ test('three optimal outings unlock Cyan trace after all required actions', () =>
   assert.equal(state.cyanGateUnlocked, true);
   assert.equal(state.stage, 'cyanReady');
   assert.equal(state.roomFeatures.firstRecord, true);
+});
+
+test('pendingReaction is cleared after the 3rd selection returns to room', () => {
+  let state = startOuting(createInitialState());
+  for (const hotspot of ['bankCounter', 'storeFront', 'busStop'] as HotspotId[]) {
+    state = selectHotspot(state, hotspot);
+  }
+
+  assert.equal(state.screen, 'room');
+  assert.equal(state.pendingReaction, null);
 });
 
 test('Cyan trace stays faint until every required action is complete', () => {
@@ -136,6 +175,68 @@ test('loadState recovers corrupt or old data safely', () => {
   assert.equal(loaded.screen, 'room');
   assert.equal(loaded.currentOutingSelections.length, 0);
   assert.equal(loaded.cyanGateUnlocked, false);
+});
+
+test('corrupt in-progress outing save returns to safe room state', () => {
+  const normalized = normalizeState({
+    screen: 'villageBoard',
+    currentOutingId: 'unknown-outing',
+    currentOutingSelections: ['bankCounter', 'bankCounter', 'workBackDoor']
+  });
+
+  assert.equal(normalized.screen, 'room');
+  assert.equal(normalized.currentOutingId, null);
+  assert.deepEqual(normalized.currentOutingSelections, []);
+});
+
+test('malformed history records are dropped or normalized safely', () => {
+  const normalized = normalizeState({
+    outingHistory: [
+      {
+        stage: 'preCyan',
+        outingId: 'settling',
+        selections: ['bankCounter', 'missing', 'bankCounter', 'busStop'],
+        summary: 'kept',
+        flagsGained: ['supportEnvelope', 12, 'spentSmall'],
+        reactionsSeen: ['bank-counter-support', null, 'busStop-moved']
+      },
+      {
+        stage: 'wrong',
+        outingId: 'settling',
+        selections: ['bankCounter'],
+        summary: 'drop me',
+        flagsGained: [],
+        reactionsSeen: []
+      },
+      'bad'
+    ]
+  });
+
+  assert.equal(normalized.outingHistory.length, 1);
+  assert.deepEqual(normalized.outingHistory[0], {
+    stage: 'preCyan',
+    outingId: 'settling',
+    selections: ['bankCounter', 'busStop'],
+    summary: 'kept',
+    flagsGained: ['supportEnvelope', 'spentSmall'],
+    reactionsSeen: ['bank-counter-support', 'busStop-moved']
+  });
+});
+
+test('bad money fever numbers normalize safely', () => {
+  const normalized = normalizeState({
+    moneyFever: {
+      activeUntil: Number.POSITIVE_INFINITY,
+      triggeredEver: true,
+      triggerCountWindowStartedAt: -1,
+      triggerCount: 2.8
+    }
+  });
+
+  assert.equal(normalized.moneyFever.activeUntil, null);
+  assert.equal(normalized.moneyFever.triggeredEver, true);
+  assert.equal(normalized.moneyFever.triggerCountWindowStartedAt, null);
+  assert.equal(normalized.moneyFever.triggerCount, 2);
 });
 
 test('saveState and resetState use provided storage', () => {

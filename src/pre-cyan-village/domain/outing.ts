@@ -181,12 +181,15 @@ function finishOuting(state: VillageState): VillageState {
         outingId: state.currentOutingId ?? 'unknown',
         selections: [...state.currentOutingSelections],
         summary,
-        flagsGained: Object.keys(state.sequenceFlags),
-        reactionsSeen: [...state.reactionsSeen]
+        flagsGained: [...state.currentOutingFlagsGained],
+        reactionsSeen: [...state.currentOutingReactionsSeen]
       }
     ],
     currentOutingId: null,
     currentOutingSelections: [],
+    currentOutingFlagsGained: [],
+    currentOutingReactionsSeen: [],
+    pendingReaction: null,
     roomFeatures: {
       ...state.roomFeatures,
       firstRecord: true
@@ -207,6 +210,8 @@ export function startOuting(state: VillageState): VillageState {
     screen: 'villageBoard',
     currentOutingId: outingId,
     currentOutingSelections: [],
+    currentOutingFlagsGained: [],
+    currentOutingReactionsSeen: [],
     pendingReaction: null,
     guideLine: outing?.guideLine ?? '오늘 못 본 길이 하나 남았네.',
     log: outing?.title ?? '다른 하루'
@@ -231,6 +236,8 @@ export function selectHotspot(state: VillageState, hotspotId: HotspotId): Villag
     log: reaction.log,
     pendingReaction: reaction,
     currentOutingSelections: [...state.currentOutingSelections, hotspotId],
+    currentOutingFlagsGained: [...new Set([...state.currentOutingFlagsGained, ...reaction.flagsGained])],
+    currentOutingReactionsSeen: [...new Set([...state.currentOutingReactionsSeen, reaction.id])],
     completedActions,
     sequenceFlags,
     reactionsSeen: [...new Set([...state.reactionsSeen, reaction.id])],

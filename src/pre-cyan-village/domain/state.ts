@@ -1,6 +1,8 @@
 import { readStorage, removeStorage, type StorageLike, writeStorage } from '../../shared/storage/local-storage';
+import { plannedOutings } from './data';
 import type {
   HotspotId,
+  OutingRecord,
   RequiredAction,
   RoomFeatureId,
   ScreenId,
@@ -8,13 +10,25 @@ import type {
   VillageState,
   ZoneId
 } from '../../shared/types/village';
-import { recordMoneyFeverClick, selectHotspot, startOuting } from './outing';
+import { activeHotspotIds, recordMoneyFeverClick, selectHotspot, startOuting } from './outing';
 
 export const STORAGE_KEY = 'goodafternoon.preCyanVillage.v2';
 
 const VALID_SCREENS: ScreenId[] = ['room', 'villageBoard', 'event'];
 const VALID_STAGES: StageId[] = ['preCyan', 'cyanReady'];
 const VALID_ACTIONS: RequiredAction[] = ['receivedSupport', 'spent', 'moved', 'earned', 'kept'];
+const VALID_HOTSPOTS: HotspotId[] = [
+  'bankCounter',
+  'storeFront',
+  'busStop',
+  'mailbox',
+  'workBackDoor',
+  'storeRegister',
+  'bankAtm',
+  'workBoard',
+  'busEnd',
+  'cyanTrace'
+];
 const VALID_ZONES: ZoneId[] = ['home', 'commercial', 'transit', 'work', 'finance', 'hidden'];
 const VALID_ROOM_FEATURES: RoomFeatureId[] = ['guideDevice', 'firstRecord', 'cyanTraceRecord', 'strangeDrawer'];
 
@@ -26,6 +40,8 @@ export function createInitialState(): VillageState {
     guideLine: '다녀올래?',
     currentOutingId: null,
     currentOutingSelections: [],
+    currentOutingFlagsGained: [],
+    currentOutingReactionsSeen: [],
     outingHistory: [],
     completedActions: [],
     sequenceFlags: {},
@@ -74,6 +90,10 @@ function validArray<T extends string>(items: string[], valid: T[]): T[] {
   return items.filter((item): item is T => valid.includes(item as T));
 }
 
+function uniqueValidHotspots(value: unknown): HotspotId[] {
+  return [...new Set(validArray(stringArray(value), VALID_HOTSPOTS))];
+}
+
 function booleanRecord<T extends string>(value: unknown, keys: T[], defaults: Record<T, boolean>): Record<T, boolean> {
   if (!isRecord(value)) return defaults;
   return keys.reduce<Record<T, boolean>>((result, key) => {
@@ -99,6 +119,53 @@ function trueBooleanRecord(value: unknown): Record<string, boolean> {
   }, {});
 }
 
+function nonNegativeFiniteNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+function nonNegativeInteger(value: unknown): number | null {
+  const number = nonNegativeFiniteNumber(value);
+  return number === null ? null : Math.floor(number);
+}
+
+function recoveryIdForAction(value: string): RequiredAction | null {
+  if (!value.startsWith('recovery-')) return null;
+  const action = value.slice('recovery-'.length);
+  return VALID_ACTIONS.includes(action as RequiredAction) ? action as RequiredAction : null;
+}
+
+function validCurrentOutingId(value: unknown, completedActions: RequiredAction[]): string | null {
+  if (typeof value !== 'string') return null;
+  if (plannedOutings.some((outing) => outing.id === value)) return value;
+
+  const recoveryAction = recoveryIdForAction(value);
+  if (!recoveryAction) return null;
+  return completedActions.includes(recoveryAction) ? null : value;
+}
+
+function normalizeHistoryRecord(value: unknown): OutingRecord | null {
+  if (!isRecord(value)) return null;
+  if (typeof value.stage !== 'string' || !VALID_STAGES.includes(value.stage as StageId)) return null;
+  if (typeof value.outingId !== 'string') return null;
+
+  return {
+    stage: value.stage as StageId,
+    outingId: value.outingId,
+    selections: uniqueValidHotspots(value.selections).slice(0, 3),
+    summary: typeof value.summary === 'string' ? value.summary : '',
+    flagsGained: stringArray(value.flagsGained),
+    reactionsSeen: stringArray(value.reactionsSeen)
+  };
+}
+
+function normalizeHistory(value: unknown): OutingRecord[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    const record = normalizeHistoryRecord(item);
+    return record ? [record] : [];
+  });
+}
+
 function getBrowserStorage(): StorageLike | null {
   return typeof window === 'undefined' ? null : window.localStorage;
 }
@@ -114,16 +181,30 @@ export function normalizeState(parsed: unknown): VillageState {
     ? parsed.stage as StageId
     : base.stage;
   const completedActions = validArray(stringArray(parsed.completedActions), VALID_ACTIONS);
+  const currentOutingId = validCurrentOutingId(parsed.currentOutingId, completedActions);
+  const normalizedScreen = screen === 'villageBoard' && !currentOutingId ? 'room' : screen;
+  const stateForActiveHotspots: VillageState = {
+    ...base,
+    screen: normalizedScreen,
+    currentOutingId,
+    completedActions
+  };
+  const activeHotspots = normalizedScreen === 'villageBoard' ? new Set(activeHotspotIds(stateForActiveHotspots)) : new Set<HotspotId>();
+  const currentOutingSelections = normalizedScreen === 'villageBoard'
+    ? uniqueValidHotspots(parsed.currentOutingSelections).filter((hotspotId) => activeHotspots.has(hotspotId)).slice(0, 3)
+    : [];
 
   return {
     ...base,
-    screen,
+    screen: normalizedScreen,
     stage,
     log: typeof parsed.log === 'string' ? parsed.log : base.log,
     guideLine: typeof parsed.guideLine === 'string' ? parsed.guideLine : base.guideLine,
-    currentOutingId: typeof parsed.currentOutingId === 'string' ? parsed.currentOutingId : null,
-    currentOutingSelections: stringArray(parsed.currentOutingSelections) as HotspotId[],
-    outingHistory: Array.isArray(parsed.outingHistory) ? parsed.outingHistory as VillageState['outingHistory'] : [],
+    currentOutingId: normalizedScreen === 'villageBoard' ? currentOutingId : null,
+    currentOutingSelections,
+    currentOutingFlagsGained: normalizedScreen === 'villageBoard' ? stringArray(parsed.currentOutingFlagsGained) : [],
+    currentOutingReactionsSeen: normalizedScreen === 'villageBoard' ? stringArray(parsed.currentOutingReactionsSeen) : [],
+    outingHistory: normalizeHistory(parsed.outingHistory),
     completedActions,
     sequenceFlags: trueBooleanRecord(parsed.sequenceFlags),
     reactionsSeen: stringArray(parsed.reactionsSeen),
@@ -134,12 +215,10 @@ export function normalizeState(parsed: unknown): VillageState {
     cyanGateUnlocked: parsed.cyanGateUnlocked === true,
     moneyFever: isRecord(parsed.moneyFever)
       ? {
-        activeUntil: typeof parsed.moneyFever.activeUntil === 'number' ? parsed.moneyFever.activeUntil : null,
+        activeUntil: nonNegativeFiniteNumber(parsed.moneyFever.activeUntil),
         triggeredEver: parsed.moneyFever.triggeredEver === true,
-        triggerCountWindowStartedAt: typeof parsed.moneyFever.triggerCountWindowStartedAt === 'number'
-          ? parsed.moneyFever.triggerCountWindowStartedAt
-          : null,
-        triggerCount: typeof parsed.moneyFever.triggerCount === 'number' ? parsed.moneyFever.triggerCount : 0
+        triggerCountWindowStartedAt: nonNegativeFiniteNumber(parsed.moneyFever.triggerCountWindowStartedAt),
+        triggerCount: nonNegativeInteger(parsed.moneyFever.triggerCount) ?? 0
       }
       : base.moneyFever,
     alley: isRecord(parsed.alley)

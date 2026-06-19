@@ -68,6 +68,8 @@ export type VillageState = {
   guideLine: string;
   currentOutingId: string | null;
   currentOutingSelections: HotspotId[];
+  currentOutingFlagsGained: string[];
+  currentOutingReactionsSeen: string[];
   outingHistory: OutingRecord[];
   completedActions: RequiredAction[];
   sequenceFlags: Record<string, boolean>;
