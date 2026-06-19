@@ -1,54 +1,87 @@
-import type { GridPosition, Move, NodeId } from './graph';
+export type StageId = 'preCyan' | 'cyanReady';
 
-export type VillageNodeKind = 'home' | 'place' | 'gate' | 'hidden';
+export type ScreenId = 'room' | 'villageBoard' | 'event';
 
-export type VillageNode = {
-  id: NodeId;
+export type ZoneId = 'home' | 'commercial' | 'transit' | 'work' | 'finance' | 'hidden';
+
+export type HotspotId =
+  | 'bankCounter'
+  | 'storeFront'
+  | 'busStop'
+  | 'mailbox'
+  | 'workBackDoor'
+  | 'storeRegister'
+  | 'bankAtm'
+  | 'workBoard'
+  | 'busEnd'
+  | 'cyanTrace';
+
+export type RequiredAction = 'receivedSupport' | 'spent' | 'moved' | 'earned' | 'kept';
+
+export type ReactionKind = 'softSuccess' | 'differentDay' | 'strangeTrace';
+
+export type RoomFeatureId = 'guideDevice' | 'firstRecord' | 'cyanTraceRecord' | 'strangeDrawer';
+
+export type HotspotDefinition = {
+  id: HotspotId;
+  zoneId: ZoneId;
   label: string;
+  shortLabel: string;
+};
+
+export type OutingDefinition = {
+  id: string;
+  title: string;
+  guideLine: string;
+  hotspotIds: HotspotId[];
+};
+
+export type ReactionResult = {
+  id: string;
+  hotspotId: HotspotId;
+  kind: ReactionKind;
   log: string;
-  x: number;
-  y: number;
-  grid: GridPosition;
-  kind: VillageNodeKind;
-  unlocks: NodeId[];
-  hidden?: boolean;
-  gate?: boolean;
-  startsUnlocked?: boolean;
+  actionsGained: RequiredAction[];
+  flagsGained: string[];
 };
 
-export type CyanChoice = {
-  id: string;
-  label: string;
+export type OutingRecord = {
+  stage: StageId;
+  outingId: string;
+  selections: HotspotId[];
+  summary: string;
+  flagsGained: string[];
+  reactionsSeen: string[];
 };
 
-export type CyanLoop = {
-  id: string;
-  situation: string;
-  question: string;
-  correctChoiceId: string;
-  successLog: string;
-  failureLog: string;
-  choices: CyanChoice[];
+export type MoneyFeverState = {
+  activeUntil: number | null;
+  triggeredEver: boolean;
+  triggerCountWindowStartedAt: number | null;
+  triggerCount: number;
 };
-
-export type CurrentStage = 'preCyan' | 'cyanIntro' | 'cyanLoop';
-
-export type CyanLoopResult = 'success' | 'failure' | null;
 
 export type VillageState = {
-  unlocked: NodeId[];
-  visited: NodeId[];
+  screen: ScreenId;
+  stage: StageId;
   log: string;
+  guideLine: string;
+  currentOutingId: string | null;
+  currentOutingSelections: HotspotId[];
+  outingHistory: OutingRecord[];
+  completedActions: RequiredAction[];
+  sequenceFlags: Record<string, boolean>;
+  reactionsSeen: string[];
+  zoneLayers: Record<ZoneId, number>;
+  roomFeatures: Record<RoomFeatureId, boolean>;
+  bankSupportReceived: boolean;
+  cyanTraceDiscovered: boolean;
   cyanGateUnlocked: boolean;
-  lotterySeen: boolean;
-  backAlleyDiscovered: boolean;
-  backAlleyEntered: boolean;
-  firstAchievementShown: boolean;
-  playerNodeId: NodeId;
-  movingToNodeId: NodeId | null;
-  lastMove: Move | null;
-  currentStage: CurrentStage;
-  cyanLoopSeen: boolean;
-  cyanLoopCompleted: boolean;
-  cyanLoopResult: CyanLoopResult;
+  moneyFever: MoneyFeverState;
+  alley: {
+    discoveredHint: boolean;
+    unlockedAfterYellow: boolean;
+  };
+  pendingReaction: ReactionResult | null;
+  outingCount: number;
 };
