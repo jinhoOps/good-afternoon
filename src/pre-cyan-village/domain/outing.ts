@@ -168,6 +168,7 @@ function finishOuting(state: VillageState): VillageState {
   const summary = state.currentOutingSelections.length
     ? `${state.currentOutingSelections.join(' -> ')} 순서로 다녀왔다.`
     : '오늘은 문 앞에서만 맴돌았다.';
+  const finalReaction = state.pendingReaction;
 
   return {
     ...state,
@@ -189,7 +190,7 @@ function finishOuting(state: VillageState): VillageState {
     currentOutingSelections: [],
     currentOutingFlagsGained: [],
     currentOutingReactionsSeen: [],
-    pendingReaction: null,
+    pendingReaction: finalReaction,
     roomFeatures: {
       ...state.roomFeatures,
       firstRecord: true

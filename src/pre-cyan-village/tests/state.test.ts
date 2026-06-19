@@ -127,14 +127,15 @@ test('three optimal outings unlock Cyan trace after all required actions', () =>
   assert.equal(state.roomFeatures.firstRecord, true);
 });
 
-test('pendingReaction is cleared after the 3rd selection returns to room', () => {
+test('third selection reaction remains visible after returning to room', () => {
   let state = startOuting(createInitialState());
   for (const hotspot of ['bankCounter', 'storeFront', 'busStop'] as HotspotId[]) {
     state = selectHotspot(state, hotspot);
   }
 
   assert.equal(state.screen, 'room');
-  assert.equal(state.pendingReaction, null);
+  assert.equal(state.pendingReaction?.id, 'busStop-moved');
+  assert.match(state.pendingReaction?.log ?? '', /정류장/);
 });
 
 test('Cyan trace stays faint until every required action is complete', () => {
@@ -167,6 +168,20 @@ test('money fever triggers after ten finance clicks without opening alley', () =
   assert.equal(state.moneyFever.triggeredEver, true);
   assert.equal(state.alley.discoveredHint, true);
   assert.equal(state.alley.unlockedAfterYellow, false);
+});
+
+test('selected finance hotspots can still record repeated money fever clicks', () => {
+  let state = startOuting(createInitialState());
+  state = selectHotspot(recordMoneyFeverClick(state, 1000), 'bankCounter');
+
+  for (let index = 1; index < 10; index += 1) {
+    state = recordMoneyFeverClick(state, 1000 + index * 100);
+    state = selectHotspot(state, 'bankCounter');
+  }
+
+  assert.deepEqual(state.currentOutingSelections, ['bankCounter']);
+  assert.equal(state.moneyFever.triggeredEver, true);
+  assert.equal(state.alley.discoveredHint, true);
 });
 
 test('loadState recovers corrupt or old data safely', () => {
@@ -254,6 +269,19 @@ test('bad money fever numbers normalize safely', () => {
   assert.equal(normalized.moneyFever.triggeredEver, true);
   assert.equal(normalized.moneyFever.triggerCountWindowStartedAt, null);
   assert.equal(normalized.moneyFever.triggerCount, 2);
+});
+
+test('normalizeState rejects gated Cyan state without required actions', () => {
+  const normalized = normalizeState({
+    stage: 'cyanReady',
+    completedActions: ['receivedSupport'],
+    cyanTraceDiscovered: true,
+    cyanGateUnlocked: true
+  });
+
+  assert.equal(normalized.stage, 'preCyan');
+  assert.equal(normalized.cyanTraceDiscovered, false);
+  assert.equal(normalized.cyanGateUnlocked, false);
 });
 
 test('saveState and resetState use provided storage', () => {

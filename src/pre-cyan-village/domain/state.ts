@@ -177,10 +177,11 @@ export function normalizeState(parsed: unknown): VillageState {
   const screen = typeof parsed.screen === 'string' && VALID_SCREENS.includes(parsed.screen as ScreenId)
     ? parsed.screen as ScreenId
     : base.screen;
-  const stage = typeof parsed.stage === 'string' && VALID_STAGES.includes(parsed.stage as StageId)
-    ? parsed.stage as StageId
-    : base.stage;
   const completedActions = validArray(stringArray(parsed.completedActions), VALID_ACTIONS);
+  const allRequiredActionsComplete = VALID_ACTIONS.every((action) => completedActions.includes(action));
+  const cyanTraceDiscovered = parsed.cyanTraceDiscovered === true && allRequiredActionsComplete;
+  const cyanGateUnlocked = parsed.cyanGateUnlocked === true && cyanTraceDiscovered;
+  const stage = parsed.stage === 'cyanReady' && cyanGateUnlocked ? 'cyanReady' : base.stage;
   const currentOutingId = validCurrentOutingId(parsed.currentOutingId, completedActions);
   const screenWithValidOuting = screen === 'villageBoard' && !currentOutingId ? 'room' : screen;
   const stateForActiveHotspots: VillageState = {
@@ -213,8 +214,8 @@ export function normalizeState(parsed: unknown): VillageState {
     zoneLayers: zoneLayerRecord(parsed.zoneLayers, base.zoneLayers),
     roomFeatures: booleanRecord(parsed.roomFeatures, VALID_ROOM_FEATURES, base.roomFeatures),
     bankSupportReceived: parsed.bankSupportReceived === true || completedActions.includes('receivedSupport'),
-    cyanTraceDiscovered: parsed.cyanTraceDiscovered === true,
-    cyanGateUnlocked: parsed.cyanGateUnlocked === true,
+    cyanTraceDiscovered,
+    cyanGateUnlocked,
     moneyFever: isRecord(parsed.moneyFever)
       ? {
         activeUntil: nonNegativeFiniteNumber(parsed.moneyFever.activeUntil),

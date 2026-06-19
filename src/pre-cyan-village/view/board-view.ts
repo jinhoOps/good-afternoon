@@ -16,7 +16,8 @@ export function renderOutingSlots(host: HTMLElement, state: VillageState): void 
 function renderHotspotButton(hotspotId: HotspotId, state: VillageState): string {
   const hotspot = hotspots[hotspotId];
   const selected = state.currentOutingSelections.includes(hotspotId);
-  const disabled = selected || state.currentOutingSelections.length >= 3 ? 'disabled' : '';
+  const financeHotspot = hotspotId === 'bankAtm' || hotspotId === 'bankCounter';
+  const disabled = (selected && !financeHotspot) || state.currentOutingSelections.length >= 3 ? 'disabled' : '';
   return `<button type="button" class="hotspot ${selected ? 'is-selected' : ''}" data-hotspot-id="${hotspot.id}" ${disabled}>${hotspot.label}</button>`;
 }
 
