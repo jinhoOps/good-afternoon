@@ -82,6 +82,24 @@ test('Phaser runtime hides the DOM shell while DOM runtime keeps it visible', ()
   assert.match(mainSource, /\.hidden\s*=\s*false/);
 });
 
+test('Phaser prototype SVG assets exist in the Vite source tree', () => {
+  const assetNames = [
+    'player.svg',
+    'room.svg',
+    'bank.svg',
+    'store.svg',
+    'bus-stop.svg',
+    'board.svg',
+    'lottery.svg',
+    'dark-alley.svg',
+    'cyan-trace.svg'
+  ];
+
+  for (const assetName of assetNames) {
+    assert.equal(existsSync(join(villageDir, 'assets', assetName)), true, assetName);
+  }
+});
+
 test('outing render and event hosts remain wired', () => {
   const renderSource = readVillageFile(join('view', 'render.ts'));
   const eventsSource = readVillageFile(join('view', 'events.ts'));
