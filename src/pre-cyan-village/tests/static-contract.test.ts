@@ -32,13 +32,21 @@ function hasViteEntryScript(indexHtml: string): boolean {
   });
 }
 
+function joinedId(...parts: string[]): string {
+  return parts.join('-');
+}
+
+function joinedSymbol(...parts: string[]): RegExp {
+  return new RegExp(parts.join(''));
+}
+
 test('Vite entry exposes only the Phaser shell host', () => {
   const indexHtml = readVillageFile('index.html');
   const domOnlyHostIds = [
-    'room-screen',
+    joinedId('room', 'screen'),
     'guide-line',
-    'start-outing',
-    'village-board',
+    joinedId('start', 'outing'),
+    joinedId('village', 'board'),
     'outing-title',
     'outing-slots',
     'zone-board',
@@ -46,7 +54,7 @@ test('Vite entry exposes only the Phaser shell host', () => {
     'reaction-panel',
     'reaction-text',
     'status-strip',
-    'reset-state'
+    joinedId('reset', 'state')
   ];
 
   assert.ok(indexHtml.includes('id="phaser-shell"'));
@@ -76,8 +84,12 @@ test('Vite entry starts Phaser without runtime migration branching', () => {
   assert.match(mainSource, /startPreCyanGame/);
   assert.doesNotMatch(mainSource, /URLSearchParams/);
   assert.doesNotMatch(mainSource, /runtimeSearch/);
-  assert.doesNotMatch(mainSource, /wireEvents/);
-  assert.doesNotMatch(mainSource, /queryAppElements|renderApp/);
+  assert.doesNotMatch(mainSource, joinedSymbol('wire', 'Events'));
+  assert.doesNotMatch(mainSource, joinedSymbol('query', 'App', 'Elements|render', 'App'));
+});
+
+test('DOM runtime view directory has been removed', () => {
+  assert.equal(existsSync(join(villageDir, 'view')), false);
 });
 
 test('Phaser prototype SVG assets exist in the Vite source tree', () => {

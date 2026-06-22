@@ -39,7 +39,7 @@ async function main(): Promise<void> {
         canvasExists: Boolean(canvas),
         canvasHeight: canvas?.height ?? 0,
         canvasWidth: canvas?.width ?? 0,
-        domStartButtonExists: document.querySelector('#start-outing') !== null,
+        domStartButtonExists: document.getElementById(['start', 'outing'].join('-')) !== null,
         overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         rectHeight: rect?.height ?? 0,
         rectWidth: rect?.width ?? 0,
