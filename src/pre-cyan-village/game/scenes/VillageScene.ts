@@ -1,12 +1,11 @@
 import Phaser from 'phaser';
 import { findNearestHotspot, villageHotspots, villageSize, type VillageHotspot } from '../config/map-layout';
+import { loadSvgAsset } from '../config/svg-assets';
 import { DeviceHud } from '../objects/DeviceHud';
 import { InteractionPrompt } from '../objects/InteractionPrompt';
 import { PathGlow } from '../objects/PathGlow';
 import { Player } from '../objects/Player';
 import type { OutingSession } from '../adapters/outing-session';
-
-const assetUrl = (fileName: string): string => new URL(`../../assets/${fileName}?no-inline`, import.meta.url).href;
 
 export class VillageScene extends Phaser.Scene {
   private player: Player | null = null;
@@ -22,14 +21,14 @@ export class VillageScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.svg('player', assetUrl('player.svg'));
-    this.load.svg('bank', assetUrl('bank.svg'));
-    this.load.svg('store', assetUrl('store.svg'));
-    this.load.svg('bus-stop', assetUrl('bus-stop.svg'));
-    this.load.svg('board', assetUrl('board.svg'));
-    this.load.svg('lottery', assetUrl('lottery.svg'));
-    this.load.svg('dark-alley', assetUrl('dark-alley.svg'));
-    this.load.svg('cyan-trace', assetUrl('cyan-trace.svg'));
+    loadSvgAsset(this, 'player');
+    loadSvgAsset(this, 'bank');
+    loadSvgAsset(this, 'store');
+    loadSvgAsset(this, 'bus-stop');
+    loadSvgAsset(this, 'board');
+    loadSvgAsset(this, 'lottery');
+    loadSvgAsset(this, 'dark-alley');
+    loadSvgAsset(this, 'cyan-trace');
   }
 
   create(): void {

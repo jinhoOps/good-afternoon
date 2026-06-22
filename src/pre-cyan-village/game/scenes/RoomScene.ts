@@ -1,11 +1,10 @@
 import Phaser from 'phaser';
 import { findNearestDoor, roomDoor, roomSize } from '../config/map-layout';
+import { loadSvgAsset } from '../config/svg-assets';
 import { DeviceHud } from '../objects/DeviceHud';
 import { InteractionPrompt } from '../objects/InteractionPrompt';
 import { Player } from '../objects/Player';
 import type { OutingSession } from '../adapters/outing-session';
-
-const assetUrl = (fileName: string): string => new URL(`../../assets/${fileName}?no-inline`, import.meta.url).href;
 
 export class RoomScene extends Phaser.Scene {
   private player: Player | null = null;
@@ -19,8 +18,8 @@ export class RoomScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.svg('player', assetUrl('player.svg'));
-    this.load.svg('room', assetUrl('room.svg'));
+    loadSvgAsset(this, 'player');
+    loadSvgAsset(this, 'room');
   }
 
   create(): void {
