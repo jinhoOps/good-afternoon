@@ -8,6 +8,7 @@
 
 현재 활성 첫 슬라이스의 소스는 `src/pre-cyan-village/`입니다. 플레이어는 `내 방`에서 시작해 작은 단말의 안내를 받고, 한 번의 외출에서 4개 선택지 중 3개를 순서대로 고르는 Pre-Cyan 외출 루프를 진행합니다. 선택 순서에 따라 마을 반응과 기록이 달라지고, 필수 행동 감각을 모두 경험하면 Cyan 입구 흔적이 열리는 Vite + TypeScript 구현입니다. `dist/`는 빌드로 생성되는 출력물이며 저장소에 커밋하지 않습니다.
 
+- **Pre-Cyan runtime**: Phaser가 기본 진입점입니다. 기본 URL은 `http://127.0.0.1:5173/good-afternoon/`이며, `?runtime=phaser` 쿼리는 더 이상 필요하지 않습니다. DOM runtime은 entry/source에서 제거됐고 fallback으로 유지하지 않습니다.
 - **루트 HTML 데모**: 기획 검증용 시각 자료입니다. 온보딩, 개념 지도, 기준금리 챌린지 흐름을 참고할 때만 사용합니다.
 - **개발 로드맵**: `docs/ROADMAP.md`에 다음 구현 순서와 완료 기준을 정리했습니다.
 - **디자인 기준**: `DESIGN.md`의 Good Afternoon 우선 섹션을 기준으로 판단합니다.
@@ -24,8 +25,10 @@ Pre-Cyan 첫 모험 마을:
 
 빌드와 배포 산출물 확인:
 
+- `npm test`: 도메인/상태 전이 테스트를 실행합니다.
 - `npm run build`: TypeScript 검사와 Vite 빌드를 실행하고 `dist/`를 생성합니다.
-- `npm run preview`: 생성된 `dist/`를 로컬에서 미리 확인합니다.
+- `npm run preview -- --host 127.0.0.1 --port 4173`: 생성된 `dist/`를 로컬에서 미리 확인합니다.
+- `npm run test:smoke`: preview 서버가 켜진 상태에서 Phaser 첫 방/모바일 뷰포트 스모크를 실행합니다.
 
 기획 검증용 데모:
 
