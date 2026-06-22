@@ -302,3 +302,26 @@ h1 { margin: 0; font-size: 24px; line-height: 1.1; letter-spacing: 0; }
   .zone-card { min-height: 128px; padding: 8px; }
   .hotspot { font-size: 12px; }
 }
+
+.game-shell {
+  min-height: 100svh;
+  background: #faf9f5;
+  color: #1c1b18;
+}
+
+.game-host {
+  width: 100vw;
+  height: 100svh;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.game-host canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100svh;
+}
+
+html[data-runtime="phaser"] .app-shell {
+  display: none;
+}
