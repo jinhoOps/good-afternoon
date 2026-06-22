@@ -1,11 +1,16 @@
 import { chromium } from 'playwright';
 
+declare const process: {
+  exit(code?: number): never;
+};
+
 async function main(): Promise<void> {
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
     const failed: string[] = [];
     const consoleErrors: string[] = [];
+    const pageErrors: string[] = [];
 
     page.on('requestfailed', (request) => {
       failed.push(`${request.url()} ${request.failure()?.errorText ?? ''}`);
@@ -14,6 +19,9 @@ async function main(): Promise<void> {
       if (message.type() === 'error') {
         consoleErrors.push(message.text());
       }
+    });
+    page.on('pageerror', (error) => {
+      pageErrors.push(error.message);
     });
 
     await page.goto('http://127.0.0.1:4173/good-afternoon/?runtime=phaser', {
@@ -30,9 +38,10 @@ async function main(): Promise<void> {
       const appShellStyle = appShell ? window.getComputedStyle(appShell) : null;
 
       return {
+        appShellExists: Boolean(appShell),
         appShellHidden: appShell
           ? appShell.hidden || appShellStyle?.display === 'none' || appShellStyle?.visibility === 'hidden'
-          : true,
+          : false,
         canvasExists: Boolean(canvas),
         canvasHeight: canvas?.height ?? 0,
         canvasWidth: canvas?.width ?? 0,
@@ -56,6 +65,9 @@ async function main(): Promise<void> {
     if (result.runtime !== 'phaser') {
       throw new Error(`Unexpected runtime ${result.runtime}`);
     }
+    if (!result.appShellExists) {
+      throw new Error('DOM app shell missing during runtime migration');
+    }
     if (!result.appShellHidden) {
       throw new Error('DOM app shell is visible during Phaser runtime');
     }
@@ -68,6 +80,9 @@ async function main(): Promise<void> {
     if (consoleErrors.length > 0) {
       throw new Error(`Console errors: ${consoleErrors.join(', ')}`);
     }
+    if (pageErrors.length > 0) {
+      throw new Error(`Page errors: ${pageErrors.join(', ')}`);
+    }
   } finally {
     await browser.close();
   }
@@ -75,5 +90,5 @@ async function main(): Promise<void> {
 
 main().catch((error) => {
   console.error(error);
-  throw error;
+  process.exit(1);
 });

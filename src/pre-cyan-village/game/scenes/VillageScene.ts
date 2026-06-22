@@ -6,7 +6,7 @@ import { PathGlow } from '../objects/PathGlow';
 import { Player } from '../objects/Player';
 import type { OutingSession } from '../adapters/outing-session';
 
-const assetUrl = (fileName: string): string => new URL(`../../assets/${fileName}`, import.meta.url).href;
+const assetUrl = (fileName: string): string => new URL(`../../assets/${fileName}?no-inline`, import.meta.url).href;
 
 export class VillageScene extends Phaser.Scene {
   private player: Player | null = null;
