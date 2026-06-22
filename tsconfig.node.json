@@ -19,6 +19,7 @@
     "vite.config.ts",
     "src/**/*.test.ts",
     "src/shared/**/*.ts",
-    "src/pre-cyan-village/domain/**/*.ts"
+    "src/pre-cyan-village/domain/**/*.ts",
+    "src/pre-cyan-village/game/**/*.ts"
   ]
 }

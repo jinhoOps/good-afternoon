@@ -40,6 +40,36 @@ test('outing session ignores duplicate hotspot interactions', () => {
   assert.deepEqual(unchanged.currentOutingSelections, ['bankCounter']);
 });
 
+test('outing session ignores finance interactions before an outing starts', () => {
+  const session = createOutingSession(createInitialState(), null);
+  const unchanged = session.interact('bankCounter', 1000);
+
+  assert.equal(unchanged.screen, 'room');
+  assert.equal(unchanged.moneyFever.triggerCount, 0);
+});
+
+test('outing session ignores inactive finance hotspots during an outing', () => {
+  const session = createOutingSession(createInitialState(), null);
+  session.start();
+  const unchanged = session.interact('bankAtm', 1000);
+
+  assert.equal(unchanged.moneyFever.triggerCount, 0);
+  assert.deepEqual(unchanged.currentOutingSelections, []);
+});
+
+test('storage-backed outing session persists state for reload recovery', () => {
+  const storage = createMemoryStorage();
+  const session = createOutingSession(createInitialState(), storage);
+
+  session.start();
+  session.interact('bankCounter', 1000);
+
+  const recovered = loadGameState(storage);
+  assert.equal(recovered.screen, 'villageBoard');
+  assert.deepEqual(recovered.currentOutingSelections, ['bankCounter']);
+  assert.equal(recovered.moneyFever.triggerCount, 1);
+});
+
 test('game storage adapter saves, loads, and recovers corrupt data', () => {
   const storage = createMemoryStorage();
   const initial = createInitialState();
