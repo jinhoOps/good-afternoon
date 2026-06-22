@@ -62,6 +62,18 @@ test('Vite entry declares a project-local favicon', () => {
   assert.equal(existsSync(join(villageDir, 'favicon.svg')), true);
 });
 
+test('Vite entry can host DOM and Phaser runtimes during migration', () => {
+  const indexHtml = readVillageFile('index.html');
+  const mainSource = readVillageFile('main.ts');
+
+  assert.ok(indexHtml.includes('id="phaser-game"'));
+  assert.ok(indexHtml.includes('data-runtime="dom"'));
+  assert.match(mainSource, /URLSearchParams/);
+  assert.match(mainSource, /runtime=phaser|runtimeSearch/);
+  assert.match(mainSource, /startPreCyanGame/);
+  assert.match(mainSource, /wireEvents/);
+});
+
 test('outing render and event hosts remain wired', () => {
   const renderSource = readVillageFile(join('view', 'render.ts'));
   const eventsSource = readVillageFile(join('view', 'events.ts'));

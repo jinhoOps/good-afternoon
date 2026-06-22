@@ -2,6 +2,7 @@ import './styles.css';
 import { createInitialState, loadState, saveState } from './domain/state';
 import { wireEvents } from './view/events';
 import { queryAppElements, renderApp } from './view/render';
+import { startPreCyanGame } from './game/main-game';
 import type { StorageLike } from '../shared/storage/local-storage';
 
 function getSafeStorage(): StorageLike | null {
@@ -12,12 +13,29 @@ function getSafeStorage(): StorageLike | null {
   }
 }
 
-const elements = queryAppElements();
+function runtimeSearch(): 'dom' | 'phaser' {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('runtime') === 'phaser' ? 'phaser' : 'dom';
+}
+
 const storage = getSafeStorage();
 const initialState = storage ? loadState(storage) : createInitialState();
 
 if (storage) {
   saveState(storage, initialState);
 }
-renderApp(elements, initialState);
-wireEvents(elements, initialState, storage);
+
+if (runtimeSearch() === 'phaser') {
+  document.documentElement.dataset.runtime = 'phaser';
+  const shell = document.querySelector<HTMLElement>('#phaser-shell');
+  const host = document.querySelector<HTMLElement>('#phaser-game');
+  if (!shell || !host) throw new Error('Missing Phaser game host');
+  shell.hidden = false;
+  shell.dataset.runtime = 'phaser';
+  startPreCyanGame({ host, storage, initialState });
+} else {
+  document.documentElement.dataset.runtime = 'dom';
+  const elements = queryAppElements();
+  renderApp(elements, initialState);
+  wireEvents(elements, initialState, storage);
+}
