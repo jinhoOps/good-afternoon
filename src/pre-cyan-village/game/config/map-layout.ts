@@ -10,16 +10,27 @@ export type DoorTarget = {
   label: string;
 };
 
-export type VillageHotspot = {
-  id: HotspotId | 'lottery' | 'darkAlley' | 'cyanTraceSeed';
-  domainId: HotspotId | null;
-  kind: 'core' | 'background';
+type VillageHotspotBase = {
   x: number;
   y: number;
   radius: number;
   label: string;
   assetKey: string;
 };
+
+export type CoreVillageHotspot = VillageHotspotBase & {
+  kind: 'core';
+  id: HotspotId;
+  domainId: HotspotId;
+};
+
+export type BackgroundVillageHotspot = VillageHotspotBase & {
+  kind: 'background';
+  id: 'lottery' | 'darkAlley' | 'cyanTraceSeed';
+  domainId: null;
+};
+
+export type VillageHotspot = CoreVillageHotspot | BackgroundVillageHotspot;
 
 export const roomSize = { width: 720, height: 480 };
 export const villageSize = { width: 960, height: 640 };

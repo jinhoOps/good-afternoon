@@ -8,11 +8,11 @@ test('room door uses explicit interaction radius', () => {
   assert.equal(findNearestDoor({ x: roomDoor.x + roomDoor.radius + 10, y: roomDoor.y }), null);
 });
 
-test('village exposes three current core hotspots and background seeds', () => {
+test('village exposes current core hotspots and background seeds', () => {
   assert.deepEqual(coreHotspotIds, ['bankCounter', 'storeFront', 'busStop', 'mailbox']);
-  assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'lottery'));
-  assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'darkAlley'));
-  assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'cyanTraceSeed'));
+  assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'lottery' && hotspot.domainId === null));
+  assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'darkAlley' && hotspot.domainId === null));
+  assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'cyanTraceSeed' && hotspot.domainId === null));
 });
 
 test('nearest hotspot only returns a target inside its radius', () => {
