@@ -74,6 +74,14 @@ test('Vite entry can host DOM and Phaser runtimes during migration', () => {
   assert.match(mainSource, /wireEvents/);
 });
 
+test('Phaser runtime hides the DOM shell while DOM runtime keeps it visible', () => {
+  const mainSource = readVillageFile('main.ts');
+
+  assert.match(mainSource, /\.app-shell/);
+  assert.match(mainSource, /\.hidden\s*=\s*true/);
+  assert.match(mainSource, /\.hidden\s*=\s*false/);
+});
+
 test('outing render and event hosts remain wired', () => {
   const renderSource = readVillageFile(join('view', 'render.ts'));
   const eventsSource = readVillageFile(join('view', 'events.ts'));
