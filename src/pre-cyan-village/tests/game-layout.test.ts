@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { plannedOutings } from '../domain/data';
 import { villageHotspots, roomDoor, findNearestHotspot, findNearestDoor, coreHotspotIds } from '../game/config/map-layout';
 
 test('room door uses explicit interaction radius', () => {
@@ -13,6 +14,23 @@ test('village exposes current core hotspots and background seeds', () => {
   assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'lottery' && hotspot.domainId === null));
   assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'darkAlley' && hotspot.domainId === null));
   assert.ok(villageHotspots.some((hotspot) => hotspot.kind === 'background' && hotspot.id === 'cyanTraceSeed' && hotspot.domainId === null));
+});
+
+test('village maps every planned outing hotspot to a core Phaser marker', () => {
+  const plannedHotspotIds = [...new Set(plannedOutings.flatMap((outing) => outing.hotspotIds))];
+
+  for (const hotspotId of plannedHotspotIds) {
+    assert.ok(
+      villageHotspots.some((hotspot) => {
+        return hotspot.kind === 'core' && hotspot.id === hotspotId && hotspot.domainId === hotspotId;
+      }),
+      `${hotspotId} must have a core marker`
+    );
+  }
+
+  for (const background of villageHotspots.filter((hotspot) => hotspot.kind === 'background')) {
+    assert.equal(background.domainId, null);
+  }
 });
 
 test('nearest hotspot only returns a target inside its radius', () => {
