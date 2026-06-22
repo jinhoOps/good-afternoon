@@ -33,6 +33,7 @@ async function main(): Promise<void> {
 
     const result = await page.evaluate(() => {
       const canvas = document.querySelector<HTMLCanvasElement>('#phaser-game canvas');
+      const host = document.querySelector('#phaser-game');
       const rect = canvas?.getBoundingClientRect();
 
       return {
@@ -40,6 +41,9 @@ async function main(): Promise<void> {
         canvasHeight: canvas?.height ?? 0,
         canvasWidth: canvas?.width ?? 0,
         domStartButtonExists: document.getElementById(['start', 'outing'].join('-')) !== null,
+        nonCanvasChildren: Array.from(host?.children ?? []).filter((child) => {
+          return child.tagName.toLowerCase() !== 'canvas';
+        }).length,
         overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         rectHeight: rect?.height ?? 0,
         rectWidth: rect?.width ?? 0,
@@ -62,6 +66,9 @@ async function main(): Promise<void> {
     }
     if (result.domStartButtonExists) {
       throw new Error('DOM runtime start button should not exist in Phaser entry');
+    }
+    if (result.nonCanvasChildren > 0) {
+      throw new Error(`Phaser host has non-canvas children ${result.nonCanvasChildren}`);
     }
     if (result.overflow > 0) {
       throw new Error(`Mobile horizontal overflow ${result.overflow}`);

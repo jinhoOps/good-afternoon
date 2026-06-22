@@ -35,9 +35,6 @@ export function startPreCyanGame(options: PreCyanGameOptions): PreCyanGameHandle
       arcade: {
         debug: false
       }
-    },
-    dom: {
-      createContainer: true
     }
   });
 
