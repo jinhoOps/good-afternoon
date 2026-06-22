@@ -7,40 +7,9 @@
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
 </head>
 <body>
-  <main class="app-shell">
-    <section class="room-screen" id="room-screen">
-      <p class="eyebrow">// Pre-Cyan</p>
-      <h1>Good Afternoon.</h1>
-      <p class="guide-line" id="guide-line">다녀올래?</p>
-      <button type="button" id="start-outing">나가기</button>
-    </section>
-
-    <section class="village-board" id="village-board" hidden>
-      <header class="outing-header">
-        <h1 id="outing-title">첫 외출</h1>
-        <div class="outing-slots" id="outing-slots" aria-label="오늘 들를 곳"></div>
-      </header>
-      <div class="zone-board" id="zone-board"></div>
-    </section>
-
-    <section class="village-log" aria-live="polite">
-      <p id="village-log-text">문은 열려 있어.</p>
-    </section>
-
-    <section class="reaction-panel" id="reaction-panel" hidden>
-      <p id="reaction-text"></p>
-    </section>
-
-    <section class="status-strip" id="status-strip" aria-label="현재 상태"></section>
-
-    <footer class="controls">
-      <button type="button" id="reset-state">초기화</button>
-    </footer>
-  </main>
-
-  <section class="game-shell" id="phaser-shell" data-runtime="dom" hidden>
+  <main class="game-shell" id="phaser-shell" data-runtime="phaser">
     <div class="game-host" id="phaser-game" aria-label="Pre-Cyan playable prototype"></div>
-  </section>
+  </main>
 
   <script type="module" src="./main.ts"></script>
 </body>

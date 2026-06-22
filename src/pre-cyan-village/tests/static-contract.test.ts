@@ -32,9 +32,9 @@ function hasViteEntryScript(indexHtml: string): boolean {
   });
 }
 
-test('Vite entry keeps room and outing hosts wired', () => {
+test('Vite entry exposes only the Phaser shell host', () => {
   const indexHtml = readVillageFile('index.html');
-  const hostIds = [
+  const domOnlyHostIds = [
     'room-screen',
     'guide-line',
     'start-outing',
@@ -49,8 +49,11 @@ test('Vite entry keeps room and outing hosts wired', () => {
     'reset-state'
   ];
 
-  for (const hostId of hostIds) {
-    assert.ok(indexHtml.includes(`id="${hostId}"`));
+  assert.ok(indexHtml.includes('id="phaser-shell"'));
+  assert.ok(indexHtml.includes('id="phaser-game"'));
+  assert.ok(indexHtml.includes('data-runtime="phaser"'));
+  for (const hostId of domOnlyHostIds) {
+    assert.equal(indexHtml.includes(`id="${hostId}"`), false, hostId);
   }
   assert.equal(hasViteEntryScript(indexHtml), true);
 });
@@ -62,24 +65,19 @@ test('Vite entry declares a project-local favicon', () => {
   assert.equal(existsSync(join(villageDir, 'favicon.svg')), true);
 });
 
-test('Vite entry can host DOM and Phaser runtimes during migration', () => {
+test('Vite entry starts Phaser without runtime migration branching', () => {
   const indexHtml = readVillageFile('index.html');
   const mainSource = readVillageFile('main.ts');
 
   assert.ok(indexHtml.includes('id="phaser-game"'));
-  assert.ok(indexHtml.includes('data-runtime="dom"'));
-  assert.match(mainSource, /URLSearchParams/);
-  assert.match(mainSource, /runtime=phaser|runtimeSearch/);
+  assert.ok(indexHtml.includes('id="phaser-shell"'));
+  assert.ok(indexHtml.includes('data-runtime="phaser"'));
+  assert.match(mainSource, /dataset\.runtime\s*=\s*['"]phaser['"]/);
   assert.match(mainSource, /startPreCyanGame/);
-  assert.match(mainSource, /wireEvents/);
-});
-
-test('Phaser runtime hides the DOM shell while DOM runtime keeps it visible', () => {
-  const mainSource = readVillageFile('main.ts');
-
-  assert.match(mainSource, /\.app-shell/);
-  assert.match(mainSource, /\.hidden\s*=\s*true/);
-  assert.match(mainSource, /\.hidden\s*=\s*false/);
+  assert.doesNotMatch(mainSource, /URLSearchParams/);
+  assert.doesNotMatch(mainSource, /runtimeSearch/);
+  assert.doesNotMatch(mainSource, /wireEvents/);
+  assert.doesNotMatch(mainSource, /queryAppElements|renderApp/);
 });
 
 test('Phaser prototype SVG assets exist in the Vite source tree', () => {
@@ -100,14 +98,12 @@ test('Phaser prototype SVG assets exist in the Vite source tree', () => {
   }
 });
 
-test('outing render and event hosts remain wired', () => {
-  const renderSource = readVillageFile(join('view', 'render.ts'));
-  const eventsSource = readVillageFile(join('view', 'events.ts'));
+test('Phaser game scenes remain wired as the entry experience', () => {
+  const mainGameSource = readVillageFile(join('game', 'main-game.ts'));
 
-  assert.match(renderSource, /\brenderOutingSlots\b/);
-  assert.match(renderSource, /\brenderZoneBoard\b/);
-  assert.match(eventsSource, /\bstartOuting\b/);
-  assert.match(eventsSource, /\bselectHotspot\b/);
+  assert.match(mainGameSource, /\bRoomScene\b/);
+  assert.match(mainGameSource, /\bVillageScene\b/);
+  assert.match(mainGameSource, /\bstartPreCyanGame\b/);
 });
 
 test('runtime source avoids banned first-experience strings', () => {

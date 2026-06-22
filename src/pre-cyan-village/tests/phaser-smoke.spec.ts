@@ -24,7 +24,7 @@ async function main(): Promise<void> {
       pageErrors.push(error.message);
     });
 
-    await page.goto('http://127.0.0.1:4173/good-afternoon/?runtime=phaser', {
+    await page.goto('http://127.0.0.1:4173/good-afternoon/', {
       waitUntil: 'networkidle',
       timeout: 30_000
     });
@@ -34,17 +34,12 @@ async function main(): Promise<void> {
     const result = await page.evaluate(() => {
       const canvas = document.querySelector<HTMLCanvasElement>('#phaser-game canvas');
       const rect = canvas?.getBoundingClientRect();
-      const appShell = document.querySelector<HTMLElement>('.app-shell');
-      const appShellStyle = appShell ? window.getComputedStyle(appShell) : null;
 
       return {
-        appShellExists: Boolean(appShell),
-        appShellHidden: appShell
-          ? appShell.hidden || appShellStyle?.display === 'none' || appShellStyle?.visibility === 'hidden'
-          : false,
         canvasExists: Boolean(canvas),
         canvasHeight: canvas?.height ?? 0,
         canvasWidth: canvas?.width ?? 0,
+        domStartButtonExists: document.querySelector('#start-outing') !== null,
         overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         rectHeight: rect?.height ?? 0,
         rectWidth: rect?.width ?? 0,
@@ -65,11 +60,8 @@ async function main(): Promise<void> {
     if (result.runtime !== 'phaser') {
       throw new Error(`Unexpected runtime ${result.runtime}`);
     }
-    if (!result.appShellExists) {
-      throw new Error('DOM app shell missing during runtime migration');
-    }
-    if (!result.appShellHidden) {
-      throw new Error('DOM app shell is visible during Phaser runtime');
+    if (result.domStartButtonExists) {
+      throw new Error('DOM runtime start button should not exist in Phaser entry');
     }
     if (result.overflow > 0) {
       throw new Error(`Mobile horizontal overflow ${result.overflow}`);
