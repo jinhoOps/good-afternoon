@@ -49,9 +49,9 @@ export const DAYS: MarketDay[] = [
     title: '빗소리가 들리는 장터', label: '세 번째 오후', weather: 'rain', weatherLabel: '오후부터 가랑비',
     forecast: '손님 4~6명', forecastDetail: '학교를 마친 학생 몇 명이 지나갈 거예요.',
     news: '“비도 오는데, 오늘은 가볍게 사 마실래.”',
-    hint: '어제 잘 팔렸어도 오늘은 달라요. 남는 음료도 이미 재료비를 쓴 음료예요.', cost: 500,
+    hint: '어제 잘 팔렸어도 오늘은 달라요. 오늘 팔 물량과 내일 가져갈 음료를 함께 생각해보세요.', cost: 500,
     visitors: visitors([800, 900, 1200, 1000, 900], '잠깐 비를 피하고 있어요.'),
-    concept: { title: '재고와 남겨둘 돈', description: '많이 준비할수록 영업 전에 쓰는 돈도 커져요. 남는 음료에 묶인 돈은 다음 영업에 쓸 수 없으니, 팔릴 양과 남겨둘 돈을 함께 생각해봐요.' }
+    concept: { title: '오늘의 돈과 내일의 재고', description: '보관에 쓰는 돈은 지금의 현금을 줄여요. 대신 내일 팔 음료가 남으면 새 재료에 쓸 돈을 아낄 수 있어요. 얼마나 활용하느냐에 따라 선택의 가치가 달라져요.' }
   },
   {
     title: '레몬 상자의 새 가격표', label: '네 번째 오후', weather: 'supply', weatherLabel: '구름 사이 햇살',
@@ -75,4 +75,7 @@ export const PRICES = [800, 1000, 1200, 1500] as const;
 export const INITIAL_CASH = 6000;
 export const DREAM_CASH = 15000;
 export const MAX_STOCK = 18;
+export const COOLER_FEE = 600;
+export const COOLER_CAPACITY = 4;
+export const canRentCooler = (day: number): boolean => day >= 2 && day < DAYS.length - 1;
 export const money = (value: number): string => `${value.toLocaleString('ko-KR')}원`;

@@ -127,6 +127,64 @@ async function main(): Promise<void> {
     await page.locator('#next-day').waitFor();
     assert.equal(await cash(page), 9000);
 
+    // 기존 버전의 셋째 날 저장에서 이어 시작해 보관과 다음 날 판매를 확인합니다.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.evaluate((key) => localStorage.setItem(key, JSON.stringify({
+      version: 1, phase: 'planning', order: { quantity: 6, price: 1200 },
+      receipts: [{ quantity: 6, price: 1000 }, { quantity: 8, price: 1200 }]
+    })), STORAGE_KEY);
+    await page.reload({ waitUntil: 'networkidle' });
+    assert.equal(await cash(page), 13400);
+    assert.equal(await page.locator('.notice').count(), 0);
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await setQuantity(page, 9);
+    await page.locator('#price-800').click();
+    await page.locator('#rent-cooler').click();
+    assert.equal(await page.locator('#rent-cooler').getAttribute('aria-pressed'), 'true');
+    assert.ok((await page.locator('.tomorrow-news').innerText()).includes('700원'));
+    await page.reload({ waitUntil: 'networkidle' });
+    assert.equal(await page.locator('#rent-cooler').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('#quantity').inputValue(), '9');
+    await noOverflow(page);
+    await page.screenshot({ path: `${artifactDir}/07-desktop-cooler.png`, fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    const rentalBounds = await page.locator('#rent-cooler').boundingBox();
+    assert.ok(rentalBounds && rentalBounds.height >= 44);
+    await noOverflow(page);
+    await page.screenshot({ path: `${artifactDir}/08-mobile-cooler.png`, fullPage: true });
+    await sell(page);
+    assert.equal(await cash(page), 12300);
+    assert.ok((await page.locator('.cooler-prop').innerText()).includes('4잔'));
+    assert.ok((await page.locator('.storage-result').innerText()).includes('4잔'));
+    await page.locator('.inventory-accounting summary').click();
+    assert.ok((await page.locator('.accounting-profit').innerText()).includes('900원'));
+    await noOverflow(page);
+    await page.screenshot({ path: `${artifactDir}/09-mobile-stored-result.png`, fullPage: true });
+    await page.locator('#next-day').click();
+    await page.reload({ waitUntil: 'networkidle' });
+    assert.equal(await page.locator('#quantity').inputValue(), '2');
+    assert.ok((await page.locator('.carried-stock').innerText()).includes('4잔'));
+    assert.equal(await page.locator('#rent-cooler').getAttribute('aria-pressed'), 'false');
+    await setQuantity(page, 3);
+    await page.locator('#price-1200').click();
+    await page.screenshot({ path: `${artifactDir}/10-mobile-next-day-stock.png`, fullPage: true });
+    await sell(page);
+    assert.equal(await cash(page), 18600);
+    await page.locator('#retry-day').click();
+    assert.equal(await cash(page), 12300);
+    assert.ok((await page.locator('.carried-stock').innerText()).includes('4잔'));
+    await setQuantity(page, 0);
+    await page.locator('#price-1500').click();
+    await page.locator('#rent-cooler').click();
+    assert.equal(await page.locator('#open-market').innerText(), '가게 문 열기');
+    await page.locator('#open-market').click();
+    await page.reload({ waitUntil: 'networkidle' });
+    assert.equal(await cash(page), 14700);
+    assert.ok((await page.locator('.storage-result').innerText()).includes('2잔'));
+    await page.locator('#next-day').click();
+    assert.equal(await page.locator('.carried-stock').count(), 0);
+    assert.equal(await page.locator('#rent-cooler').count(), 0);
+
     const failedStorage = await context.newPage();
     await failedStorage.addInitScript(() => {
       Object.defineProperty(window, 'localStorage', { get() { throw new Error('저장소 접근 불가'); } });
@@ -138,7 +196,7 @@ async function main(): Promise<void> {
 
     assert.deepEqual(errors, [], `브라우저 오류: ${errors.join('\n')}`);
     await context.close();
-    console.log('PC·390×844 모바일 / 5일 전체 진행 / 다시 해보기 / 저장·손상·접근 실패 / 콘솔·이미지·넘침: 통과');
+    console.log('PC·390×844 모바일 / 5일 진행 / 보관·기한·재시도 / v1 저장 이전·손상·접근 실패 / 콘솔·이미지·넘침: 통과');
     console.log(`화면 캡처: ${artifactDir}`);
   } finally {
     await browser.close();

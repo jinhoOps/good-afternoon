@@ -1,6 +1,7 @@
 import './styles.css';
+import './cooler.css';
 import { DAYS, PRICES } from './content';
-import { capacity, changeOrder, newGame, nextDay, openMarket, retryDay, type GameState } from './domain';
+import { preparationCapacity, changeOrder, newGame, nextDay, openMarket, retryDay, type GameState } from './domain';
 import { load, save } from './storage';
 import { view, type ViewState } from './view';
 
@@ -68,7 +69,7 @@ function tick(): void {
 }
 
 function changeQuantity(quantity: number): void {
-  const nextQuantity = Math.min(capacity(state.cash, state.day), Math.max(0, Math.trunc(quantity)));
+  const nextQuantity = Math.min(preparationCapacity(state), Math.max(0, Math.trunc(quantity)));
   if (!Number.isFinite(nextQuantity)) { render('quantity'); return; }
   persist(changeOrder(state, { ...state.order, quantity: nextQuantity }));
   render();
@@ -98,6 +99,10 @@ app.addEventListener('click', (event) => {
   if (action === 'less') changeQuantity(state.order.quantity - 1);
   if (action === 'more') changeQuantity(state.order.quantity + 1);
   if (action === 'quantity') changeQuantity(Number(target.dataset.value));
+  if (action === 'cooler') {
+    persist(changeOrder(state, { ...state.order, cooler: !state.order.cooler }));
+    render('rent-cooler');
+  }
   if (action === 'price') {
     const price = Number(target.dataset.value);
     if (PRICES.includes(price as typeof PRICES[number])) { persist(changeOrder(state, { ...state.order, price })); render(); }

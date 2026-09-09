@@ -10,18 +10,19 @@ function record(value: unknown): value is Record<string, unknown> {
 }
 
 export function serialize(state: GameState): string {
-  return JSON.stringify({ version: 1, phase: state.phase, order: state.order, receipts: state.receipts.map(({ quantity, price }) => ({ quantity, price })) });
+  return JSON.stringify({ version: 2, phase: state.phase, order: state.order, receipts: state.receipts.map(({ quantity, price, cooler }) => ({ quantity, price, cooler })) });
 }
 
 export function restore(raw: string): GameState | null {
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (!record(parsed) || parsed.version !== 1 || !Array.isArray(parsed.receipts) || parsed.receipts.length > DAYS.length) return null;
+    if (!record(parsed) || (parsed.version !== 1 && parsed.version !== 2) || !Array.isArray(parsed.receipts) || parsed.receipts.length > DAYS.length) return null;
     let state = newGame();
     for (const [index, item] of parsed.receipts.entries()) {
       if (!record(item) || typeof item.quantity !== 'number' || typeof item.price !== 'number') return null;
+      if (parsed.version === 2 && typeof item.cooler !== 'boolean') return null;
       if (index > 0) state = nextDay(state);
-      const ordered = changeOrder(state, { quantity: item.quantity, price: item.price });
+      const ordered = changeOrder(state, { quantity: item.quantity, price: item.price, cooler: parsed.version === 2 ? item.cooler as boolean : false });
       if (ordered === state) return null;
       state = openMarket(ordered);
     }
@@ -30,7 +31,8 @@ export function restore(raw: string): GameState | null {
       if (state.receipts.length === DAYS.length) return null;
       if (state.receipts.length > 0) state = nextDay(state);
       if (!record(parsed.order) || typeof parsed.order.quantity !== 'number' || typeof parsed.order.price !== 'number') return null;
-      const updated = changeOrder(state, { quantity: parsed.order.quantity, price: parsed.order.price });
+      if (parsed.version === 2 && typeof parsed.order.cooler !== 'boolean') return null;
+      const updated = changeOrder(state, { quantity: parsed.order.quantity, price: parsed.order.price, cooler: parsed.version === 2 ? parsed.order.cooler as boolean : false });
       if (updated === state) return null;
       state = updated;
     } else if (parsed.phase !== 'result' || state.receipts.length === 0) return null;

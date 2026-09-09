@@ -1,0 +1,52 @@
+.cooler-choice {
+  margin: 22px 0;
+  padding: 20px 0 0;
+  border-top: 1px dashed var(--line);
+}
+.cooler-choice-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.small-eyebrow { display: block; color: #90723c; font-size: 10px; line-height: 1.6; margin-bottom: 6px; }
+.cooler-choice h3 { font-size: 15px; line-height: 1.5; }
+.cooler-price { flex-shrink: 0; font-size: 10px; color: #727b6a; text-align: right; }
+.cooler-price b { display: block; color: var(--ink); font-size: 13px; margin-top: 3px; }
+.cooler-choice p, .cooler-choice>small { display: block; font-size: 12px; line-height: 1.8; color: #687561; margin-top: 9px; word-break: keep-all; overflow-wrap: anywhere; }
+.tomorrow-news { display: flex; gap: 10px; margin: 13px 0; padding-left: 10px; border-left: 2px solid #c6aa65; font-size: 11px; line-height: 1.8; color: #6c725e; }
+.tomorrow-news strong { flex-shrink: 0; color: #8c7037; font-weight: 500; }
+.cooler-toggle { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 48px; padding: 10px 12px; font-size: 12px; border: 1px solid #ccd6c5; border-radius: 6px; background: #f5f6ed; text-align: left; }
+.cooler-toggle[aria-pressed=true] { background: #e7efe0; border-color: #8ba47b; color: #3d603c; }
+.cooler-toggle>span:last-child { margin-left: auto; flex-shrink: 0; font-size: 11px; }
+.toggle-mark { display: grid; place-items: center; width: 21px; height: 21px; flex-shrink: 0; border: 1px solid #a4b699; border-radius: 4px; font-size: 14px; }
+.carried-stock { margin: 18px 0 0; padding: 13px 14px; background: #eaf1ea; border-left: 3px solid #83a79b; border-radius: 4px; font-size: 12px; color: #436559; }
+.carried-stock strong { font-weight: 600; }
+.carried-stock p { font-size: 11px; line-height: 1.8; margin-top: 5px; word-break: keep-all; }
+.storage-result { background: #edf2e6; border-radius: 6px; padding: 13px 15px; margin: 15px 0; }
+.storage-result>div { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; line-height: 1.9; color: #506c48; }
+.storage-result>div+div { color: #75806a; font-size: 11px; }
+.storage-result p { font-size: 11px; line-height: 1.7; margin-top: 7px; color: #6d7b60; }
+.inventory-accounting { border-top: 1px solid var(--line); padding-top: 13px; margin: 15px 0; font-size: 12px; }
+.inventory-accounting summary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; color: #556c51; list-style: none; }
+.inventory-accounting summary::-webkit-details-marker { display: none; }
+.inventory-accounting[open] summary>span { transform: rotate(45deg); }
+.inventory-accounting p, .inventory-accounting small { display: block; font-size: 11px; line-height: 1.9; color: #6b7564; word-break: keep-all; }
+.inventory-accounting dl { margin: 14px 0; }
+.inventory-accounting dl>div { display: flex; justify-content: space-between; gap: 12px; margin-top: 9px; color: #67735e; font-size: 11px; }
+.inventory-accounting dd { margin: 0; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.inventory-accounting .accounting-profit { border-top: 1px dashed #d5decd; padding-top: 11px; color: #3e5c3a; font-size: 12px; font-weight: 600; }
+.history-label { font-size: 11px; color: #7a846f; margin-top: 20px; }
+.cooler-prop { position: absolute; right: 26px; bottom: 115px; width: 122px; pointer-events: none; text-align: center; z-index: 1; }
+.cooler-prop svg { display: block; width: 100%; filter: drop-shadow(0 3px 4px #25352d20); }
+.cooler-prop>span { display: inline-block; background: #fff9e9f2; color: #466051; border: 1px solid #8fa58f80; border-radius: 12px; padding: 4px 9px; font-size: 10px; line-height: 1.4; }
+.cooler-prop.has-stock svg { animation: cooler-settle .4s ease-out; }
+.customer-bubble { z-index: 2; }
+@keyframes cooler-settle { from { transform: translateY(-5px); } to { transform: translateY(0); } }
+@media (max-width:849px) {
+  .cooler-choice p, .carried-stock { font-size: 13px; }
+  .tomorrow-news, .carried-stock p, .cooler-toggle { font-size: 12px; }
+  .cooler-prop { width: 95px; right: 16px; bottom: 86px; }
+  .cooler-prop>span { font-size: 10px; padding: 3px 7px; }
+  .storage-result>div { font-size: 13px; }
+}
+@media (max-width:450px) {
+  .cooler-prop { width: 88px; right: 12px; bottom: 79px; }
+  .cooler-choice-heading { gap: 7px; }
+  .cooler-choice h3 { font-size: 14px; }
+}
