@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   base: '/good-afternoon/',
-  root: 'src/pre-cyan-village',
+  root: 'src/market-game',
   publicDir: '../../public',
   build: {
     outDir: '../../dist',

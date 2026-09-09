@@ -17,9 +17,9 @@
   },
   "include": [
     "vite.config.ts",
-    "src/**/*.test.ts",
-    "src/shared/**/*.ts",
-    "src/pre-cyan-village/domain/**/*.ts",
-    "src/pre-cyan-village/game/**/*.ts"
+    "src/**/tests/**/*.ts",
+    "src/market-game/domain.ts",
+    "src/market-game/content.ts",
+    "src/market-game/storage.ts"
   ]
 }

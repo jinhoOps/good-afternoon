@@ -1,37 +1,13 @@
-# Continue - Pre-Cyan Tile Movement Brainstorming
+# 이어서 작업하기 — 오후의 작은 가게
 
-## Last Action
+갱신일: 2026-09-09. 이 파일은 과거 경로에서 현재 작업을 찾기 위한 안내입니다. Superpowers 실행 지침이 아닙니다.
 
-Paused during `superpowers:brainstorming` before any implementation. The user said the current game feels requirement-driven and identified the first concrete problem as poor controls, especially mobile controls.
+**현재 설계는 사용자 승인 완료 상태입니다.** 2026-09-09 사용자가 현재 게임으로 진행하고 커밋·푸시하도록 요청하셨습니다. 장르 선정이나 기존 설계의 재승인 단계로 돌아가지 않고 현재 기준선에서 후속 작업을 진행합니다.
 
-## Agreed Direction
+사용자는 기존 구현을 폐기하고 경제 기초에 쉽게 다가가는 웹 게임으로 다시 만들도록 요청하셨습니다. **짧은 턴제 장사 게임**으로 장르를 선택하고 `src/market-game/`에 다섯 오후의 플레이를 구현했습니다. 이전 Phaser 마을 소스와 의존성은 제거했습니다.
 
-- First improvement target: controls and moment-to-moment feel, not new content.
-- Preferred movement model: full tile-based movement, not continuous movement with correction.
-- Map should be rebuilt around an isometric diamond grid.
-- Mobile control should be a fixed D-pad improved to feel like a joystick: hold a direction to keep moving tile by tile.
-- Approved design sections so far:
-  - Core direction: Pre-Cyan becomes an isometric tile-grid exploration scene.
-  - Input feel: keyboard and mobile D-pad share one direction intent model.
-  - Map and interaction: hotspots live on current/front tiles instead of free-coordinate radius checks.
+현재 목표와 범위는 [PROJECT_CONTEXT.md](../../PROJECT_CONTEXT.md), 게임 규칙은 [주말 장터 설계](../design/weekend-market.md), 실행과 검증은 [README](../../README.md), 다음 단계는 [ROADMAP](../ROADMAP.md)을 확인합니다.
 
-## Next Action
+`.codex/config.toml`에서 이 프로젝트의 Superpowers를 껐고 `AGENTS.md`에 적용 범위를 명시했습니다. 전역 설정은 유지합니다. 과거 설계의 승인 대기나 Superpowers 작업 단계를 재개하지 않습니다.
 
-Continue brainstorming from design section 4. Cover visual feedback, state/data architecture, testing/UAT, and migration risk. Then ask for approval section by section before writing the final design spec.
-
-## Why
-
-The current implementation uses free movement in `src/pre-cyan-village/game/objects/Player.ts`, fixed HUD movement buttons in `DeviceHud.ts`, and radius-based hotspots in `map-layout.ts`. The user prefers replacing that model rather than polishing it.
-
-## Open Threads
-
-- Decide exact tile size, movement duration, and map dimensions.
-- Decide whether RoomScene also becomes tile-based in the same pass or stays simpler until VillageScene is proven.
-- Decide how much of the current `VillageState` can remain unchanged while replacing the rendering/input layer.
-
-## Do Not
-
-- Do not start implementation yet. Brainstorming hard gate is still active.
-- Do not write the final design spec until the remaining design sections are presented and approved.
-- Do not treat the old root HTML demos or `app/` runtime as the implementation source.
-- Do not revert unrelated current work: `AGENTS.md`, `.codegraph/`, and an existing docs plan are already modified/untracked in the worktree.
+규칙 테스트와 PC·모바일 브라우저 검증을 수행했습니다. 실제 사용자의 재미와 경제 이해, 장기 숙련은 아직 관찰하지 않았습니다. 다음 작업은 기능 목록을 늘리기 전에 플레이 중의 판단과 재시도 동기를 확인하는 것입니다.

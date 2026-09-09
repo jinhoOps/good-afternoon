@@ -1,0 +1,4 @@
+# 이 프로젝트에서는 Superpowers를 사용하지 않습니다.
+# 사용자 전역 플러그인 설정과 다른 프로젝트에는 영향을 주지 않습니다.
+[plugins."superpowers@openai-curated-remote"]
+enabled = false

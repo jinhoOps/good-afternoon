@@ -1,61 +1,63 @@
-# 굿애프터눈 (Good Afternoon.)
+# Good Afternoon. — 오후의 작은 가게
 
-굿애프터눈은 공부처럼 느껴지지 않는 경제 개념 잠금해제 서비스입니다. 이름의 숨은 의미는 온보딩에서 설명하지 않고 철 티어 이스터에그에서 회수합니다.
+경제를 쉽게 접하는 **짧은 턴제 장사 웹 게임**입니다. 레모네이드 가게에서 물량과 가격을 정하고, 손님과 남은 음료를 보며 다음 영업의 판단을 바꿉니다.
 
-핵심 철학은 **Easy to learn, Hard to master**입니다. Pre-Cyan은 경제 단어에 부담이 있는 사용자가 현실 동네를 닮은 첫 모험 마을에서 적응하도록 만들고, 이후 Cyan 이상 티어와 마스터리 레이어가 깊이를 담당합니다.
+현재는 다섯 번의 오후를 처음부터 끝까지 플레이할 수 있습니다. 이전 마을 구현을 교체했으며, 실행 소스는 `src/market-game/`입니다.
 
-## 현재 구현 상태
+## 플레이
 
-현재 활성 첫 슬라이스의 소스는 `src/pre-cyan-village/`입니다. 플레이어는 `내 방`에서 시작해 작은 단말의 안내를 받고, 한 번의 외출에서 4개 선택지 중 3개를 순서대로 고르는 Pre-Cyan 외출 루프를 진행합니다. 선택 순서에 따라 마을 반응과 기록이 달라지고, 필수 행동 감각을 모두 경험하면 Cyan 입구 흔적이 열리는 Vite + TypeScript 구현입니다. `dist/`는 빌드로 생성되는 출력물이며 저장소에 커밋하지 않습니다.
+1. 장터 소식에서 날씨, 손님, 재료값을 살펴봅니다.
+2. 가진 6,000원 안에서 음료를 준비합니다. 첫날에는 물량만 고릅니다.
+3. 가게를 열면 손님이 구매하거나 돌아갑니다. 다음 날부터 가격도 정합니다.
+4. 매출에서 준비한 음료 전체의 재료비를 뺀 결과를 확인합니다.
+5. 같은 날을 다시 해보거나 다음 오후로 넘어갑니다. 다섯 번의 영업 동안 가게 준비금 15,000원을 모아봅니다.
 
-- **Pre-Cyan runtime**: Phaser가 기본 진입점입니다. 기본 URL은 `http://127.0.0.1:5173/good-afternoon/`이며, `?runtime=phaser` 쿼리는 더 이상 필요하지 않습니다. DOM runtime은 entry/source에서 제거됐고 fallback으로 유지하지 않습니다.
-- **루트 HTML 데모**: 기획 검증용 시각 자료입니다. 온보딩, 개념 지도, 기준금리 챌린지 흐름을 참고할 때만 사용합니다.
-- **개발 로드맵**: `docs/ROADMAP.md`에 다음 구현 순서와 완료 기준을 정리했습니다.
-- **디자인 기준**: `DESIGN.md`의 Good Afternoon 우선 섹션을 기준으로 판단합니다.
+날씨와 손님, 재료비는 날마다 달라집니다. 남은 음료는 다음 날 판매할 수 없습니다. 용어 설명은 영업 뒤 선택해서 열어볼 수 있습니다.
 
-## 실행 방법
+## 실행과 검증
 
-Pre-Cyan 첫 모험 마을:
+Node.js와 npm이 필요합니다.
 
-1. `npm install`로 의존성을 설치합니다.
-2. `npm run dev`로 Vite 개발 서버를 실행합니다.
-3. 브라우저에서 안내된 로컬 주소를 열고, `내 방`에서 문을 열어 첫 외출을 시작합니다.
-4. 각 외출에서 4개 선택지 중 3개를 순서대로 골라 마을 반응과 단말 기록이 바뀌는지 확인합니다.
-5. 필수 행동 감각을 모두 경험한 뒤 Cyan 입구 흔적이 열리는지 확인합니다.
+```sh
+npm install
+npm run dev
+```
 
-빌드와 배포 산출물 확인:
+터미널에 표시된 주소의 `/good-afternoon/`을 엽니다. 기본 주소는 `http://127.0.0.1:5173/good-afternoon/`이며, 해당 포트가 사용 중이면 Vite가 다음 포트를 안내합니다.
 
-- `npm test`: 도메인/상태 전이 테스트를 실행합니다.
-- `npm run build`: TypeScript 검사와 Vite 빌드를 실행하고 `dist/`를 생성합니다.
-- `npm run preview -- --host 127.0.0.1 --port 4173`: 생성된 `dist/`를 로컬에서 미리 확인합니다.
-- `npm run test:smoke`: preview 서버가 켜진 상태에서 Phaser 첫 방/모바일 뷰포트 스모크를 실행합니다.
+```sh
+npm test
+npm run build
+npm run preview -- --port 4173
+```
 
-기획 검증용 데모:
+다른 터미널에서 브라우저 검증을 실행합니다. Chromium 설치는 최초 한 번 필요합니다.
 
-- `goodafternoon_integrated_demo.html`: 온보딩, 개념 지도, 기준금리 챌린지 통합 목업
-- `goodafternoon_mathflat_edition.html`: 별도 평가형 실험 목업
+```sh
+npx playwright install chromium
+npm run test:smoke
+```
 
-## 문서 지도
+`MARKET_TEST_URL`로 대상 주소를, `MARKET_SCREENSHOTS`로 캡처 경로를 지정할 수 있습니다. 기본 캡처 경로는 `/tmp/good-afternoon-market-qa`입니다.
 
-- `PROJECT_CONTEXT.md`: 서비스 정의, 확정 구조, 기획 불변량
-- `docs/ROADMAP.md`: 개발 로드맵과 다음 구현 순서
-- `DESIGN.md`: Good Afternoon 디자인 기준과 참고 분석
-- `harness/30_mastery_spec.md`: Hard to Master 마스터리 레이어 상세 명세
-- `AGENTS.md`: 에이전트와 개발자가 따라야 할 작업 지침
-- `GEMINI.md`: Gemini용 harness 인덱스
+검증에는 다섯 번의 영업, 수익 계산, 같은 날 재시도, 새로고침 복구, 손상된 저장값, 저장 불가 환경, PC와 모바일 390×844 화면이 포함됩니다. 자동 검증은 실제 사용자의 재미나 경제 이해를 입증하지 않습니다.
 
-## 다음 개발 순서
+## 구현 구조
 
-1. Cyan 입구 흔적 이후의 전환 화면을 만들고, 외출 기록이 다음 티어로 이어지는 느낌을 다듬습니다.
-2. Cyan 티어도 같은 외출 순서 시스템 위에서 교환 판단이 반복되도록 최소 루프를 설계합니다.
-3. Pre-Cyan 외출 기록을 전체 진행 상태 저장 스키마와 연결합니다.
-4. 메인 허브 지도 초안을 만듭니다.
-5. 투자 브랜치의 첫 씨앗을 Pre-Cyan 어두운 틈 신호와 연결합니다.
+- `content.ts`: 날마다 달라지는 손님·재료비·상황과 짧은 경제 설명
+- `domain.ts`: 준비, 영업 정산, 다음 날, 재시도의 게임 규칙
+- `storage.ts`: 영업 기록을 재계산하는 저장 복구
+- `view.ts`, `main.ts`, `styles.css`: 장면, 조작, 손님 반응, 반응형 화면
+- [배경 이미지와 제작 기록](src/market-game/assets/README.md)
 
-## 개발 원칙
+Vite + TypeScript와 HTML/CSS/SVG를 사용합니다. 게임 이미지도 로컬 파일이며 외부 폰트 요청은 없습니다. 기록은 현재 브라우저에 자동 저장합니다. `dist/`는 빌드 출력물이므로 커밋하지 않습니다.
 
-- 현재 구현의 기준 소스는 `src/`이며, Pre-Cyan은 `src/pre-cyan-village/`에서 관리합니다.
-- Vite + TypeScript로 개발하고, `dist/`는 생성 출력물로만 취급합니다.
-- “학습”, “공부”, “점수” 뉘앙스를 첫 경험 전면에 두지 않습니다.
-- 철 티어 이전에는 `Good Afternoon.` 이름의 의미를 직접 설명하지 않습니다.
-- 변경 후에는 정적 문자열 스캔, `npm test`, `npm run build`, 브라우저 스모크 테스트, 모바일 뷰포트 점검 중 해당 검증을 수행합니다.
+## 현재 기획
+
+- [프로젝트 기준](PROJECT_CONTEXT.md): 장르, 목표, 구현 범위와 아직 검증하지 않은 부분
+- [게임 규칙과 재미 검토](docs/design/weekend-market.md): 다섯 오후의 설계와 검증 기준
+- [로드맵](docs/ROADMAP.md): 다음 플레이테스트와 숙련 확장 후보
+- [디자인 기준](DESIGN.md): 화면, 조작, 톤
+- [작업 지침](AGENTS.md): 이 프로젝트의 Superpowers 비활성화 포함
+
+[장르 비교](docs/design/2026-09-09-economics-game-directions.md), [이전 안의 재미 검토](docs/design/2026-09-09-game-fun-review.md), [교체 전 서비스 기획](docs/archive/2026-09-09-before-market-context.md)은 결정 과정을 보존한 자료입니다. `docs/superpowers/`, `harness/`, 루트 HTML 데모의 마을·문항·티어 구조는 현재 게임의 필수 조건이 아닙니다.
