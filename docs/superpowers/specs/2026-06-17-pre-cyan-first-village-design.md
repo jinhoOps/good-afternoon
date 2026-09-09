@@ -1,5 +1,7 @@
 # Pre-Cyan First Village Design
 
+> 과거 설계 기록입니다. 본문의 `harness/30_mastery_spec.md`는 [이전 마스터리 설계](../../archive/2026-09-10-mastery-spec.md)로 옮겼습니다. 현재 개발 기준은 [PROJECT_CONTEXT.md](../../../PROJECT_CONTEXT.md)를 따릅니다.
+
 ## 목적
 
 Pre-Cyan은 굿애프터눈의 첫 지역이다. 사용자가 경제를 공부하러 왔다고 느끼기 전에, 작은 게임 월드에 들어와 장소를 둘러보고 만져보며 적응하게 만든다.

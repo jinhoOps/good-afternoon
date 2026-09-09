@@ -64,6 +64,6 @@ Vite + TypeScript와 HTML/CSS/SVG를 사용합니다. 게임 이미지도 로컬
 - [첫 장터 이후의 설계](docs/design/after-first-market.md): 감사 스크롤과 후속 장터·가게 성장·장기 판단
 - [로드맵](docs/ROADMAP.md): 다음 플레이테스트와 숙련 확장 순서
 - [디자인 기준](DESIGN.md): 화면, 조작, 톤
-- [작업 지침](AGENTS.md): 이 프로젝트의 Superpowers 비활성화 포함
+- [작업 지침](AGENTS.md): Gemini를 포함한 모든 에이전트의 공통 규칙과 프로젝트 내 Superpowers 비활성화
 
-[장르 비교](docs/design/2026-09-09-economics-game-directions.md), [이전 안의 재미 검토](docs/design/2026-09-09-game-fun-review.md), [교체 전 서비스 기획](docs/archive/2026-09-09-before-market-context.md)은 결정 과정을 보존한 자료입니다. `docs/superpowers/`, `harness/`, 루트 HTML 데모의 마을·문항·티어 구조는 현재 게임의 필수 조건이 아닙니다.
+[장르 비교](docs/design/2026-09-09-economics-game-directions.md), [이전 안의 재미 검토](docs/design/2026-09-09-game-fun-review.md), [교체 전 서비스 기획](docs/archive/2026-09-09-before-market-context.md), [이전 마스터리 설계](docs/archive/2026-09-10-mastery-spec.md)는 결정 과정을 보존한 자료입니다. `docs/superpowers/`와 루트 HTML 데모의 마을·문항·티어 구조도 현재 게임의 필수 조건이 아닙니다.

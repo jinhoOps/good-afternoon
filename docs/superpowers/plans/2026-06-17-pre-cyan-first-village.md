@@ -1,5 +1,7 @@
 # Pre-Cyan First Village Implementation Plan
 
+> 과거 실행 기록입니다. 아래 스킬 지침과 명령은 현재 작업에 적용하지 않습니다. 본문의 `harness/30_mastery_spec.md`는 [이전 마스터리 설계](../../archive/2026-09-10-mastery-spec.md)로 옮겼으며, 현재 작업은 [AGENTS.md](../../../AGENTS.md)를 따릅니다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Clean up the planning direction and start a fresh static implementation of the Pre-Cyan first village without treating the existing demo HTML as production code.

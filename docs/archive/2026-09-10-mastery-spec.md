@@ -1,5 +1,7 @@
 # 🔑 Mastery Layer Specification
 
+> 과거 기획 기록입니다. 2026-09-10 하네스 정리 시 `harness/30_mastery_spec.md`에서 옮겼으며, 당시의 설계 본문을 보존합니다. 현재 게임의 규칙이나 완료 기준으로 적용하지 않습니다. 현 기획은 [PROJECT_CONTEXT.md](../../PROJECT_CONTEXT.md), 작업 지침은 [AGENTS.md](../../AGENTS.md)를 따릅니다.
+
 이 문서는 굿애프터눈 서비스의 "Easy to Learn, Hard to master" 철학을 실현하기 위한 마스터리 레이어 설계서입니다.
 점수를 매기거나 레벨을 비교하는 학업적인 뉘앙스를 철저히 배제하고, 인쇄의 기본 4원색인 **CMYK (Cyan, Magenta, Yellow, Key/Black)**를 글로벌 진척도 티어(Tier) 구조로 채택합니다.
 

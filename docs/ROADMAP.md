@@ -60,4 +60,4 @@
 
 규칙 변경은 관련 도메인 테스트와 `npm run build`로 확인합니다. 프론트엔드·저장 변경은 preview 서버에서 `npm run test:smoke`와 화면 캡처를 확인합니다. 현재 규칙은 [설계 문서](design/weekend-market.md), 실행은 [README](../README.md), 시각 기준은 [DESIGN](../DESIGN.md)에 있습니다.
 
-[과거 서비스 구조](archive/2026-09-09-before-market-context.md)와 `harness/30_mastery_spec.md`는 아이디어 참고 자료입니다. 현 장르의 구현 순서나 승인 절차를 강제하지 않습니다.
+[과거 서비스 구조](archive/2026-09-09-before-market-context.md)와 [이전 마스터리 설계](archive/2026-09-10-mastery-spec.md)는 아이디어 참고 자료입니다. 현 장르의 구현 순서나 승인 절차를 강제하지 않습니다.
