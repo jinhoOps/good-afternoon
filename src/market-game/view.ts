@@ -2,8 +2,9 @@ import { DAYS, DREAM_CASH, INITIAL_CASH, PRICES, COOLER_FEE, money } from './con
 import { preparationCapacity, resultNote, type GameState, type Receipt } from './domain';
 
 import { coolerChoice, stockNotice, storageResult, inventoryAccounting, coolerScene } from './cooler-view';
+import { creditsView } from './credits';
 
-export type ViewState = { selling: boolean; seen: number; notice: string; modal: 'help' | 'journal' | 'reset' | null };
+export type ViewState = { selling: boolean; seen: number; notice: string; modal: 'help' | 'journal' | 'reset' | 'credits' | null };
 
 const paths: Record<string, string> = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
@@ -108,6 +109,7 @@ function finale(state: GameState): string {
 
 function modal(state: GameState, kind: ViewState['modal']): string {
   if (!kind) return '';
+  if (kind === 'credits') return creditsView(state);
   let title = '작은 가게를 여는 방법';
   let content = `<ol class="help-steps"><li><strong>장터 소식 읽기</strong><p>오늘 찾아올 손님과 재료값을 살펴보세요.</p></li><li><strong>물량과 가격 정하기</strong><p>가진 돈 안에서 준비해요. 처음에는 물량만 고르면 돼요. 셋째 날부터는 보관함으로 내일을 준비할 수도 있어요.</p></li><li><strong>손님의 반응 보기</strong><p>팔린 음료와 남은 음료, 실제로 번 돈을 연결해보세요.</p></li></ol><p class="modal-note">다섯 번의 영업으로 끝나는 작은 게임이에요. 같은 날 다시 해보기로 결과를 비교할 수 있어요. 기록은 이 브라우저에 자동으로 남아요.</p>`;
   if (kind === 'journal') {

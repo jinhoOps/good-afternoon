@@ -49,6 +49,11 @@ async function main(): Promise<void> {
     assert.equal(await page.locator('dialog').count(), 0);
     assert.equal(await page.locator('#help').evaluate((el) => el === document.activeElement), true);
 
+    await page.locator('#restart').click();
+    assert.equal(await page.locator('#confirm-reset').isVisible(), true);
+    assert.equal(await page.locator('.credits-dialog').count(), 0);
+    await page.keyboard.press('Escape');
+
     await setQuantity(page, 10);
     await page.reload({ waitUntil: 'networkidle' });
     assert.equal(await page.locator('#quantity').inputValue(), '10');
@@ -99,9 +104,54 @@ async function main(): Promise<void> {
     await noOverflow(page);
     await page.locator('#close-modal').click();
 
+    const completedSave = await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
     await page.locator('#new-market').click();
-    await page.locator('#confirm-reset').click();
+    assert.ok((await page.locator('#credits-title').innerText()).includes('고맙습니다'));
+    assert.ok((await page.locator('#credits-summary').innerText()).includes('같은 날씨와 손님'));
+    assert.equal(await page.locator('#credits-motion').getAttribute('aria-pressed'), 'false');
+    const replayBounds = await page.locator('#replay-market').boundingBox();
+    assert.ok(replayBounds && replayBounds.y >= 0 && replayBounds.y + replayBounds.height <= 844);
+    await noOverflow(page);
+    await page.screenshot({ path: `${artifactDir}/11-mobile-thanks.png` });
+    await page.locator('#credits-scroll').focus();
+    await page.locator('#credits-scroll').press('End');
+    await page.waitForFunction(() => {
+      const viewport = document.querySelector('#credits-scroll')!;
+      return viewport.scrollTop + viewport.clientHeight >= viewport.scrollHeight - 2;
+    });
+    await page.screenshot({ path: `${artifactDir}/12-mobile-thanks-end.png` });
+    await page.locator('.credits-return').click();
+    assert.equal(await cash(page), 18800);
+    assert.equal(await page.locator('#new-market').evaluate((el) => el === document.activeElement), true);
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY), completedSave);
+    await page.locator('#new-market').click();
+    await page.reload({ waitUntil: 'networkidle' });
+    assert.equal(await cash(page), 18800);
+    assert.equal(await page.locator('.credits-dialog').count(), 0);
+
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.locator('#new-market').click();
+    assert.equal(await page.locator('#credits-motion').getAttribute('aria-pressed'), 'true');
+    await page.screenshot({ path: `${artifactDir}/13-desktop-thanks.png` });
+    await page.waitForFunction(() => document.querySelector('#credits-scroll')!.scrollTop > 8);
+    await page.locator('#credits-motion').click();
+    const stoppedAt = await page.locator('#credits-scroll').evaluate(el => el.scrollTop);
+    await page.waitForTimeout(180);
+    assert.equal(await page.locator('#credits-scroll').evaluate(el => el.scrollTop), stoppedAt);
+    await page.locator('#credits-motion').click();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForFunction(() => document.querySelector('#credits-motion')?.getAttribute('aria-pressed') === 'false');
+    assert.equal(await page.locator('#credits-motion').getAttribute('aria-pressed'), 'false');
+    await page.keyboard.press('Escape');
+    assert.equal(await page.evaluate(() => document.body.style.overflow), '');
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY), completedSave);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('#new-market').click();
+    await page.locator('#replay-market').click();
     assert.equal(await cash(page), 6000);
+    assert.equal(await page.locator('.credits-dialog').count(), 0);
+    assert.equal(await page.evaluate(() => document.body.style.overflow), '');
     await page.locator('#open-market').click();
     // 영업 애니메이션 중 새로고침해도 한 번 정산한 결과만 복구합니다.
     await page.reload({ waitUntil: 'networkidle' });
@@ -196,7 +246,7 @@ async function main(): Promise<void> {
 
     assert.deepEqual(errors, [], `브라우저 오류: ${errors.join('\n')}`);
     await context.close();
-    console.log('PC·390×844 모바일 / 5일 진행 / 보관·기한·재시도 / v1 저장 이전·손상·접근 실패 / 콘솔·이미지·넘침: 통과');
+    console.log('PC·390×844 모바일 / 5일 진행 / 감사 스크롤·재시작·기록 보존 / 보관·기한 / v1 저장 이전·손상·접근 실패 / 콘솔·이미지·넘침: 통과');
     console.log(`화면 캡처: ${artifactDir}`);
   } finally {
     await browser.close();

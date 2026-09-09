@@ -1,5 +1,7 @@
 import './styles.css';
 import './cooler.css';
+import './credits.css';
+import { startCredits } from './credits';
 import { DAYS, PRICES } from './content';
 import { preparationCapacity, changeOrder, newGame, nextDay, openMarket, retryDay, type GameState } from './domain';
 import { load, save } from './storage';
@@ -15,14 +17,18 @@ let state = loaded.state;
 const ui: ViewState = { selling: false, seen: 0, notice: loaded.notice, modal: null };
 let timer: ReturnType<typeof setTimeout> | null = null;
 let modalTrigger = '';
+let stopCredits: (() => void) | null = null;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function render(focusId?: string): void {
   const focus = focusId ?? (document.activeElement instanceof HTMLElement ? document.activeElement.id : '');
+  stopCredits?.();
+  stopCredits = null;
   app.innerHTML = view(state, ui);
   if (ui.modal) {
     const dialog = app.querySelector<HTMLDialogElement>('dialog');
     dialog?.showModal();
+    if (dialog && ui.modal === 'credits') stopCredits = startCredits(dialog, reducedMotion);
     dialog?.addEventListener('cancel', (event) => { event.preventDefault(); closeModal(); });
     dialog?.addEventListener('click', (event) => {
       if (event.target !== dialog) return;
@@ -41,7 +47,7 @@ function persist(next: GameState): void {
 function showModal(modal: NonNullable<ViewState['modal']>): void {
   modalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement.id : '';
   ui.modal = modal;
-  render('close-modal');
+  render(modal === 'credits' ? 'credits-title' : 'close-modal');
 }
 
 function closeModal(): void {
@@ -83,9 +89,12 @@ app.addEventListener('click', (event) => {
   const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('button[data-action]') : null;
   if (!target || target.disabled) return;
   const action = target.dataset.action;
-  if (action === 'help' || action === 'journal' || action === 'reset') { showModal(action); return; }
+  if (action === 'help' || action === 'journal' || action === 'reset') {
+    showModal(action === 'reset' && state.phase === 'complete' ? 'credits' : action);
+    return;
+  }
   if (action === 'close-modal') { closeModal(); return; }
-  if (action === 'confirm-reset') {
+  if ((action === 'confirm-reset' && ui.modal === 'reset') || (action === 'replay-market' && ui.modal === 'credits' && state.phase === 'complete')) {
     if (timer) clearTimeout(timer);
     timer = null;
     ui.modal = null; ui.selling = false; ui.seen = 0;
