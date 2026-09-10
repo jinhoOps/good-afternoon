@@ -29,8 +29,19 @@
 - Pages 배포: [실행 34422194731](https://github.com/jinhoOps/good-afternoon/actions/runs/34422194731), 2026-09-10 00:39:37 UTC 성공
 - 공개 게임: [오후의 작은 가게](https://jinhoops.github.io/good-afternoon/)
 - 공개 주소에 `MARKET_TEST_URL`을 지정한 전체 브라우저 스모크 통과: 동네·공원 두 주간, 설비·메뉴, 선불 주문과 납품, 저장·재시작, PC·모바일
-- 배포된 HTML의 `index-FO-7knrP.js`, `index-CF-Eknf9.css`가 검증한 로컬 빌드와 일치합니다.
+- 초기 배포 HTML의 `index-FO-7knrP.js`, `index-CF-Eknf9.css`가 당시 로컬 빌드와 일치함을 확인했습니다.
 - 공개 화면 캡처: `/tmp/good-afternoon-market-live-qa`
+
+### 키보드 조작 보완
+
+수량 입력 후 Tab을 누르면 초점이 BODY로 빠지고 다음 Tab이 상단 도움말로 돌아가는 문제를 공개 버전에서 재현했습니다. 기존 입력 검증은 Tab 뒤 마우스로 버튼을 눌러 이 초점 문제를 놓쳤습니다.
+
+- 수정: 수량을 확정한 뒤 새 화면의 다음 조작으로 이동합니다. Shift+Tab은 반대 방향으로 이동하고, 최솟값·최댓값에서 비활성 버튼은 건너뜁니다. 빈 입력은 기존 수량으로 복원하고 이동을 이어갑니다.
+- 추가 검증: 8잔 입력 → Tab → 늘리기 → Space, 최대 12잔에서 비활성 늘리기 건너뛰기, 0잔에서 Shift+Tab 이동, 빈 입력 복원과 이동을 확인했습니다. 모바일에서는 초점 버튼이 화면 안에 보임을 캡처했습니다.
+- 수정 커밋: [`690d3e5`](https://github.com/jinhoOps/good-afternoon/commit/690d3e53af5cd535cf95b239cfe11c00ab5049e9)
+- 배포: [실행 34422768518](https://github.com/jinhoOps/good-afternoon/actions/runs/34422768518) 성공
+- 검증: 규칙 테스트 28개와 빌드, 로컬·공개 주소의 전체 브라우저 스모크 통과
+- 수정된 공개 자산 `index-C6gyDaF7.js`, `index-CF-Eknf9.css`가 로컬 빌드와 일치합니다.
 
 기능과 공개 배포의 증거는 확보했습니다. 사용자에게 막힌 부분과 결과를 보고 바꾸고 싶어진 선택을 요청했으며, 실제 플레이 반응은 아직 받지 않았습니다. 관찰 결과를 받은 뒤 아래 게임성 판단을 보완합니다.
 
