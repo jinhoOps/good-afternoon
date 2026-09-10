@@ -1,9 +1,13 @@
+import { hasShop, isEquipment } from './equipment';
+import { dayFor, isMarketId } from './markets';
 import './styles.css';
 import './cooler.css';
 import './credits.css';
+import './journey.css';
+import './contracts.css';
 import { startCredits } from './credits';
-import { DAYS, PRICES } from './content';
-import { preparationCapacity, changeOrder, newGame, nextDay, openMarket, retryDay, type GameState } from './domain';
+import { PRICES } from './content';
+import { preparationCapacity, minimumPreparation, changeOrder, startMarket, nextDay, openMarket, retryDay, type GameState } from './domain';
 import { load, save } from './storage';
 import { view, type ViewState } from './view';
 
@@ -59,7 +63,7 @@ function finishAnimation(): void {
   if (timer) clearTimeout(timer);
   timer = null;
   ui.selling = false;
-  ui.seen = DAYS[state.day].visitors.length;
+  ui.seen = dayFor(state).visitors.length;
   render('panel-title');
   if (window.innerWidth < 850) document.querySelector('.play-panel')?.scrollIntoView({ behavior: reducedMotion.matches ? 'instant' : 'smooth', block: 'start' });
 }
@@ -67,27 +71,39 @@ function finishAnimation(): void {
 function tick(): void {
   if (!ui.selling) return;
   if (ui.modal) { timer = setTimeout(tick, 200); return; }
-  const count = DAYS[state.day].visitors.length;
+  const count = dayFor(state).visitors.length;
   if (ui.seen >= count) { finishAnimation(); return; }
   ui.seen += 1;
   render();
   timer = setTimeout(tick, reducedMotion.matches ? 220 : 950);
 }
 
-function changeQuantity(quantity: number): void {
-  const nextQuantity = Math.min(preparationCapacity(state), Math.max(0, Math.trunc(quantity)));
+function changeQuantity(quantity: number, repaint = true): void {
+  const nextQuantity = Math.min(preparationCapacity(state), Math.max(minimumPreparation(state), Math.trunc(quantity)));
   if (!Number.isFinite(nextQuantity)) { render('quantity'); return; }
   persist(changeOrder(state, { ...state.order, quantity: nextQuantity }));
-  render();
+  if (repaint) render();
 }
 
 app.addEventListener('change', (event) => {
-  if (event.target instanceof HTMLInputElement && event.target.id === 'quantity') changeQuantity(event.target.valueAsNumber);
+  if (event.target instanceof HTMLInputElement && event.target.id === 'quantity' && event.target.valueAsNumber !== state.order.quantity) changeQuantity(event.target.valueAsNumber);
+});
+
+app.addEventListener('pointerdown', (event) => {
+  const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('button[data-action]') : null;
+  // 입력 중 버튼을 누르면 blur의 렌더링이 해당 버튼을 지우지 않게 합니다.
+  // 값 확정과 버튼 동작은 이어지는 click에서 한 번에 처리합니다.
+  if (button && !button.disabled && document.activeElement?.id === 'quantity') event.preventDefault();
 });
 
 app.addEventListener('click', (event) => {
   const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('button[data-action]') : null;
   if (!target || target.disabled) return;
+  if (state.phase === 'planning' && !ui.modal && document.activeElement instanceof HTMLInputElement && document.activeElement.id === 'quantity') {
+    const value = document.activeElement.valueAsNumber;
+    if (Number.isFinite(value)) changeQuantity(value, false);
+    target.focus({ preventScroll: true });
+  }
   const action = target.dataset.action;
   if (action === 'help' || action === 'journal' || action === 'reset') {
     showModal(action === 'reset' && state.phase === 'complete' ? 'credits' : action);
@@ -98,9 +114,18 @@ app.addEventListener('click', (event) => {
     if (timer) clearTimeout(timer);
     timer = null;
     ui.modal = null; ui.selling = false; ui.seen = 0;
-    persist(newGame()); render('day-title');
+    persist(startMarket(state, state.market)); render('day-title');
     window.scrollTo({ top: 0, behavior: 'instant' });
     return;
+  }
+  if (action === 'choose-market' && ui.modal === 'credits') { ui.modal = 'markets'; ui.equipment = state.equipment; render('modal-title'); return; }
+  if (action === 'equipment' && ui.modal === 'markets' && hasShop(state) && isEquipment(target.dataset.equipment)) {
+    ui.equipment = target.dataset.equipment; render(); return;
+  }
+  if (action === 'start-market' && ui.modal === 'markets' && state.phase === 'complete' && isMarketId(target.dataset.market)) {
+    persist(startMarket(state, target.dataset.market, ui.equipment));
+    ui.modal = null; ui.selling = false; ui.seen = 0;
+    render('day-title'); window.scrollTo({ top: 0, behavior: 'instant' }); return;
   }
   if (ui.modal) return;
   if (action === 'skip' && ui.selling) { finishAnimation(); return; }
@@ -108,6 +133,9 @@ app.addEventListener('click', (event) => {
   if (action === 'less') changeQuantity(state.order.quantity - 1);
   if (action === 'more') changeQuantity(state.order.quantity + 1);
   if (action === 'quantity') changeQuantity(Number(target.dataset.value));
+  if (action === 'booking') {
+    persist(changeOrder(state, { ...state.order, booking: !state.order.booking })); render('accept-booking');
+  }
   if (action === 'cooler') {
     persist(changeOrder(state, { ...state.order, cooler: !state.order.cooler }));
     render('rent-cooler');

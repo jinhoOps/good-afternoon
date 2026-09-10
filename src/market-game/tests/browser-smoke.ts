@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { chromium, type Page } from 'playwright';
 import { STORAGE_KEY } from '../storage';
+import { journeySmoke } from './journey-smoke';
 
 const url = process.env.MARKET_TEST_URL ?? 'http://127.0.0.1:4173/good-afternoon/';
 const artifactDir = process.env.MARKET_SCREENSHOTS ?? '/tmp/good-afternoon-market-qa';
@@ -35,7 +36,7 @@ async function main(): Promise<void> {
     const page = await context.newPage();
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-    page.on('requestfailed', (request) => errors.push(request.url()));
+    page.on('requestfailed', (request) => errors.push(`${request.url()}: ${request.failure()?.errorText}`));
     await page.goto(url, { waitUntil: 'networkidle' });
     await page.locator('#open-market').waitFor();
     assert.equal(await cash(page), 6000);
@@ -53,6 +54,20 @@ async function main(): Promise<void> {
     assert.equal(await page.locator('#confirm-reset').isVisible(), true);
     assert.equal(await page.locator('.credits-dialog').count(), 0);
     await page.keyboard.press('Escape');
+
+    // 실제 플레이처럼 입력창에서 곧바로 누른 첫 클릭도 처리합니다.
+    await page.locator('#quantity').fill('8');
+    await page.locator('#open-market').click();
+    assert.equal(await page.locator('#skip-sales').count(), 1);
+    await page.locator('#skip-sales').click();
+    assert.equal(await cash(page), 8000);
+    await page.locator('#retry-day').click();
+    await page.locator('#quantity').fill('9');
+    await page.locator('#help').click();
+    assert.equal(await page.locator('dialog').isVisible(), true);
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#quantity').inputValue(), '9');
+    assert.equal(await page.locator('#help').evaluate(el => el === document.activeElement), true);
 
     await setQuantity(page, 10);
     await page.reload({ waitUntil: 'networkidle' });
@@ -244,10 +259,12 @@ async function main(): Promise<void> {
     assert.equal(await cash(failedStorage), 9000);
     assert.ok((await failedStorage.locator('.notice').innerText()).includes('남기지 못했어요'));
 
+    await journeySmoke(page, completedSave!, artifactDir);
     assert.deepEqual(errors, [], `브라우저 오류: ${errors.join('\n')}`);
     await context.close();
     console.log('PC·390×844 모바일 / 5일 진행 / 감사 스크롤·재시작·기록 보존 / 보관·기한 / v1 저장 이전·손상·접근 실패 / 콘솔·이미지·넘침: 통과');
     console.log(`화면 캡처: ${artifactDir}`);
+    console.log('공원 두 주간 완주 / 목표 성장·설비·새 메뉴 / 선불 주문·납품·품절 / 장터 이동·최고 기록 유지: 통과');
   } finally {
     await browser.close();
   }

@@ -20,6 +20,9 @@
     "src/**/tests/**/*.ts",
     "src/market-game/domain.ts",
     "src/market-game/content.ts",
+    "src/market-game/markets.ts",
+    "src/market-game/equipment.ts",
+    "src/market-game/contracts.ts",
     "src/market-game/storage.ts"
   ]
 }

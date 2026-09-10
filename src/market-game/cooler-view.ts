@@ -1,18 +1,20 @@
-import { COOLER_CAPACITY, COOLER_FEE, DAYS, canRentCooler, money } from './content';
+import { rentalFee, storageLimit, unitCost } from './equipment';
+import { dayFor, daysFor } from './markets';
+import { canRentCooler, money } from './content';
 import type { GameState, Receipt } from './domain';
 
 export function coolerChoice(state: GameState): string {
   if (!canRentCooler(state.day)) return '';
-  const affordable = state.cash - state.order.quantity * DAYS[state.day].cost >= COOLER_FEE;
-  const next = DAYS[state.day + 1];
-  const tomorrow = next.cost !== DAYS[state.day].cost
-    ? `내일은 재료비가 한 잔 ${money(next.cost)}으로 올라요. 손님은 ${next.forecast.replace('손님 ', '')} 예상해요.`
-    : `내일은 ${next.weatherLabel}. ${next.forecast} 예상해요. 재료비는 한 잔 ${money(next.cost)}이에요.`;
+  const affordable = state.cash - state.order.quantity * unitCost(state) >= rentalFee(state);
+  const next = daysFor(state)[state.day + 1];
+  const tomorrow = next.cost !== dayFor(state).cost
+    ? `내일은 재료비가 한 잔 ${money(unitCost({ ...state, day: state.day + 1 }))}으로 ${next.cost > dayFor(state).cost ? '올라요' : '내려가요'}. 손님은 ${next.forecast.replace('손님 ', '')} 예상해요.`
+    : `내일은 ${next.weatherLabel}. ${next.forecast} 예상해요. 재료비는 한 잔 ${money(unitCost({ ...state, day: state.day + 1 }))}이에요.`;
   return `<section class="cooler-choice" aria-labelledby="cooler-title">
-    <div class="cooler-choice-heading"><div><span class="small-eyebrow">${state.day === 2 ? '새로운 선택 · 내일을 준비하기' : '다음 영업까지 생각하기'}</span><h3 id="cooler-title">남을 음료, 보관할까요?</h3></div><span class="cooler-price">하루 <b>${money(COOLER_FEE)}</b></span></div>
-    <p>오늘 만든 음료 중 최대 ${COOLER_CAPACITY}잔을 내일까지만 보관해요. 빈 보관함도 대여료는 같아요.</p>
+    <div class="cooler-choice-heading"><div><span class="small-eyebrow">${state.day === 2 ? '새로운 선택 · 내일을 준비하기' : '다음 영업까지 생각하기'}</span><h3 id="cooler-title">남을 음료, 보관할까요?</h3></div><span class="cooler-price">하루 <b>${money(rentalFee(state))}</b></span></div>
+    <p>오늘 만든 음료 중 최대 ${storageLimit(state)}잔을 내일까지만 보관해요. 빈 보관함도 대여료는 같아요.</p>
     <div class="tomorrow-news"><strong>내일 소식</strong><span>${tomorrow}</span></div>
-    <button type="button" id="rent-cooler" class="cooler-toggle" data-action="cooler" aria-pressed="${state.order.cooler}" ${!affordable && !state.order.cooler ? 'disabled' : ''}><span class="toggle-mark" aria-hidden="true">${state.order.cooler ? '✓' : '+'}</span>${state.order.cooler ? '보관함 빌리기 선택됨' : '보관함 하루 빌리기'}<span>${state.order.cooler ? '취소' : money(COOLER_FEE)}</span></button>
+    <button type="button" id="rent-cooler" class="cooler-toggle" data-action="cooler" aria-pressed="${state.order.cooler}" ${!affordable && !state.order.cooler ? 'disabled' : ''}><span class="toggle-mark" aria-hidden="true">${state.order.cooler ? '✓' : '+'}</span>${state.order.cooler ? '보관함 빌리기 선택됨' : '보관함 하루 빌리기'}<span>${state.order.cooler ? '취소' : money(rentalFee(state))}</span></button>
     ${!affordable && !state.order.cooler ? '<small>빌리려면 음료 준비량을 조금 줄여야 해요.</small>' : ''}
   </section>`;
 }
