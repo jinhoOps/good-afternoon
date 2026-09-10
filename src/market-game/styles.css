@@ -1,13 +1,21 @@
 :root {
   font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
-  color:#203c62;
-  background:#edf4ff;
+  color:var(--ink);
+  background:#fdfdfc;
   font-synthesis:none;
   font-weight:400;
-  --ink:#203c62;
-  --muted:#526987;
-  --action:#215bd5;
-  --line:#dce9fa;
+  --ink:#29332d;
+  --muted:#636d65;
+  --action:rgb(56, 92, 68);
+  --action-hover:#2e4c38;
+  --action-edge:#304f3b;
+  --line:#dce2db;
+  --line-strong:#b5c0b6;
+  --selection-border:#6d816f;
+  --surface-soft:#f5f6f3;
+  --surface-hover:#edf0eb;
+  --surface-selected:#e8eee6;
+  --shade-rgb:26 36 29;
   --paper:#ffffff;
   --yellow:#ffe169
 }
@@ -39,7 +47,7 @@ button,input,summary {
 }
 
 button:focus-visible,input:focus-visible,summary:focus-visible {
-  outline:3px solid #d3670e;
+  outline:3px solid var(--action);
   outline-offset:4px
 }
 
@@ -107,7 +115,7 @@ h1:focus,h2:focus {
   color:var(--ink);
   width:34px;
   height:34px;
-  background:var(--yellow);
+  background:var(--surface-soft);
   border-radius:8px;
   padding:5px
 }
@@ -134,11 +142,11 @@ h1:focus,h2:focus {
 
 .header-button {
   font-size:13px;
-  color:#203c62
+  color:var(--ink)
 }
 
 .header-button:hover,.icon-button:hover {
-  color:#203c62
+  color:var(--ink)
 }
 
 .header-button .icon {
@@ -149,11 +157,11 @@ h1:focus,h2:focus {
 .icon-button {
   width:44px;
   border-radius:50%;
-  color:#526987
+  color:var(--muted)
 }
 
 .icon-button:hover {
-  background:#dce9fa
+  background:var(--line)
 }
 
 .game-heading {
@@ -168,13 +176,13 @@ h1:focus,h2:focus {
   font-size:11px;
   font-weight:600;
   letter-spacing:1.1px;
-  color:#526987;
+  color:var(--muted);
   margin-bottom:9px
 }
 
 .eyebrow span {
   padding:0 9px;
-  color:#526987
+  color:var(--muted)
 }
 
 h1 {
@@ -194,7 +202,7 @@ h1 {
 .wallet-icon {
   width:44px;
   height:44px;
-  background:var(--yellow);
+  background:var(--surface-soft);
   border-radius:10px;
   display:grid;
   place-items:center;
@@ -238,14 +246,14 @@ h1 {
   display:flex;
   gap:7px;
   align-items:center;
-  color:#526987;
+  color:var(--muted);
   font-size:11px
 }
 
 .day-marker b,.day-marker>.icon {
   display:grid;
   place-items:center;
-  border:1px solid #dce9fa;
+  border:1px solid var(--line);
   width:24px;
   height:24px;
   border-radius:7px;
@@ -263,15 +271,16 @@ h1 {
 }
 
 .day-marker.current b {
-  color:#ffffff;
-  background:var(--action);
-  border-color:var(--action)
+  color:var(--ink);
+  background:var(--surface-selected);
+  border-color:var(--selection-border);
+  box-shadow:inset 0 0 0 1px var(--selection-border)
 }
 
 .day-marker.past>.icon {
-  background:#dce9fa;
-  color:#203c62;
-  border-color:#dce9fa
+  background:var(--line);
+  color:var(--ink);
+  border-color:var(--line)
 }
 
 .day-status {
@@ -300,8 +309,8 @@ h1 {
   aspect-ratio:1.44;
   overflow:hidden;
   border-radius:14px;
-  background:#dce9fa;
-  box-shadow:4px 5px 0 #b8cceb;
+  background:var(--line);
+  box-shadow:4px 5px 0 var(--line-strong);
   border:2px solid var(--ink)
 }
 
@@ -352,7 +361,7 @@ h1 {
   gap:7px;
   align-items:center;
   padding:9px 11px;
-  box-shadow:0 2px 8px #17345c10;
+  box-shadow:0 2px 8px rgb(var(--shade-rgb) / 0.063);
   font-weight:600
 }
 
@@ -367,21 +376,21 @@ h1 {
 .weather-label .icon {
   width:16px;
   height:16px;
-  color:#526987
+  color:var(--muted)
 }
 
 .live-dot {
   display:inline-block;
   width:6px;
   height:6px;
-  background:#526987;
+  background:var(--muted);
   border-radius:50%;
   flex-shrink:0
 }
 
 .live-dot.active {
-  background:#203c62;
-  box-shadow:0 0 0 4px #17345c22;
+  background:var(--ink);
+  box-shadow:0 0 0 4px rgb(var(--shade-rgb) / 0.133);
   animation:pulse 1.5s ease-in-out infinite
 }
 
@@ -393,7 +402,7 @@ h1 {
   background:#ffffff;
   border:1px solid var(--ink);
   border-radius:7px;
-  box-shadow:2px 3px 0 #203c6226;
+  box-shadow:2px 3px 0 rgb(var(--shade-rgb) / 0.149);
   padding:12px 16px;
   backdrop-filter:none
 }
@@ -403,7 +412,7 @@ h1 {
   align-items:center;
   gap:7px;
   font-size:11px;
-  color:#203c62
+  color:var(--ink)
 }
 
 .counter-caption>.icon {
@@ -413,7 +422,7 @@ h1 {
 
 .counter-caption strong {
   margin-left:auto;
-  color:#203c62;
+  color:var(--ink);
   font-size:18px
 }
 
@@ -445,12 +454,12 @@ h1 {
 
 .more-cups {
   font-size:11px;
-  color:#526987
+  color:var(--muted)
 }
 
 .empty-shelf {
   font-size:11px;
-  color:#526987
+  color:var(--muted)
 }
 
 .market-news {
@@ -460,19 +469,19 @@ h1 {
   gap:12px;
   background:#ffffff;
   padding:17px 19px;
-  border:1px solid #b8cceb;
+  border:1px solid var(--line-strong);
   border-radius:8px;
   border-left:4px solid var(--action)
 }
 
 .news-icon {
-  background:#f0f6ff;
+  background:var(--surface-soft);
   width:34px;
   height:34px;
   border-radius:50%;
   display:grid;
   place-items:center;
-  color:#526987;
+  color:var(--muted);
   flex-shrink:0
 }
 
@@ -500,13 +509,13 @@ h1 {
 
 .news-topline>span {
   font-size:10px;
-  color:#526987
+  color:var(--muted)
 }
 
 .market-news p {
   font-size:12px;
   line-height:1.7;
-  color:#203c62;
+  color:var(--ink);
   word-break:keep-all;
   overflow-wrap:anywhere
 }
@@ -523,11 +532,11 @@ h1 {
 .dream-icon {
   width:31px;
   height:31px;
-  border:1px solid #dce9fa;
+  border:1px solid var(--line);
   border-radius:50%;
   display:grid;
   place-items:center;
-  color:#526987
+  color:var(--muted)
 }
 
 .dream-icon .icon {
@@ -542,7 +551,7 @@ h1 {
 
 .dream-copy p {
   font-size:10px;
-  color:#526987;
+  color:var(--muted);
   margin-top:5px;
   line-height:1.6
 }
@@ -553,7 +562,7 @@ h1 {
   left:43px;
   right:0;
   height:6px;
-  background:#d0dff3;
+  background:var(--line);
   border-radius:3px;
   overflow:hidden
 }
@@ -571,13 +580,13 @@ h1 {
   border-radius:14px;
   padding:25px 25px 17px;
   min-height:600px;
-  box-shadow:4px 5px 0 #b8cceb;
+  box-shadow:4px 5px 0 var(--line-strong);
   scroll-margin-top:16px
 }
 
 .panel-eyebrow {
   font-size:10px;
-  color:#526987;
+  color:var(--muted);
   font-weight:500;
   letter-spacing:.45px;
   display:flex;
@@ -600,7 +609,7 @@ h1 {
 
 .panel-intro {
   font-size:12px;
-  color:#526987;
+  color:var(--muted);
   line-height:1.85;
   margin-top:11px;
   word-break:keep-all;
@@ -625,7 +634,7 @@ h1 {
 
 .field-heading>span {
   font-size:10px;
-  color:#526987
+  color:var(--muted)
 }
 
 .stepper {
@@ -633,26 +642,26 @@ h1 {
   justify-content:space-between;
   align-items:center;
   margin:12px 0;
-  background:#f0f6ff;
-  border:1px solid #dce9fa;
+  background:var(--surface-soft);
+  border:1px solid var(--line);
   border-radius:6px;
   padding:7px
 }
 
 .stepper>button {
   background:#ffffff;
-  border:1px solid #dce9fa;
+  border:1px solid var(--line);
   border-radius:5px;
   font-size:23px;
   font-weight:400;
   width:44px;
   height:44px;
   line-height:1;
-  color:#203c62
+  color:var(--ink)
 }
 
 .stepper>button:hover:not(:disabled) {
-  background:#f0f6ff
+  background:var(--surface-soft)
 }
 
 .quantity-display {
@@ -682,7 +691,7 @@ h1 {
 
 .quantity-display>span {
   font-size:13px;
-  color:#526987
+  color:var(--muted)
 }
 
 .quantity-presets {
@@ -692,22 +701,23 @@ h1 {
 
 .quantity-presets button {
   background:transparent;
-  border:1px solid #dce9fa;
+  border:1px solid var(--line);
   flex:1;
   min-height:33px;
   border-radius:4px;
   font-size:11px;
-  color:#526987
+  color:var(--muted)
 }
 
 .quantity-presets button.selected {
-  border-color:var(--action);
-  background:#dce9ff;
-  color:#1747a6
+  border-color:var(--selection-border);
+  background:var(--surface-selected);
+  color:var(--ink);
+  box-shadow:inset 0 0 0 1px var(--selection-border)
 }
 
 .quantity-presets button:hover:not(:disabled) {
-  background:#f0f6ff
+  background:var(--surface-soft)
 }
 
 .price-block {
@@ -731,7 +741,7 @@ h1 {
 .price-block legend span {
   font-size:9px;
   font-weight:400;
-  color:#526987
+  color:var(--muted)
 }
 
 .fixed-price {
@@ -754,7 +764,7 @@ h1 {
 
 .fixed-price>span {
   font-size:9px;
-  color:#526987
+  color:var(--muted)
 }
 
 .price-options {
@@ -764,7 +774,7 @@ h1 {
 }
 
 .price-options button {
-  border:1px solid #dce9fa;
+  border:1px solid var(--line);
   background:transparent;
   min-height:45px;
   font-size:12px;
@@ -781,13 +791,14 @@ h1 {
 }
 
 .price-options button[aria-pressed=true] {
-  background:var(--action);
-  border-color:var(--action);
-  color:#ffffff
+  background:var(--surface-selected);
+  border-color:var(--selection-border);
+  color:var(--ink);
+  box-shadow:inset 0 0 0 1px var(--selection-border)
 }
 
 .cost-summary {
-  border-top:1px dashed #dce9fa;
+  border-top:1px dashed var(--line);
   margin-top:20px;
   padding-top:17px;
   display:flex;
@@ -804,7 +815,7 @@ h1 {
 }
 
 .cost-summary>div>span {
-  color:#526987
+  color:var(--muted)
 }
 
 .cost-summary strong {
@@ -813,7 +824,7 @@ h1 {
 }
 
 .cost-summary>div:last-child strong {
-  color:#526987
+  color:var(--muted)
 }
 
 .perish-note {
@@ -822,7 +833,7 @@ h1 {
   gap:5px;
   align-items:center;
   font-size:10px;
-  color:#526987
+  color:var(--muted)
 }
 
 .perish-note .icon {
@@ -846,13 +857,14 @@ h1 {
 .primary-button {
   background:var(--action);
   color:#ffffff;
-  box-shadow:0 4px 0 #173779;
-  border-color:#173779;
-  font-weight:700
+  box-shadow:0 2px 5px rgb(var(--shade-rgb) / .16), inset 0 1px 0 #ffffff18;
+  border-color:var(--action-edge);
+  font-weight:600
 }
 
 .primary-button:hover {
-  background:#1849b2
+  background:var(--action-hover);
+  box-shadow:0 3px 8px rgb(var(--shade-rgb) / .2), inset 0 1px 0 #ffffff18
 }
 
 .primary-button .icon {
@@ -861,18 +873,19 @@ h1 {
 }
 
 .secondary-button {
-  background:#f0f6ff;
-  color:#203c62;
-  border-color:#dce9fa
+  background:var(--surface-soft);
+  color:var(--ink);
+  border-color:var(--line)
 }
 
 .secondary-button:hover {
-  background:#f0f6ff
+  background:var(--surface-hover);
+  border-color:var(--line-strong)
 }
 
 .panel-footnote {
   text-align:center;
-  color:#526987;
+  color:var(--muted);
   font-size:9px;
   margin-top:14px
 }
@@ -886,11 +899,11 @@ h1 {
   gap:7px;
   min-height:40px;
   font-size:11px;
-  color:#526987
+  color:var(--muted)
 }
 
 .text-button:hover {
-  color:#203c62
+  color:var(--ink)
 }
 
 .retry {
@@ -905,7 +918,7 @@ h1 {
 
 .retry-note {
   font-size:9px;
-  color:#526987;
+  color:var(--muted);
   text-align:center
 }
 
@@ -932,7 +945,7 @@ h1 {
 .large-cup>.icon {
   width:48px;
   height:48px;
-  fill:#17345c30
+  fill:rgb(var(--shade-rgb) / 0.188)
 }
 
 .live-sales>strong {
@@ -945,7 +958,7 @@ h1 {
 .live-sales>strong>span {
   display:block;
   font-size:12px;
-  color:#526987;
+  color:var(--muted);
   margin:10px 0 18px;
   font-weight:400;
   letter-spacing:0
@@ -953,12 +966,12 @@ h1 {
 
 .live-sales p {
   font-size:11px;
-  color:#526987
+  color:var(--muted)
 }
 
 .live-sales b {
   font-weight:500;
-  color:#203c62;
+  color:var(--ink);
   margin-left:4px
 }
 
@@ -972,7 +985,7 @@ h1 {
 .visitor-track>span {
   width:10px;
   height:10px;
-  background:#f0f6ff;
+  background:var(--surface-soft);
   border-radius:50%
 }
 
@@ -985,13 +998,13 @@ h1 {
 }
 
 .visitor-track>.sold-out {
-  background:#7d8fa8
+  background:var(--muted)
 }
 
 .visitors-progress {
   text-align:center;
   font-size:10px;
-  color:#526987;
+  color:var(--muted);
   margin:10px 0 24px
 }
 
@@ -1007,7 +1020,7 @@ h1 {
   background:#ffffff;
   border:1px solid var(--ink);
   border-radius:10px;
-  box-shadow:0 4px 15px #17345c1a;
+  box-shadow:0 4px 15px rgb(var(--shade-rgb) / 0.102);
   animation:bubble-in .25s ease
 }
 
@@ -1036,7 +1049,7 @@ h1 {
 
 .customer-bubble small {
   font-size:9px;
-  color:#526987
+  color:var(--muted)
 }
 
 .customer-bubble p {
@@ -1053,7 +1066,7 @@ h1 {
   margin-top:22px;
   margin-bottom:16px;
   padding:14px 0;
-  background:#f0f6ff;
+  background:var(--surface-soft);
   border-radius:6px
 }
 
@@ -1061,24 +1074,24 @@ h1 {
   flex:1;
   font-size:10px;
   text-align:center;
-  color:#526987;
+  color:var(--muted);
   white-space:nowrap
 }
 
 .sales-summary strong {
   font-size:20px;
   font-weight:500;
-  color:#203c62;
+  color:var(--ink);
   margin-right:3px
 }
 
 .sales-summary>span+span {
-  border-left:1px solid #dce9fa
+  border-left:1px solid var(--line)
 }
 
 .receipt-rows {
-  border-top:1px dashed #dce9fa;
-  border-bottom:1px dashed #dce9fa;
+  border-top:1px dashed var(--line);
+  border-bottom:1px dashed var(--line);
   padding:15px 0 13px;
   display:flex;
   flex-direction:column;
@@ -1094,36 +1107,36 @@ h1 {
 }
 
 .receipt-rows>div>span {
-  color:#526987
+  color:var(--muted)
 }
 
 .receipt-rows small {
   display:block;
   font-size:9px;
-  color:#526987;
+  color:var(--muted);
   margin-top:5px
 }
 
 .receipt-rows strong {
   font-size:13px;
   font-weight:500;
-  color:#203c62;
+  color:var(--ink);
   white-space:nowrap
 }
 
 .receipt-rows .profit-row {
-  border-top:1px solid #dce9fa;
+  border-top:1px solid var(--line);
   padding-top:14px
 }
 
 .receipt-rows .profit-row>span {
-  color:#203c62;
+  color:var(--ink);
   font-weight:500
 }
 
 .receipt-rows .profit-row>strong {
   font-size:21px;
-  color:#203c62;
+  color:var(--ink);
   letter-spacing:-.6px
 }
 
@@ -1134,7 +1147,7 @@ h1 {
 .result-observation {
   font-size:11px;
   line-height:1.9;
-  color:#526987;
+  color:var(--muted);
   word-break:keep-all;
   overflow-wrap:anywhere;
   margin:17px 0
@@ -1142,10 +1155,10 @@ h1 {
 
 .concept-note {
   margin-bottom:21px;
-  background:#f0f6ff;
+  background:var(--surface-soft);
   border-radius:6px;
   font-size:11px;
-  color:#526987
+  color:var(--muted)
 }
 
 .concept-note summary {
@@ -1174,7 +1187,7 @@ h1 {
 .concept-note p {
   padding:0 13px 9px;
   line-height:1.85;
-  color:#203c62;
+  color:var(--ink);
   word-break:keep-all
 }
 
@@ -1183,20 +1196,20 @@ h1 {
   font-size:10px;
   line-height:1.7;
   padding:0 13px 14px;
-  color:#526987
+  color:var(--muted)
 }
 
 .final-cash {
   margin-top:24px;
   padding:22px 10px;
-  background:#fff4b5;
+  background:var(--surface-soft);
   border-radius:7px;
   text-align:center
 }
 
 .final-cash>span {
   font-size:10px;
-  color:#526987;
+  color:var(--muted);
   display:block
 }
 
@@ -1207,12 +1220,12 @@ h1 {
   letter-spacing:-1px;
   display:block;
   margin:9px 0;
-  color:#203c62
+  color:var(--ink)
 }
 
 .final-cash>small {
   font-size:10px;
-  color:#526987
+  color:var(--muted)
 }
 
 .day-history {
@@ -1230,23 +1243,23 @@ h1 {
   gap:8px;
   align-items:center;
   font-size:10px;
-  color:#526987
+  color:var(--muted)
 }
 
 .day-history li>span:first-child {
-  color:#203c62
+  color:var(--ink)
 }
 
 .day-history strong {
   font-weight:500;
-  color:#203c62
+  color:var(--ink)
 }
 
 .final-question {
   text-align:center;
   font-size:11px;
   line-height:1.9;
-  color:#526987;
+  color:var(--muted);
   margin-bottom:22px
 }
 
@@ -1263,7 +1276,7 @@ h1 {
 .empty-budget {
   font-size:11px;
   line-height:1.8;
-  color:#526987;
+  color:var(--muted);
   margin:12px 0
 }
 
@@ -1275,7 +1288,7 @@ footer {
   margin-top:29px;
   padding:22px 0 26px;
   font-size:10px;
-  color:#526987
+  color:var(--muted)
 }
 
 footer>span:first-child {
@@ -1296,18 +1309,18 @@ footer .icon {
 .modal {
   padding:28px;
   border-radius:14px;
-  border:1px solid #dce9fa;
+  border:1px solid var(--line);
   max-width:520px;
   width:calc(100% - 36px);
   max-height:85svh;
   overflow-y:auto;
   background:var(--paper);
   color:var(--ink);
-  box-shadow:0 20px 80px #17345c40
+  box-shadow:0 20px 80px rgb(var(--shade-rgb) / 0.251)
 }
 
 .modal::backdrop {
-  background:#17345c80;
+  background:rgb(var(--shade-rgb) / 0.502);
   backdrop-filter:blur(4px)
 }
 
@@ -1350,11 +1363,11 @@ footer .icon {
   width:27px;
   height:27px;
   border-radius:50%;
-  background:#dce9fa;
+  background:var(--line);
   display:grid;
   place-items:center;
   font-size:12px;
-  color:#526987
+  color:var(--muted)
 }
 
 .help-steps strong {
@@ -1365,13 +1378,13 @@ footer .icon {
 .help-steps p,.modal-note,.reset-copy {
   font-size:13px;
   line-height:1.9;
-  color:#526987;
+  color:var(--muted);
   margin-top:6px;
   word-break:keep-all
 }
 
 .modal-note {
-  border-top:1px solid #dce9fa;
+  border-top:1px solid var(--line);
   padding-top:18px
 }
 
@@ -1387,13 +1400,13 @@ footer .icon {
   padding:50px 0 60px;
   text-align:center;
   line-height:2;
-  color:#526987;
+  color:var(--muted);
   font-size:15px
 }
 
 .journal-entry {
   padding:18px 0;
-  border-bottom:1px solid #dce9fa
+  border-bottom:1px solid var(--line)
 }
 
 .journal-entry:last-child {
@@ -1409,7 +1422,7 @@ footer .icon {
 
 .journal-entry>p {
   font-size:11px;
-  color:#526987;
+  color:var(--muted);
   line-height:1.9;
   margin:9px 0 14px
 }
@@ -1424,7 +1437,7 @@ input:focus-visible {
 
 @keyframes pulse {
   50% {
-    box-shadow:0 0 0 6px #17345c0a
+    box-shadow:0 0 0 6px rgb(var(--shade-rgb) / 0.039)
   }
 }
 

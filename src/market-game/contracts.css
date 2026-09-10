@@ -1,11 +1,11 @@
-.booking-choice { margin-top: 22px; padding: 17px 0; border-top: 1px solid #adc5e5; border-bottom: 1px solid #adc5e5; }
+.booking-choice { margin-top: 22px; padding: 17px 0; border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
 .booking-choice h3 { font-size: 17px; margin: 8px 0 12px; }
-.booking-choice p { font-size: 12px; line-height: 1.9; color: #203c62; margin: 10px 0; }
-.booking-choice small { display: block; font-size: 11px; line-height: 1.8; color: #203c62; margin: 10px 0; }
-.booking-due { padding: 15px; border-radius: 7px; background: #dce9fa; color: #203c62; margin-top: 18px; }
+.booking-choice p { font-size: 12px; line-height: 1.9; color: var(--ink); margin: 10px 0; }
+.booking-choice small { display: block; font-size: 11px; line-height: 1.8; color: var(--ink); margin: 10px 0; }
+.booking-due { padding: 15px; border-radius: 7px; background: var(--line); color: var(--ink); margin-top: 18px; }
 .booking-due strong, .booking-result strong { font-size: 13px; }
 .booking-due p, .booking-result p { font-size: 12px; line-height: 1.9; margin: 7px 0; }
 .booking-due small { font-size: 11px; line-height: 1.8; display: block; }
-.booking-result { margin: 16px 0; padding: 15px; border-radius: 7px; background: #f0f6ff; color: #203c62; }
-.booking-result details { margin-top: 12px; border-top: 1px solid #adc5e5; }
+.booking-result { margin: 16px 0; padding: 15px; border-radius: 7px; background: var(--surface-soft); color: var(--ink); }
+.booking-result details { margin-top: 12px; border-top: 1px solid var(--line-strong); }
 .booking-result summary { padding-top: 12px; font-size: 12px; min-height: 44px; cursor: pointer; }

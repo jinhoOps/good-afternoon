@@ -1,40 +1,40 @@
-.journey-intro, .journey-note { color: #203c62; font-size: 13px; line-height: 1.9; word-break: keep-all; }
-.journey-preview { font-size: 12px; line-height: 1.8; background: #f0f6ff; color: #203c62; padding: 14px; margin-top: 15px; border-radius: 8px; }
+.journey-intro, .journey-note { color: var(--ink); font-size: 13px; line-height: 1.9; word-break: keep-all; }
+.journey-preview { font-size: 12px; line-height: 1.8; background: var(--surface-soft); color: var(--ink); padding: 14px; margin-top: 15px; border-radius: 8px; }
 .journey-preview strong { display: block; margin-bottom: 5px; }
 .modal .icon-button, .header-button, .icon-button { min-width: 44px; }
 .quantity-presets button, .retry { min-height: 44px; }
 .modal-heading { position: sticky; top: 0; background: var(--paper); z-index: 1; }
 .journey-note { font-size: 12px; margin-top: 18px; }
 .market-destinations { display: grid; gap: 14px; margin-top: 22px; }
-.destination { display: flex; align-items: center; gap: 18px; text-align: left; padding: 20px; border: 1px solid #adc5e5; border-radius: 12px; background: #f0f6ff; }
-.destination:hover { background: #f0f6ff; border-color: #203c62; }
+.destination { display: flex; align-items: center; gap: 18px; text-align: left; padding: 20px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface-soft); }
+.destination:hover { background: var(--surface-hover); border-color: var(--selection-border); box-shadow: 0 3px 9px rgb(var(--shade-rgb) / .08); }
 .destination>span:last-child { min-width: 0; flex: 1; }
-.destination small { color: #203c62; font-size: 11px; }
+.destination small { color: var(--ink); font-size: 11px; }
 .destination strong { display: block; font-size: 22px; margin: 4px 0 10px; }
-.destination span span { display: block; color: #203c62; font-size: 12px; line-height: 1.8; word-break: keep-all; }
-.destination em { display: block; font-style: normal; font-size: 11px; margin-top: 14px; color: #203c62; }
-.destination-art { display: grid; place-items: center; align-self: stretch; width: 76px; flex-shrink: 0; font: 58px Georgia, serif; background: #dce9fa; color: #526987; border-radius: 48px 48px 8px 8px; }
-.destination-art.park { color: #203c62; background: #dce9fa; }
-.journey-records { padding: 22px 0 14px; border-bottom: 1px solid #dce9fa; }
+.destination span span { display: block; color: var(--ink); font-size: 12px; line-height: 1.8; word-break: keep-all; }
+.destination em { display: block; font-style: normal; font-size: 11px; margin-top: 14px; color: var(--ink); }
+.destination-art { display: grid; place-items: center; align-self: stretch; width: 76px; flex-shrink: 0; font: 58px Georgia, serif; background: var(--line); color: var(--muted); border-radius: 48px 48px 8px 8px; }
+.destination-art.park { color: var(--ink); background: var(--line); }
+.journey-records { padding: 22px 0 14px; border-bottom: 1px solid var(--line); }
 .journey-records h3 { font-size: 15px; }
-.journey-records p { font-size: 11px; color: #526987; margin: 8px 0 14px; }
+.journey-records p { font-size: 11px; color: var(--muted); margin: 8px 0 14px; }
 .journey-records ul { padding: 0; list-style: none; }
 .journey-records li { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; line-height: 1.8; padding: 7px 0; }
 .journey-records strong { white-space: nowrap; }
-.market-news .forecast-detail { font-size: 11px; color: #203c62; margin-bottom: 6px; }
+.market-news .forecast-detail { font-size: 11px; color: var(--ink); margin-bottom: 6px; }
 .credits-actions .secondary-button { margin-top: 7px; min-height: 44px; font-size: 12px; }
-.shop-sign { position: absolute; width: 30%; max-width: 230px; right: 5%; top: 12%; filter: drop-shadow(0 3px 4px #17345c50); }
+.shop-sign { position: absolute; width: 30%; max-width: 230px; right: 5%; top: 12%; filter: drop-shadow(0 3px 4px rgb(var(--shade-rgb) / 0.314)); }
 .shop-sign svg { display: block; width: 100%; }
-.shop-equipment { position: absolute; right: 15px; bottom: 110px; padding: 7px 10px; border-radius: 5px; background: #f0f6ff; color: #203c62; font-size: 11px; box-shadow: 0 2px 8px #17345c30; }
-.equipment-choice { border: 0; border-top: 1px solid #dce9fa; padding: 20px 0 0; margin: 25px 0 0; }
+.shop-equipment { position: absolute; right: 15px; bottom: 110px; padding: 7px 10px; border-radius: 5px; background: var(--surface-soft); color: var(--ink); font-size: 11px; box-shadow: 0 2px 8px rgb(var(--shade-rgb) / 0.188); }
+.equipment-choice { border: 0; border-top: 1px solid var(--line); padding: 20px 0 0; margin: 25px 0 0; }
 .equipment-choice legend { font-size: 15px; font-weight: 600; padding: 0 10px 0 0; }
-.equipment-choice p, .equipment-choice small { display: block; font-size: 11px; line-height: 1.8; color: #203c62; }
+.equipment-choice p, .equipment-choice small { display: block; font-size: 11px; line-height: 1.8; color: var(--ink); }
 .equipment-choice>div { display: grid; gap: 8px; margin: 13px 0 10px; }
-.equipment-choice button { min-height: 62px; padding: 12px 15px; text-align: left; background: #ffffff; border: 1px solid #adc5e5; border-radius: 7px; }
-.equipment-choice button[aria-pressed=true] { background: #f0f6ff; border: 2px solid #203c62; padding: 11px 14px; }
+.equipment-choice button { min-height: 62px; padding: 12px 15px; text-align: left; background: #ffffff; border: 1px solid var(--line-strong); border-radius: 7px; }
+.equipment-choice button[aria-pressed=true] { background: var(--surface-selected); border: 2px solid var(--selection-border); padding: 11px 14px; }
 .equipment-choice strong { display: block; font-size: 13px; }
-.equipment-choice span { display: block; font-size: 11px; line-height: 1.7; margin-top: 5px; color: #203c62; }
-.menu-notice { font-size: 12px; color: #203c62; background: #f0f6ff; padding: 14px; margin-top: 18px; border-radius: 7px; line-height: 1.8; }
+.equipment-choice span { display: block; font-size: 11px; line-height: 1.7; margin-top: 5px; color: var(--ink); }
+.menu-notice { font-size: 12px; color: var(--ink); background: var(--surface-soft); padding: 14px; margin-top: 18px; border-radius: 7px; line-height: 1.8; }
 .menu-notice strong, .menu-notice small { display: block; }
 .menu-notice small { margin-top: 6px; font-size: 10px; }
 @media(max-width:450px) {
@@ -46,4 +46,4 @@
   .shop-equipment { font-size: 9px; right: 10px; bottom: 91px; }
 }
 
-.tea-scene .stock-cup { color: #203c62; fill: #17345c26; }
+.tea-scene .stock-cup { color: var(--ink); fill: rgb(var(--shade-rgb) / 0.149); }
