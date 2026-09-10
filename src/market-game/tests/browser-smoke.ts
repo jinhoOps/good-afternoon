@@ -69,6 +69,29 @@ async function main(): Promise<void> {
     assert.equal(await page.locator('#quantity').inputValue(), '9');
     assert.equal(await page.locator('#help').evaluate(el => el === document.activeElement), true);
 
+    // 입력 확정으로 버튼이 재생성돼도 Tab의 이동 방향과 비활성 건너뛰기를 유지합니다.
+    await page.locator('#quantity').fill('8');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'more');
+    await page.keyboard.press('Space');
+    assert.equal(await page.locator('#quantity').inputValue(), '9');
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'quantity');
+    await page.locator('#quantity').fill('12');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'preset-4');
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'quantity');
+    await page.locator('#quantity').fill('0');
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'restart');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'quantity');
+    await page.locator('#quantity').fill('');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.locator('#quantity').inputValue(), '0');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'more');
+
     await setQuantity(page, 10);
     await page.reload({ waitUntil: 'networkidle' });
     assert.equal(await page.locator('#quantity').inputValue(), '10');

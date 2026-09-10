@@ -80,13 +80,27 @@ function tick(): void {
 
 function changeQuantity(quantity: number, repaint = true): void {
   const nextQuantity = Math.min(preparationCapacity(state), Math.max(minimumPreparation(state), Math.trunc(quantity)));
-  if (!Number.isFinite(nextQuantity)) { render('quantity'); return; }
+  if (!Number.isFinite(nextQuantity)) { if (repaint) render('quantity'); return; }
   persist(changeOrder(state, { ...state.order, quantity: nextQuantity }));
   if (repaint) render();
 }
 
 app.addEventListener('change', (event) => {
   if (event.target instanceof HTMLInputElement && event.target.id === 'quantity' && event.target.valueAsNumber !== state.order.quantity) changeQuantity(event.target.valueAsNumber);
+});
+
+app.addEventListener('keydown', (event) => {
+  if (event.key !== 'Tab' || event.ctrlKey || event.altKey || event.metaKey || !(event.target instanceof HTMLInputElement) || event.target.id !== 'quantity') return;
+  // 값 확정으로 화면을 갱신한 뒤 새 수량에 맞는 다음 조작으로 이동합니다.
+  // 브라우저가 제거된 버튼에 초점을 보내 페이지 맨 위로 돌아가지 않게 합니다.
+  event.preventDefault();
+  changeQuantity(event.target.valueAsNumber, false);
+  event.target.value = String(state.order.quantity);
+  render('quantity');
+  const controls = Array.from(app.querySelectorAll<HTMLElement>('button, input, summary, a[href], [tabindex]'))
+    .filter(element => element.tabIndex >= 0 && !element.matches(':disabled') && element.getClientRects().length > 0);
+  const index = controls.findIndex(element => element.id === 'quantity');
+  controls[index + (event.shiftKey ? -1 : 1)]?.focus();
 });
 
 app.addEventListener('pointerdown', (event) => {
@@ -102,6 +116,7 @@ app.addEventListener('click', (event) => {
   if (state.phase === 'planning' && !ui.modal && document.activeElement instanceof HTMLInputElement && document.activeElement.id === 'quantity') {
     const value = document.activeElement.valueAsNumber;
     if (Number.isFinite(value)) changeQuantity(value, false);
+    document.activeElement.value = String(state.order.quantity);
     target.focus({ preventScroll: true });
   }
   const action = target.dataset.action;
