@@ -10,7 +10,7 @@ export function bestRun(market: MarketId, equipment: Equipment, bookings = true)
   for (let day = 0; day < 5; day++) {
     const next = new Map<string, GameState>();
     for (const state of frontier) for (const price of PRICES) {
-      if (fixedPrice(state) && price !== 1000) continue;
+      if (fixedPrice(state) && price !== 3000) continue;
       for (const cooler of [false, true]) {
         if (cooler && (day < 2 || day === 4 || state.cash < rentalFee(state))) continue;
         for (const booking of [false, true]) {

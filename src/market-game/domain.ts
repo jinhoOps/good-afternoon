@@ -47,7 +47,7 @@ export function preparationCapacity(state: GameState, cooler = state.order.coole
 export const minimumPreparation = (state: GameState): number => Math.max(0, (state.booking?.quantity ?? 0) - state.stock.quantity);
 
 export function newGame(market: MarketId = 'neighborhood', records: RunRecord[] = [], equipment: Equipment = 'basic', firstShop: RunRecord | null = null): GameState {
-  return { market, equipment, booking: null, records, firstShop, day: 0, phase: 'planning', cash: INITIAL_CASH, stock: emptyStock(), order: { quantity: 6, price: 1000, cooler: false, booking: false }, receipts: [] };
+  return { market, equipment, booking: null, records, firstShop, day: 0, phase: 'planning', cash: INITIAL_CASH, stock: emptyStock(), order: { quantity: 6, price: 3000, cooler: false, booking: false }, receipts: [] };
 }
 
 export function startMarket(state: GameState, market: MarketId, equipment: Equipment = state.equipment): GameState {
@@ -69,7 +69,7 @@ function validOrder(state: GameState, order: Order): boolean {
     && typeof order.booking === 'boolean' && (!order.booking || bookingOffer(state) !== null)
     && Number.isInteger(order.quantity) && order.quantity >= minimumPreparation(state) && order.quantity <= preparationCapacity(state, order.cooler, order.booking)
     && order.quantity * unitCost(state) + (order.cooler ? rentalFee(state) : 0) <= state.cash
-    && PRICES.includes(order.price as typeof PRICES[number]) && (!fixedPrice(state) || order.price === 1000);
+    && PRICES.includes(order.price as typeof PRICES[number]) && (!fixedPrice(state) || order.price === 3000);
 }
 
 export function changeOrder(state: GameState, input: OrderInput): GameState {

@@ -39,7 +39,7 @@ async function main(): Promise<void> {
     page.on('requestfailed', (request) => errors.push(`${request.url()}: ${request.failure()?.errorText}`));
     await page.goto(url, { waitUntil: 'networkidle' });
     await page.locator('#open-market').waitFor();
-    assert.equal(await cash(page), 6000);
+    assert.equal(await cash(page), 18000);
     assert.equal(await page.locator('.scene-art').evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0), true);
     await noOverflow(page);
     await page.screenshot({ path: `${artifactDir}/01-desktop-preparation.png`, fullPage: true });
@@ -60,7 +60,7 @@ async function main(): Promise<void> {
     await page.locator('#open-market').click();
     assert.equal(await page.locator('#skip-sales').count(), 1);
     await page.locator('#skip-sales').click();
-    assert.equal(await cash(page), 8000);
+    assert.equal(await cash(page), 24000);
     await page.locator('#retry-day').click();
     await page.locator('#quantity').fill('9');
     await page.locator('#help').click();
@@ -96,34 +96,34 @@ async function main(): Promise<void> {
     await page.reload({ waitUntil: 'networkidle' });
     assert.equal(await page.locator('#quantity').inputValue(), '10');
     await sell(page);
-    assert.equal(await cash(page), 7000);
+    assert.equal(await cash(page), 21000);
     await page.screenshot({ path: `${artifactDir}/02-desktop-result.png`, fullPage: true });
     await page.reload({ waitUntil: 'networkidle' });
-    assert.equal(await cash(page), 7000);
+    assert.equal(await cash(page), 21000);
     assert.equal(await page.locator('#next-day').isVisible(), true);
     await page.locator('#retry-day').click();
-    assert.equal(await cash(page), 6000);
+    assert.equal(await cash(page), 18000);
     await setQuantity(page, 6);
     await sell(page);
-    assert.equal(await cash(page), 9000);
+    assert.equal(await cash(page), 27000);
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('#next-day').click();
-    await page.locator('#price-1200').click();
+    await page.locator('#price-3600').click();
     await setQuantity(page, 12);
     await noOverflow(page);
     assert.equal(await page.locator('.dream').isVisible(), true);
     await page.screenshot({ path: `${artifactDir}/03-mobile-preparation.png`, fullPage: true });
-    for (const selector of ['#more', '#less', '#price-1200', '#open-market']) {
+    for (const selector of ['#more', '#less', '#price-3600', '#open-market']) {
       const bounds = await page.locator(selector).boundingBox();
       assert.ok(bounds && bounds.width >= 44 && bounds.height >= 44, `${selector} 터치 영역 확인`);
     }
     await sell(page);
-    assert.equal(await cash(page), 11400);
+    assert.equal(await cash(page), 34200);
     await noOverflow(page);
     await page.screenshot({ path: `${artifactDir}/04-mobile-result.png`, fullPage: true });
 
-    for (const [quantity, price] of [[4, 800], [8, 1200], [14, 1200]]) {
+    for (const [quantity, price] of [[4, 2400], [8, 3600], [14, 3600]]) {
       await page.locator('#next-day').click();
       await setQuantity(page, quantity);
       await page.locator(`#price-${price}`).click();
@@ -132,10 +132,10 @@ async function main(): Promise<void> {
     }
     await page.locator('#next-day').click();
     await page.locator('#new-market').waitFor();
-    assert.equal(await cash(page), 18800);
+    assert.equal(await cash(page), 56400);
     assert.equal(await page.locator('.day-history li').count(), 5);
     await page.reload({ waitUntil: 'networkidle' });
-    assert.equal(await cash(page), 18800);
+    assert.equal(await cash(page), 56400);
     await page.screenshot({ path: `${artifactDir}/05-mobile-finale.png`, fullPage: true });
     await page.locator('#final-journal').click();
     assert.equal(await page.locator('.journal-entry').count(), 5);
@@ -159,12 +159,12 @@ async function main(): Promise<void> {
     });
     await page.screenshot({ path: `${artifactDir}/12-mobile-thanks-end.png` });
     await page.locator('.credits-return').click();
-    assert.equal(await cash(page), 18800);
+    assert.equal(await cash(page), 56400);
     assert.equal(await page.locator('#new-market').evaluate((el) => el === document.activeElement), true);
     assert.equal(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY), completedSave);
     await page.locator('#new-market').click();
     await page.reload({ waitUntil: 'networkidle' });
-    assert.equal(await cash(page), 18800);
+    assert.equal(await cash(page), 56400);
     assert.equal(await page.locator('.credits-dialog').count(), 0);
 
     await page.setViewportSize({ width: 1440, height: 1000 });
@@ -187,33 +187,33 @@ async function main(): Promise<void> {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('#new-market').click();
     await page.locator('#replay-market').click();
-    assert.equal(await cash(page), 6000);
+    assert.equal(await cash(page), 18000);
     assert.equal(await page.locator('.credits-dialog').count(), 0);
     assert.equal(await page.evaluate(() => document.body.style.overflow), '');
     await page.locator('#open-market').click();
     // 영업 애니메이션 중 새로고침해도 한 번 정산한 결과만 복구합니다.
     await page.reload({ waitUntil: 'networkidle' });
-    assert.equal(await cash(page), 9000);
+    assert.equal(await cash(page), 27000);
     assert.equal(await page.locator('#next-day').isVisible(), true);
 
     await page.evaluate((key) => localStorage.setItem(key, '{broken'), STORAGE_KEY);
     await page.reload({ waitUntil: 'networkidle' });
-    assert.equal(await cash(page), 6000);
+    assert.equal(await cash(page), 18000);
     assert.ok((await page.locator('.notice').innerText()).includes('새 장터'));
 
     // 일반 속도에서도 손님·재고·현금이 함께 변하고 영업이 스스로 끝나야 합니다.
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.locator('#open-market').click();
-    assert.equal(await cash(page), 3000);
+    assert.equal(await cash(page), 9000);
     await page.locator('.customer-bubble').waitFor();
-    assert.equal(await cash(page), 4000);
+    assert.equal(await cash(page), 12000);
     assert.equal((await page.locator('.counter-caption strong').innerText()).replace(/\s/g, ''), '5잔');
     const customerBounds = await page.locator('.customer-bubble').boundingBox();
     assert.ok(customerBounds && customerBounds.y >= 0 && customerBounds.y + customerBounds.height <= 844, '모바일에서 손님 반응이 현재 화면 안에 보여야 합니다.');
     await noOverflow(page);
     await page.screenshot({ path: `${artifactDir}/06-mobile-selling.png` });
     await page.locator('#next-day').waitFor();
-    assert.equal(await cash(page), 9000);
+    assert.equal(await cash(page), 27000);
 
     // 기존 버전의 셋째 날 저장에서 이어 시작해 보관과 다음 날 판매를 확인합니다.
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -222,14 +222,14 @@ async function main(): Promise<void> {
       receipts: [{ quantity: 6, price: 1000 }, { quantity: 8, price: 1200 }]
     })), STORAGE_KEY);
     await page.reload({ waitUntil: 'networkidle' });
-    assert.equal(await cash(page), 13400);
-    assert.equal(await page.locator('.notice').count(), 0);
+    assert.equal(await cash(page), 40200);
+    assert.ok((await page.locator('.notice').innerText()).includes('진행은 그대로'));
     await page.setViewportSize({ width: 1440, height: 1000 });
     await setQuantity(page, 9);
-    await page.locator('#price-800').click();
+    await page.locator('#price-2400').click();
     await page.locator('#rent-cooler').click();
     assert.equal(await page.locator('#rent-cooler').getAttribute('aria-pressed'), 'true');
-    assert.ok((await page.locator('.tomorrow-news').innerText()).includes('700원'));
+    assert.ok((await page.locator('.tomorrow-news').innerText()).includes('2,100원'));
     await page.reload({ waitUntil: 'networkidle' });
     assert.equal(await page.locator('#rent-cooler').getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator('#quantity').inputValue(), '9');
@@ -241,11 +241,11 @@ async function main(): Promise<void> {
     await noOverflow(page);
     await page.screenshot({ path: `${artifactDir}/08-mobile-cooler.png`, fullPage: true });
     await sell(page);
-    assert.equal(await cash(page), 12300);
+    assert.equal(await cash(page), 36900);
     assert.ok((await page.locator('.cooler-prop').innerText()).includes('4잔'));
     assert.ok((await page.locator('.storage-result').innerText()).includes('4잔'));
     await page.locator('.inventory-accounting summary').click();
-    assert.ok((await page.locator('.accounting-profit').innerText()).includes('900원'));
+    assert.ok((await page.locator('.accounting-profit').innerText()).includes('2,700원'));
     await noOverflow(page);
     await page.screenshot({ path: `${artifactDir}/09-mobile-stored-result.png`, fullPage: true });
     await page.locator('#next-day').click();
@@ -254,20 +254,20 @@ async function main(): Promise<void> {
     assert.ok((await page.locator('.carried-stock').innerText()).includes('4잔'));
     assert.equal(await page.locator('#rent-cooler').getAttribute('aria-pressed'), 'false');
     await setQuantity(page, 3);
-    await page.locator('#price-1200').click();
+    await page.locator('#price-3600').click();
     await page.screenshot({ path: `${artifactDir}/10-mobile-next-day-stock.png`, fullPage: true });
     await sell(page);
-    assert.equal(await cash(page), 18600);
+    assert.equal(await cash(page), 55800);
     await page.locator('#retry-day').click();
-    assert.equal(await cash(page), 12300);
+    assert.equal(await cash(page), 36900);
     assert.ok((await page.locator('.carried-stock').innerText()).includes('4잔'));
     await setQuantity(page, 0);
-    await page.locator('#price-1500').click();
+    await page.locator('#price-4500').click();
     await page.locator('#rent-cooler').click();
     assert.equal(await page.locator('#open-market').innerText(), '가게 문 열기');
     await page.locator('#open-market').click();
     await page.reload({ waitUntil: 'networkidle' });
-    assert.equal(await cash(page), 14700);
+    assert.equal(await cash(page), 44100);
     assert.ok((await page.locator('.storage-result').innerText()).includes('2잔'));
     await page.locator('#next-day').click();
     assert.equal(await page.locator('.carried-stock').count(), 0);
@@ -279,7 +279,7 @@ async function main(): Promise<void> {
     });
     await failedStorage.goto(url, { waitUntil: 'networkidle' });
     await sell(failedStorage);
-    assert.equal(await cash(failedStorage), 9000);
+    assert.equal(await cash(failedStorage), 27000);
     assert.ok((await failedStorage.locator('.notice').innerText()).includes('남기지 못했어요'));
 
     await journeySmoke(page, completedSave!, artifactDir);
