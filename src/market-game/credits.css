@@ -36,6 +36,12 @@
 .credits-future small { display: block; font-size: 11px; line-height: 1.9; color: #526987; margin-top: 32px; }
 .credits-farewell { padding: 110px 0 10px; }
 .credits-signature { display: block; margin-top: 38px; font-family: inherit; font-size: 30px; font-weight: 800; letter-spacing: -1.4px; color: #203c62; }
+.credits-roll.has-easter-egg { padding-bottom: 40px; }
+.credits-easter-egg { margin: 40px auto 0; width: min(245px, 100%); }
+.credits-easter-egg[hidden] { display: none; }
+.credits-easter-egg video { display: block; max-width: 100%; width: auto; height: min(320px, 32dvh); margin: auto; object-fit: contain; border-radius: 4px; background: #242a34; }
+.credits-easter-egg figcaption { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 8px; color: #526987; font-size: 12px; letter-spacing: .2px; }
+.credits-easter-egg button { min-height: 44px; min-width: 44px; padding: 0 4px; border: 0; background: transparent; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .credits-actions { flex-shrink: 0; display: block; margin: 0; padding: 10px 30px 16px; background: #ffffff; border-top: 1px solid #dce9fa; }
 .credits-playback { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 10px; color: #526987; }
 .credits-playback button { min-height: 44px; padding: 0 8px; background: transparent; border: 0; color: #203c62; font-size: 11px; text-decoration: underline; text-underline-offset: 4px; }

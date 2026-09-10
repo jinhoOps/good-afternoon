@@ -59,6 +59,7 @@ npm run test:smoke
 - `view.ts`, `main.ts`, `styles.css`: 장면, 조작, 손님 반응, 반응형 화면
 - `cooler-view.ts`, `cooler.css`: 보관 선택, 보관함 장면, 현금과 이익의 구분
 - `credits.ts`, `credits.css`: 반복 진입 시 감사 스크롤과 개발 중 안내
+- `credits-easter-egg.ts`: 감사 스크롤 끝에서만 나타나는 인사 장면과 재생 정리
 - `atmosphere.ts`, `daylight.ts`, `atmosphere.css`: 명시적 동의 후 현지 시각에 맞추는 웹 배경, 미동의 시 낮 고정
 - [배경 이미지와 제작 기록](src/market-game/assets/README.md)
 

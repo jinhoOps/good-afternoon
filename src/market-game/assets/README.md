@@ -1,5 +1,16 @@
 # 배경과 잉크 장면 제작 기록
 
+## 감사 스크롤의 인사 장면 — 2026-09-10
+
+- 사용자가 직접 제공한 GIF이며 제롬 파월의 인사에서 가져온 서비스 이름을 마지막에 회수하는 이스터에그입니다.
+- 원본 보존: [good-afternoon.gif](good-afternoon.gif), 245×320, 122프레임, 10fps, 12.2초. 입력은 `/Users/jinho/Downloads/e60e9effba8247d27cbd514efb120d189cc4364d11e54be2835b8021488e7894.gif`입니다.
+- 브라우저 재생본: [good-afternoon.mp4](good-afternoon.mp4). 일시정지·동작 감소·인라인 무음 재생을 지원하기 위해 H.264로 변환했습니다. 재생 길이와 프레임 수를 보존하며 인코딩에 필요한 오른쪽 1px 패딩만 추가했습니다. 이미지를 재생성하지 않았습니다.
+- 감사 스크롤 끝에 도달하기 전에는 영상 URL을 DOM에 연결하지 않습니다. 원본 GIF는 실행 번들에 포함하지 않습니다.
+
+```sh
+ffmpeg -hide_banner -loglevel error -i src/market-game/assets/good-afternoon.gif -an -vf pad=246:320:0:0 -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart src/market-game/assets/good-afternoon.mp4
+```
+
 
 ## 현재 사용하는 그림 — 2026-09-10
 

@@ -4,6 +4,7 @@ import { chromium, type Page } from 'playwright';
 import { STORAGE_KEY } from '../storage';
 import { journeySmoke } from './journey-smoke';
 import { atmosphereSmoke } from './atmosphere-smoke';
+import { creditsEasterSmoke } from './credits-easter-smoke';
 
 const url = process.env.MARKET_TEST_URL ?? 'http://127.0.0.1:4173/good-afternoon/';
 const artifactDir = process.env.MARKET_SCREENSHOTS ?? '/tmp/good-afternoon-market-qa';
@@ -284,6 +285,7 @@ async function main(): Promise<void> {
     assert.ok((await failedStorage.locator('.notice').innerText()).includes('남기지 못했어요'));
 
     await journeySmoke(page, completedSave!, artifactDir);
+    await creditsEasterSmoke(page, completedSave!, artifactDir);
     assert.deepEqual(errors, [], `브라우저 오류: ${errors.join('\n')}`);
     await context.close();
     await atmosphereSmoke(browser, url, artifactDir);
