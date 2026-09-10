@@ -23,6 +23,8 @@
     "src/market-game/markets.ts",
     "src/market-game/equipment.ts",
     "src/market-game/contracts.ts",
-    "src/market-game/storage.ts"
+    "src/market-game/storage.ts",
+    "src/market-game/daylight.ts",
+    "src/market-game/atmosphere.ts"
   ]
 }

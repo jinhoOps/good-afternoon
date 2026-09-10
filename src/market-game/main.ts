@@ -5,6 +5,8 @@ import './cooler.css';
 import './credits.css';
 import './journey.css';
 import './contracts.css';
+import './atmosphere.css';
+import { startAtmosphere, TIME_CONSENT_KEY } from './atmosphere';
 import { startCredits } from './credits';
 import { PRICES } from './content';
 import { preparationCapacity, minimumPreparation, changeOrder, startMarket, nextDay, openMarket, retryDay, type GameState } from './domain';
@@ -23,12 +25,17 @@ let timer: ReturnType<typeof setTimeout> | null = null;
 let modalTrigger = '';
 let stopCredits: (() => void) | null = null;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const atmosphere = startAtmosphere(storage);
+window.addEventListener('pagehide', (event) => { if (!event.persisted) atmosphere.stop(); });
+window.addEventListener('storage', (event) => {
+  if (ui.modal === 'atmosphere' && (event.key === TIME_CONSENT_KEY || event.key === null)) render();
+});
 
 function render(focusId?: string): void {
   const focus = focusId ?? (document.activeElement instanceof HTMLElement ? document.activeElement.id : '');
   stopCredits?.();
   stopCredits = null;
-  app.innerHTML = view(state, ui);
+  app.innerHTML = view(state, { ...ui, timeLinked: atmosphere.isTimeEnabled() });
   if (ui.modal) {
     const dialog = app.querySelector<HTMLDialogElement>('dialog');
     dialog?.showModal();
@@ -86,6 +93,11 @@ function changeQuantity(quantity: number, repaint = true): void {
 }
 
 app.addEventListener('change', (event) => {
+  if (event.target instanceof HTMLInputElement && event.target.id === 'time-consent') {
+    atmosphere.setTimeConsent(event.target.checked);
+    render('time-consent');
+    return;
+  }
   if (event.target instanceof HTMLInputElement && event.target.id === 'quantity' && event.target.valueAsNumber !== state.order.quantity) changeQuantity(event.target.valueAsNumber);
 });
 
@@ -120,7 +132,7 @@ app.addEventListener('click', (event) => {
     target.focus({ preventScroll: true });
   }
   const action = target.dataset.action;
-  if (action === 'help' || action === 'journal' || action === 'reset') {
+  if (action === 'help' || action === 'journal' || action === 'reset' || action === 'atmosphere') {
     showModal(action === 'reset' && state.phase === 'complete' ? 'credits' : action);
     return;
   }

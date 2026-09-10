@@ -1,0 +1,96 @@
+:root {
+  --night: 0;
+  --sun-x: 0px;
+  --sun-y: 0px;
+  --sun-angle: 0deg;
+  --shell-background: #fdfdfc;
+  --shell-ink: #181a18;
+  --shell-muted: #525752;
+  --shell-line: #dddfda;
+  --shell-surface: #ffffffeb;
+  background: var(--shell-background);
+  color: var(--shell-ink);
+}
+
+body { isolation: isolate; }
+.web-atmosphere { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.web-atmosphere::before, .web-atmosphere::after {
+  content: '';
+  position: absolute;
+  background-size: cover;
+  background-position: center;
+  transition: transform 55s linear;
+}
+.web-atmosphere::before {
+  inset: -24px;
+  background-image: url('./assets/web-daylight.png');
+  opacity: 1;
+  transform: translate(var(--sun-x), var(--sun-y)) rotate(var(--sun-angle));
+}
+.web-atmosphere::after {
+  inset: 0;
+  background-image: url('./assets/web-evening.png');
+  opacity: var(--night);
+}
+
+.app-wrap { max-width: 1248px; padding: 0 40px; }
+.site-header { height: 140px; padding-top: 60px; border-bottom: 1px solid var(--shell-line); }
+.brand, .brand-dot { color: var(--shell-ink); }
+.brand { font-size: 24px; letter-spacing: -.9px; font-weight: 750; }
+.site-header .header-button, .site-header .icon-button { color: var(--shell-muted); }
+.site-header button:hover { color: var(--shell-ink); background: #8c948214; }
+.game-heading { margin: 24px 0 20px; }
+.game-heading h1 { color: var(--shell-ink); font-size: 30px; }
+.eyebrow, .eyebrow span, .wallet>div>span { color: var(--shell-muted); }
+.wallet strong { color: var(--shell-ink); }
+.day-rail { border-color: var(--shell-line); margin-bottom: 20px; }
+.day-marker:not(.current) { color: var(--shell-muted); }
+.day-marker.current { color: var(--shell-ink); }
+.day-marker b { border-color: var(--shell-line); }
+.day-status { background: transparent; color: var(--shell-muted); font-weight: 500; padding-right: 0; }
+.game-grid { grid-template-columns: minmax(0, 1fr) 348px; gap: 20px; }
+.scene { border: 0; border-radius: 9px; box-shadow: none; aspect-ratio: 1.46; }
+.play-panel { color: var(--ink); border: 1px solid #e1e4e5; border-radius: 8px; box-shadow: 0 2px 16px #21282104; }
+.scene-label, .weather-label { border-color: #e6e8e2; font-weight: 500; }
+.counter-display { border-color: #e1e5e7; box-shadow: none; }
+.market-news { background: var(--shell-surface); border: 1px solid var(--shell-line); border-radius: 8px; }
+.market-news p, .market-news .forecast-detail, .news-topline>span { color: var(--shell-muted); }
+.market-news .news-icon { color: var(--shell-muted); background: #8c948211; }
+.dream-copy strong { color: var(--shell-ink); }
+.dream-copy p, .dream-icon { color: var(--shell-muted); }
+.dream-icon { border-color: var(--shell-line); }
+.dream-progress { background: var(--shell-line); height: 5px; }
+.app-wrap>footer { color: var(--shell-muted); border-color: var(--shell-line); }
+.background-settings { color: inherit; font: inherit; border: 0; background: transparent; padding: 12px 0 12px 16px; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+.atmosphere-copy, .time-status { font-size: 14px; line-height: 1.8; color: var(--muted); }
+.time-consent { display: flex; align-items: flex-start; gap: 12px; padding: 20px 0; cursor: pointer; font-size: 15px; line-height: 1.7; }
+.time-consent input { width: 20px; height: 20px; margin: 3px 0 0; flex-shrink: 0; accent-color: var(--ink); }
+.time-consent small { display: block; margin-top: 6px; font-weight: 400; font-size: 13px; color: var(--muted); }
+
+@media (min-width: 1600px) {
+  .app-wrap { max-width: 1360px; }
+  .game-grid { grid-template-columns: minmax(0, 1fr) 372px; gap: 28px; }
+}
+@media (min-width: 850px) and (max-width: 1050px) {
+  .app-wrap { padding: 0 26px; }
+  .game-grid { grid-template-columns: minmax(0, 1fr) 320px; }
+  .scene { aspect-ratio: 1.02; }
+}
+@media (max-width: 849px) {
+  .app-wrap { max-width: 650px; padding: 0 22px; }
+  .site-header { height: 88px; padding-top: 0; }
+  .brand { font-size: 22px; }
+  .game-heading { margin: 24px 0 21px; }
+  .game-heading h1 { font-size: 25px; }
+  .game-grid { grid-template-columns: 1fr; gap: 20px; }
+  .scene { aspect-ratio: 1.58; }
+  .web-atmosphere::before, .web-atmosphere::after { background-position: 12% center; }
+}
+@media (max-width: 450px) {
+  .app-wrap { padding: 0 16px; }
+  .brand { font-size: 19px; gap: 7px; }
+  .game-heading h1 { font-size: 23px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .web-atmosphere::before, .web-atmosphere::after { transition: none; transform: none; }
+}

@@ -8,7 +8,7 @@ import { bookingChoice, bookingDue, bookingResult, bookingCashRows } from './con
 import { coolerChoice, stockNotice, storageResult, inventoryAccounting, coolerScene } from './cooler-view';
 import { creditsView } from './credits';
 
-export type ViewState = { selling: boolean; seen: number; notice: string; equipment?: Equipment; modal: 'help' | 'journal' | 'reset' | 'credits' | 'markets' | null };
+export type ViewState = { selling: boolean; seen: number; notice: string; equipment?: Equipment; timeLinked?: boolean; modal: 'help' | 'journal' | 'reset' | 'credits' | 'markets' | 'atmosphere' | null };
 
 const paths: Record<string, string> = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
@@ -53,7 +53,7 @@ function scene(state: GameState, ui: ViewState): string {
     : outcome?.kind === 'expensive' ? '오늘은 조금 비싸네요. 다음에 올게요.' : '앗, 다 팔렸네요. 다음에 올게요!';
   return `<section class="world-column" aria-label="오후의 레모네이드 가게">
     <div class="scene ${state.equipment === 'tea' ? 'tea-scene' : ''} weather-${day.weather} ${ui.selling ? 'is-selling' : ''}">
-      <img class="scene-art" src="${state.market === 'neighborhood' ? new URL('./assets/market.png', import.meta.url).href : new URL('./assets/park.png', import.meta.url).href}" alt="${state.market === 'neighborhood' ? '동네 골목' : '공원 산책길'}의 노란 차양 아래 작은 초록색 노점과 가게 주인" fetchpriority="high">
+      <img class="scene-art" src="${state.market === 'neighborhood' ? new URL('./assets/market-ink.png', import.meta.url).href : new URL('./assets/park-ink.png', import.meta.url).href}" alt="${state.market === 'neighborhood' ? '동네 골목' : '공원 산책길'}의 노란 차양과 작은 음료 가게를 펜과 잉크로 그린 풍경" fetchpriority="high">
       <div class="weather-atmosphere" aria-hidden="true"></div>
       <div class="scene-label"><span class="live-dot ${ui.selling ? 'active' : ''}"></span>${ui.selling ? '장사하는 중' : showResult ? '오늘의 장사 끝' : '곧 문을 열어요'}</div>
       <div class="weather-label">${icon(day.weather === 'rain' ? 'rain' : 'sun')} ${day.weatherLabel}</div>
@@ -113,7 +113,7 @@ function finale(state: GameState): string {
   return `<section class="play-panel final-panel" aria-labelledby="panel-title"><div class="panel-eyebrow">${icon('star')} 다섯 번의 오후를 지나</div><h2 id="panel-title" tabindex="-1">${fulfilled ? '우리 가게에<br> 간판을 달았어요.' : '내일은 조금 다르게<br> 해볼 수 있겠죠.'}</h2><p class="panel-intro">${fulfilled ? '손님을 읽고, 가격을 고르고, 다음을 준비했어요. 준비금이 모여 간판과 진열대를 마련했어요. 다음 장터부터 설비 자리 하나도 고를 수 있어요.' : '어떤 날엔 모자라고, 어떤 날엔 남았죠. 그 차이를 알아차린 경험도 다음 장터에 가져가요.'}</p><div class="final-cash"><span>장터를 마친 내 주머니</span><strong>${money(state.cash)}</strong><small>시작 ${money(INITIAL_CASH)}에서 ${difference(earned)}</small></div><p class="history-label">날마다 달라진 현금</p><ol class="day-history">${state.receipts.map((receipt) => `<li><span>${receipt.day + 1}일차</span><span>${receipt.sold} / ${receipt.totalStock}잔 판매</span><strong class="${receipt.cashChange < 0 ? 'negative' : ''}">${difference(receipt.cashChange)}</strong></li>`).join('')}</ol><p class="final-question">익숙한 장터를 다시 열거나,<br> 새로운 손님을 만나러 떠나볼까요?</p><button id="new-market" class="primary-button" data-action="reset">새 장터 열기 ${icon('arrow')}</button><button id="final-journal" class="text-button retry" data-action="journal">${icon('book')} 내 영업 기록 자세히 보기</button></section>`;
 }
 
-function modal(state: GameState, kind: ViewState['modal'], equipment: Equipment = state.equipment): string {
+function modal(state: GameState, kind: ViewState['modal'], equipment: Equipment = state.equipment, timeLinked = false): string {
   if (!kind) return '';
   if (kind === 'credits') return creditsView(state);
   let title = '작은 가게를 여는 방법';
@@ -131,6 +131,10 @@ function modal(state: GameState, kind: ViewState['modal'], equipment: Equipment 
     title = '새 장터를 열까요?';
     content = '<p class="reset-copy">이번 영업을 18,000원으로 첫 오후부터 다시 시작해요. 장터별 최고 기록은 남아요.</p><button id="confirm-reset" class="primary-button" data-action="confirm-reset">새 장터 시작하기</button><button class="secondary-button" data-action="close-modal">현재 장터 계속하기</button>';
   }
+  if (kind === 'atmosphere') {
+    title = '창밖의 빛';
+    content = `<p class="atmosphere-copy" id="time-explanation">접속 기기의 현지 시각에 맞춰 빛과 그림자가 바뀌어요. 위치를 조회하거나 시간 정보를 서버에 보내지 않아요.</p><label class="time-consent"><input id="time-consent" type="checkbox" aria-describedby="time-explanation time-status" ${timeLinked ? 'checked' : ''}><span>기기 시각 사용에 동의합니다<small>언제든 끌 수 있어요. 동의하지 않으면 낮 배경을 유지해요.</small></span></label><p class="time-status" id="time-status" role="status">${timeLinked ? '지금은 기기 시각에 맞춰 빛이 바뀌고 있어요.' : '지금은 낮 배경으로 고정되어 있어요.'}</p>`;
+  }
   return `<dialog class="modal" aria-labelledby="modal-title"><div class="modal-heading"><h2 id="modal-title" tabindex="-1">${title}</h2><button id="close-modal" class="icon-button" data-action="close-modal" aria-label="닫기">${icon('close')}</button></div>${content}</dialog>`;
 }
 
@@ -142,5 +146,5 @@ export function view(state: GameState, ui: ViewState): string {
     <main><div class="game-heading"><div><div class="eyebrow">오후의 작은 가게 <span>/</span> ${MARKETS[state.market].name} · ${MARKETS[state.market].edition}</div><h1 id="day-title" tabindex="-1">${state.phase === 'complete' ? '우리 가게의 다섯 번의 오후' : day.title}</h1></div><div class="wallet"><span class="wallet-icon">${icon('wallet')}</span><div><span>내 주머니</span><strong id="wallet-value">${money(live.cash)}</strong></div></div></div>
     <div class="day-rail" aria-label="${state.day + 1}일차, 전체 ${DAYS.length}일"><div class="day-markers">${daysFor(state).map((_, index) => `<span class="day-marker ${index === state.day ? 'current' : index < state.day ? 'past' : ''}" ${index === state.day ? 'aria-current="step"' : ''}>${index < state.day || state.phase === 'complete' ? icon('check') : `<b>${index + 1}</b>`}<span>${index + 1}일차</span></span>`).join('')}</div><span class="day-status">${ui.selling ? '영업 중' : state.phase === 'planning' ? '영업 준비' : state.phase === 'complete' ? '장터를 마치며' : '영업 기록'}</span></div>
     <div class="game-grid">${scene(state, ui)}${ui.selling ? selling(state, ui) : state.phase === 'planning' ? planning(state) : state.phase === 'complete' ? finale(state) : result(state)}</div></main>
-    <footer><span>${icon('leaf')} 작게 시작하고, 조금씩 알아가요.</span><span>Good Afternoon. <span class="footer-separator">·</span> 주말 장터</span></footer>${modal(state, ui.modal, ui.equipment)}</div>`;
+    <footer><span>${icon('leaf')} 작게 시작하고, 조금씩 알아가요.</span><button id="background-settings" class="background-settings" data-action="atmosphere">배경 설정</button></footer>${modal(state, ui.modal, ui.equipment, ui.timeLinked)}</div>`;
 }

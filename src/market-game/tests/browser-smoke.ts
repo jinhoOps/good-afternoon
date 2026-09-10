@@ -3,6 +3,7 @@ import { mkdir } from 'node:fs/promises';
 import { chromium, type Page } from 'playwright';
 import { STORAGE_KEY } from '../storage';
 import { journeySmoke } from './journey-smoke';
+import { atmosphereSmoke } from './atmosphere-smoke';
 
 const url = process.env.MARKET_TEST_URL ?? 'http://127.0.0.1:4173/good-afternoon/';
 const artifactDir = process.env.MARKET_SCREENSHOTS ?? '/tmp/good-afternoon-market-qa';
@@ -285,6 +286,7 @@ async function main(): Promise<void> {
     await journeySmoke(page, completedSave!, artifactDir);
     assert.deepEqual(errors, [], `브라우저 오류: ${errors.join('\n')}`);
     await context.close();
+    await atmosphereSmoke(browser, url, artifactDir);
     console.log('PC·390×844 모바일 / 5일 진행 / 감사 스크롤·재시작·기록 보존 / 보관·기한 / v1 저장 이전·손상·접근 실패 / 콘솔·이미지·넘침: 통과');
     console.log(`화면 캡처: ${artifactDir}`);
     console.log('공원 두 주간 완주 / 목표 성장·설비·새 메뉴 / 선불 주문·납품·품절 / 장터 이동·최고 기록 유지: 통과');

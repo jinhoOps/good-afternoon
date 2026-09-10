@@ -19,6 +19,8 @@
 
 날씨와 손님, 재료비는 날마다 달라집니다. 기본 설비는 셋째·넷째 날 하루 1,800원에 최대 4잔을 다음 영업까지 보관할 수 있습니다. 보관함을 쓰지 않거나 판매 기한이 지난 음료는 정리합니다. 내일의 재료값과 손님 단서를 보고 보관을 결정합니다. 현금과 이익은 구분해 보여주며, 설명은 영업 뒤 선택해서 열어볼 수 있습니다.
 
+동네·공원 풍경은 펜과 잉크, 노란 포인트로 표현합니다. 웹 배경은 흰 벽과 나뭇잎 그림자가 기본입니다. 하단 **배경 설정**에서 기기 시각 사용에 동의하면 낮·저녁·밤의 빛이 바뀝니다. 미동의 시 낮을 유지하며 위치 조회나 시간 정보 전송은 없습니다.
+
 ## 실행과 검증
 
 Node.js와 npm이 필요합니다.
@@ -43,7 +45,7 @@ npx playwright install chromium
 npm run test:smoke
 ```
 
-`MARKET_TEST_URL`로 대상 주소를, `MARKET_SCREENSHOTS`로 캡처 경로를 지정할 수 있습니다. 기본 캡처 경로는 `/tmp/good-afternoon-market-qa`입니다.
+`MARKET_TEST_URL`로 대상 주소를, `MARKET_SCREENSHOTS`로 캡처 경로를 지정할 수 있습니다. 기본 캡처 경로는 `/tmp/good-afternoon-market-qa`입니다. `MARKET_DESIGN_REFERENCE`에 선택 시안의 로컬 PNG 경로를 지정하면 같은 크기의 화면 비교판도 남깁니다.
 
 검증에는 다섯 번의 영업, 수익 계산, 같은 날 재시도, 새로고침 복구, 보관·기한·대여 유불리, 감사 스크롤의 중지·동작 감소·기록 보존·재시작, 공원 두 주간·설비·선불 주문·납품·최고 기록 보존, 기존 v1~v3 저장의 이어하기, 손상된 저장값, 저장 불가 환경, PC와 모바일 390×844 화면이 포함됩니다. 자동 검증은 실제 사용자의 재미나 경제 이해를 입증하지 않습니다.
 
@@ -57,6 +59,7 @@ npm run test:smoke
 - `view.ts`, `main.ts`, `styles.css`: 장면, 조작, 손님 반응, 반응형 화면
 - `cooler-view.ts`, `cooler.css`: 보관 선택, 보관함 장면, 현금과 이익의 구분
 - `credits.ts`, `credits.css`: 반복 진입 시 감사 스크롤과 개발 중 안내
+- `atmosphere.ts`, `daylight.ts`, `atmosphere.css`: 명시적 동의 후 현지 시각에 맞추는 웹 배경, 미동의 시 낮 고정
 - [배경 이미지와 제작 기록](src/market-game/assets/README.md)
 
 Vite + TypeScript와 HTML/CSS/SVG를 사용합니다. 게임 이미지도 로컬 파일이며 외부 폰트 요청은 없습니다. 기록은 현재 브라우저에 자동 저장합니다. `dist/`는 빌드 출력물이므로 커밋하지 않습니다.
@@ -71,6 +74,7 @@ Vite + TypeScript와 HTML/CSS/SVG를 사용합니다. 게임 이미지도 로컬
 - [초기버전 검증 기록](docs/validation/initial-release.md): 정상 동작 근거와 실제 사용자 관찰의 구분
 - [로드맵](docs/ROADMAP.md): 다음 플레이테스트와 숙련 확장 순서
 - [디자인 기준](DESIGN.md): 화면, 조작, 톤
+- [디자인 검증](design-qa.md): 시안 비교, 낮·밤·모바일 화면과 시간 동의 검증
 - [작업 지침](AGENTS.md): Gemini를 포함한 모든 에이전트의 공통 규칙과 프로젝트 내 Superpowers 비활성화
 
 [장르 비교](docs/design/2026-09-09-economics-game-directions.md), [이전 안의 재미 검토](docs/design/2026-09-09-game-fun-review.md), [교체 전 서비스 기획](docs/archive/2026-09-09-before-market-context.md), [이전 마스터리 설계](docs/archive/2026-09-10-mastery-spec.md)는 결정 과정을 보존한 자료입니다. `docs/superpowers/`와 루트 HTML 데모의 마을·문항·티어 구조도 현재 게임의 필수 조건이 아닙니다.
