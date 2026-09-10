@@ -80,3 +80,5 @@ npm run test:smoke
 - `npm run test:smoke`: 기존 영업·저장·장터·모바일·시간 동의와 새 이스터에그 검증 통과.
 - 최초 숨김·URL 미연결, 끝 도달 후 실제 영상 시간 증가, 동작 감소 시 직접 재생, 위로 스크롤 시 정지, 다시 열기와 처음부터 스크롤 시 숨김, 완료 기록 보존을 확인했습니다.
 - 화면 확인: `/tmp/good-afternoon-easter-qa/40-mobile-easter-egg.png` (390×844), `41-desktop-easter-egg.png` (1440×1000). 큰 재생바를 제거하고 작은 재생·멈춤 버튼을 사용합니다. 영상과 고정 진행 버튼이 겹치지 않습니다.
+
+공개 주소 `https://jinhoops.github.io/good-afternoon/`에서도 같은 브라우저 검증을 통과했습니다. 영상 해제 시 해당 MP4 요청의 `net::ERR_ABORTED`는 의도한 다운로드 취소로 분류합니다. 다른 요청 실패와 콘솔 오류는 계속 실패 처리하며, 실제 디코딩·재생 시간 증가·정지 동작은 별도로 확인합니다. 공개 화면 캡처는 `/tmp/good-afternoon-easter-public-qa/`에 남겼습니다.

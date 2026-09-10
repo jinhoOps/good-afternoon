@@ -38,7 +38,13 @@ async function main(): Promise<void> {
     const page = await context.newPage();
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-    page.on('requestfailed', (request) => errors.push(`${request.url()}: ${request.failure()?.errorText}`));
+    page.on('requestfailed', (request) => {
+      const reason = request.failure()?.errorText;
+      // 감사 창을 닫으며 영상을 해제하면 진행 중인 미디어 요청은 정상 취소됩니다.
+      // 실제 재생·디코딩은 이스터에그 검사에서 확인하며 다른 요청 실패는 계속 보고합니다.
+      if (request.resourceType() === 'media' && /\/assets\/good-afternoon-[^/]+\.mp4$/.test(request.url()) && reason === 'net::ERR_ABORTED') return;
+      errors.push(`${request.url()}: ${reason}`);
+    });
     await page.goto(url, { waitUntil: 'networkidle' });
     await page.locator('#open-market').waitFor();
     assert.equal(await cash(page), 18000);
